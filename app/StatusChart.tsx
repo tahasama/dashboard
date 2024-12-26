@@ -14,24 +14,24 @@ const StatusChart: React.FC<StatusChartProps> = ({ data }) => {
     { label: string; value: number }[]
   >([]);
 
+  console.log("🚀 ~ chartData:", chartData);
+
   useEffect(() => {
     // Combine data from all files and generate chart data
     const statusCounts: { [key: string]: number } = {};
 
-    data.forEach((fileData) => {
-      const filteredData = fileData.filter(
+    data
+      .filter(
         (row: any) =>
           row["Submission Status"] !== "Canceled" &&
           row["Submission Status"] !== "Cancelled"
-      );
-
-      filteredData.forEach((row: any) => {
+      )
+      .forEach((row: any) => {
         const status = row["Status"]; // Adjust to match your column name
         if (status) {
           statusCounts[status] = (statusCounts[status] || 0) + 1;
         }
       });
-    });
 
     const formattedData = Object.keys(statusCounts).map((key) => ({
       label: key,

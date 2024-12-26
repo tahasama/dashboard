@@ -1,22 +1,23 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import * as XLSX from "xlsx";
 import StatusChart from "./StatusChart";
-import SubmissionStatus from "./SubmissionStatus";
-import ReviewChart from "./Review Status";
-import DaysLateAnalysis from "./DaysLateAnalysis";
-import MonthlyPlannedSubmissionDates from "./MonthlyPlannedSubmissionDates";
-import DaysLateAnalysisByMonth from "./DaysLateAnalysisByMonth";
-import LateAnalysis from "./LateAnalysis";
-import SankeyChart from "./SankeyChart";
+import WorkflowStatusChart from "./WorkflowStatusChart";
 
 export default function Home() {
-  const [files, setFiles] = useState<File[]>([]); // Store the uploaded files
-  const [indexRows, setIndexRows] = useState<number[]>([0, 0, 0]); // Index for headers for each file
-  const [data, setData] = useState<any[][]>([]); // Holds table data for all files
+  const [files, setFiles] = useState<File[]>([]);
+  const [indexRows, setIndexRows] = useState<number[]>([0, 0, 0]);
+  const [data, setData] = useState<any[][]>([]);
+  const [error, setError] = useState<string | null>(null); // Error state
+  const [isReadyToGenerate, setIsReadyToGenerate] = useState<boolean>(false); // Generate button readiness
 
-  // Handle file upload
+  const expectedHeaders = [
+    ["File", "Package Number", "Document No"], // Expected headers for file 1
+    ["Workflow No.", "Workflow Name"], // Expected headers for file 2
+    // ["Other A", "Other B", "Other C"], // Expected headers for file 3
+  ];
+
   const handleFileUpload = (
     e: React.ChangeEvent<HTMLInputElement>,
     fileIndex: number
@@ -26,10 +27,11 @@ export default function Home() {
       const newFiles = [...files];
       newFiles[fileIndex] = file;
       setFiles(newFiles);
+      setError(null); // Reset error when uploading a new file
+      validateFiles(newFiles); // Validate files on every upload
     }
   };
 
-  // Handle row index input change
   const handleIndexRowChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     fileIndex: number
@@ -39,53 +41,91 @@ export default function Home() {
     setIndexRows(newIndexRows);
   };
 
-  // Process all files and generate tables and charts
+  const validateFiles = (currentFiles: File[]) => {
+    const allUploaded = expectedHeaders.every(
+      (_, index) => !!currentFiles[index]
+    );
+    setIsReadyToGenerate(allUploaded);
+  };
+
   const handleGenerate = () => {
+    if (!isReadyToGenerate) {
+      setError("Please upload all required files with correct headers.");
+      return;
+    }
+
     const allData: any[][] = [];
+    let validationFailed = false;
 
     files.forEach((file, fileIndex) => {
       if (!file) return;
 
       const reader = new FileReader();
       reader.onload = (event) => {
-        const binaryStr = event.target?.result;
-        const workbook = XLSX.read(binaryStr, { type: "binary" });
-        const sheetName = workbook.SheetNames[0];
-        const sheet = workbook.Sheets[sheetName];
+        try {
+          const binaryStr = event.target?.result;
+          const workbook = XLSX.read(binaryStr, { type: "binary" });
+          const sheetName = workbook.SheetNames[0];
+          const sheet = workbook.Sheets[sheetName];
 
-        const sheetData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-        const headers: any = sheetData[indexRows[fileIndex]]; // Use indexRow for the current file
-        const rows = sheetData.slice(indexRows[fileIndex] + 1);
+          const sheetData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+          const headers: any = sheetData[indexRows[fileIndex]]; // Use indexRow for the current file
+          const rows = sheetData.slice(indexRows[fileIndex] + 1);
 
-        // Map rows to JSON objects
-        const jsonData = rows.map((row: any) =>
-          headers.reduce((acc: any, header: any, colIndex: number) => {
-            acc[header] = row[colIndex] || "";
-            return acc;
-          }, {})
-        );
+          // Validate headers
+          const isValidHeaders = expectedHeaders[fileIndex].every(
+            (header, idx) => headers[idx] === header
+          );
 
-        // Add table data
-        allData[fileIndex] = jsonData;
-        // Update state
-        if (fileIndex === files.length - 1) {
-          setData(allData);
+          if (!isValidHeaders) {
+            validationFailed = true;
+            setError(
+              `File ${
+                fileIndex + 1
+              } has incorrect headers. Expected: ${expectedHeaders[
+                fileIndex
+              ].join(", ")}`
+            );
+            return;
+          }
+
+          // Map rows to JSON objects
+          const jsonData = rows.map((row: any) =>
+            headers.reduce((acc: any, header: any, colIndex: number) => {
+              acc[header] = row[colIndex] || "";
+              return acc;
+            }, {})
+          );
+
+          // Add table data
+          allData[fileIndex] = jsonData;
+
+          if (fileIndex === files.length - 1 && !validationFailed) {
+            setData(allData);
+            setError(null); // Reset error if validation passes
+          }
+        } catch (err) {
+          setError(`Error processing file ${fileIndex + 1}: ${err.message}`);
         }
       };
       reader.readAsArrayBuffer(file);
     });
   };
 
+  const labels = { 0: "Supplier Docs", 1: "Workflow Docs", 2: "Other Docs" };
+
   return (
     <div className="p-4">
       <h1 className="text-xl font-bold mb-4">Excel to Table and Chart</h1>
-      {[0, 1, 2].map((fileIndex) => (
+      {[0, 1].map((fileIndex) => (
         <div key={fileIndex} className="mb-4">
+          <label htmlFor="">{labels[fileIndex]}</label>
           <input
             type="file"
             accept=".xlsx, .xls"
             onChange={(e) => handleFileUpload(e, fileIndex)}
             className="mb-2"
+            id={fileIndex}
           />
           <input
             value={indexRows[fileIndex]}
@@ -98,23 +138,25 @@ export default function Home() {
       ))}
       <button
         onClick={handleGenerate}
-        className="bg-blue-500 text-white px-4 py-2 rounded"
+        className={`px-4 py-2 rounded ${
+          isReadyToGenerate ? "bg-blue-500 text-white" : "bg-gray-400"
+        }`}
+        disabled={!isReadyToGenerate}
       >
         Generate
       </button>
 
-      {/* Render SubmissionStatusChart only if chartData is available */}
+      {/* Display Error */}
+      {error && <div className="text-red-500 mt-4">{error}</div>}
+
+      {/* Render Charts if data is available */}
       {data.length > 0 && (
         <div className="mt-6">
           <div className="flex justify-evenly">
-            <StatusChart data={data} />
-            <SubmissionStatus data={data} />
-            <ReviewChart data={data} />
+            <StatusChart data={data[0]} />
           </div>
           <div className="w-full">
-            <LateAnalysis data={data} />
-            <MonthlyPlannedSubmissionDates data={data} />
-            <SankeyChart data={data} />
+            <WorkflowStatusChart data={data[1]} />
           </div>
         </div>
       )}

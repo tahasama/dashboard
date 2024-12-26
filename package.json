@@ -10,7 +10,9 @@
   },
   "dependencies": {
     "chart.js": "^4.4.7",
+    "chartjs-adapter-date-fns": "^3.0.0",
     "chartjs-chart-sankey": "^0.14.0",
+    "chartjs-chart-treemap": "^3.1.0",
     "highcharts": "^12.1.2",
     "highcharts-react-official": "^3.2.1",
     "next": "15.1.2",

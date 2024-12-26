@@ -22,8 +22,9 @@ const colorList = [
 const labelMap = {
   "C1 Reviewed & accepted as final & certified": "C1 Accepted",
   "C2 Reviewed & accepted as marked revise & resubmi": "C2 with Comments",
-  "C3 Reviewed & returned Correct and resubmit":
-    "C3 Rejected                                    ",
+  "C3 Reviewed & returned Correct and resubmit": "C3 Rejected",
+  Terminated: "Status Terminated", // Update 'Terminated' to 'Status Terminated'
+  Completed: "Status Complete", // Update 'Completed' to 'Status Complete'
 };
 
 const getColor = (index) => colorList[index % colorList.length]; // Loop through the color list
@@ -34,24 +35,35 @@ const prepareDataset = (data) => {
 
   data.forEach((element) => {
     element.forEach((item) => {
-      // Add flow: Submission → Review → Status
+      // Step Status remains unchanged
+      const stepStatus = item["Step Status"];
+
+      // Apply labelMap to Step Outcome and Workflow Status
+      const stepOutcome =
+        labelMap[item["Step Outcome"]] || item["Step Outcome"];
+      const workflowStatus =
+        labelMap[item["Workflow Status"]] || item["Workflow Status"];
+
+      // Flow from Step Status → Step Outcome (Step Outcome now has the updated label)
       tempDataset.push({
-        from: labelMap[item["Submission Status"]] || item["Submission Status"],
-        to: labelMap[item["Review Status"]] || item["Review Status"],
-        flow: 1,
-      });
-      tempDataset.push({
-        from: labelMap[item["Review Status"]] || item["Review Status"],
-        to: labelMap[item["Status"]] || item["Status"],
+        from: stepStatus,
+        to: stepOutcome,
         flow: 1,
       });
 
-      // Add the mapped labels to the set
-      labelsSet.add(
-        labelMap[item["Submission Status"]] || item["Submission Status"]
-      );
-      labelsSet.add(labelMap[item["Review Status"]] || item["Review Status"]);
-      labelsSet.add(labelMap[item["Status"]] || item["Status"]);
+      // Flow from Step Outcome → Workflow Status (Workflow Status will have the updated label)
+      if (stepOutcome !== workflowStatus) {
+        tempDataset.push({
+          from: stepOutcome,
+          to: workflowStatus,
+          flow: 1,
+        });
+      }
+
+      // Add to the labels set
+      labelsSet.add(stepStatus);
+      labelsSet.add(stepOutcome); // Updated Step Outcome label added
+      labelsSet.add(workflowStatus); // Updated Workflow Status label added
     });
   });
 
