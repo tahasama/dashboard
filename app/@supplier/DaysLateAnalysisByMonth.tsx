@@ -30,29 +30,44 @@ interface DaysLateAnalysisProps {
 }
 
 const DaysLateAnalysisByMonth: React.FC<DaysLateAnalysisProps> = ({ data }) => {
+  console.log("🚀 ~ data:", data);
   const [chartData, setChartData] = useState<any>(null);
 
   useEffect(() => {
     const daysLateData: { [key: string]: { daysLate: number; docs: number } } =
       {}; // { "12/2024": { daysLate: 50, docs: 10 } }
 
-    // Process and group data by month/year
-    data.forEach((fileData) => {
-      fileData.forEach((row: any) => {
-        const rawDate = row["Planned Submission Date"];
-        const daysLate = parseFloat(row["Days Late"]);
+    const excelDateToJSDate = (serial: number) => {
+      // Excel date starts at Jan 1, 1900, with a bug that includes 1900 as a leap year
+      const utcDays = Math.floor(serial - 25569); // 25569 is the number of days from 1/1/1900 to 1/1/1970
+      const date = new Date(utcDays * 86400000); // 86400000 ms in a day
+      return date.toLocaleDateString("en-GB"); // Format as DD/MM/YYYY
+    };
 
-        if (!isNaN(daysLate)) {
-          const [day, month, year] = rawDate.split("/"); // Assuming DD/MM/YYYY
-          const monthYear = `${month}/${year}`; // Group by MM/YYYY
+    data.forEach((row: any) => {
+      const rawDate = row["Planned Submission Date"];
 
-          if (!daysLateData[monthYear]) {
-            daysLateData[monthYear] = { daysLate: 0, docs: 0 };
-          }
-          daysLateData[monthYear].daysLate += daysLate;
-          daysLateData[monthYear].docs += 1;
+      const daysLate = parseFloat(row["Days Late"]);
+
+      let formattedDate: string | null = null;
+
+      if (typeof rawDate === "number") {
+        // Convert serialized date
+        formattedDate = excelDateToJSDate(rawDate);
+      } else if (typeof rawDate === "string") {
+        formattedDate = rawDate; // Assume already in DD/MM/YYYY format
+      }
+
+      if (formattedDate && !isNaN(daysLate)) {
+        const [day, month, year] = formattedDate.split("/"); // Assuming DD/MM/YYYY
+        const monthYear = `${month}/${year}`; // Group by MM/YYYY
+
+        if (!daysLateData[monthYear]) {
+          daysLateData[monthYear] = { daysLate: 0, docs: 0 };
         }
-      });
+        daysLateData[monthYear].daysLate += daysLate;
+        daysLateData[monthYear].docs += 1;
+      }
     });
 
     // Sort by chronological order

@@ -16,20 +16,18 @@ const SubmissionStatus: React.FC<SubmissionStatusProps> = ({ data }) => {
 
   useEffect(() => {
     const statusCounts: { [key: string]: number } = {};
-    data.forEach((fileData) => {
-      const filteredData = fileData.filter(
+    data
+      .filter(
         (row: any) =>
           row["Submission Status"] !== "Canceled" &&
           row["Submission Status"] !== "Cancelled"
-      );
-
-      filteredData.forEach((row: any) => {
+      )
+      .forEach((row: any) => {
         const status = row["Submission Status"]; // Replace with your actual status key
         if (status) {
           statusCounts[status] = (statusCounts[status] || 0) + 1;
         }
       });
-    });
 
     const formattedData = Object.keys(statusCounts).map((key) => ({
       label: key,

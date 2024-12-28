@@ -37,19 +37,17 @@ const DaysLateAnalysis: React.FC<DaysLateAnalysisProps> = ({ data }) => {
     const daysLateData: { [key: string]: number[] } = {}; // { "2024-12-01": [3, 5], "2024-12-02": [1, 0], ... }
 
     // Ensure proper handling of data and ignore invalid daysLate values
-    data.forEach((fileData) => {
-      fileData.forEach((row: any) => {
-        const submissionDate = row["Planned Submission Date"];
-        const daysLate = parseFloat(row["Days Late"]);
+    data.forEach((row: any) => {
+      const submissionDate = row["Planned Submission Date"];
+      const daysLate = parseFloat(row["Days Late"]);
 
-        // Only add valid daysLate values
-        if (!isNaN(daysLate)) {
-          if (!daysLateData[submissionDate]) {
-            daysLateData[submissionDate] = [];
-          }
-          daysLateData[submissionDate].push(daysLate); // Store days late for each date
+      // Only add valid daysLate values
+      if (!isNaN(daysLate)) {
+        if (!daysLateData[submissionDate]) {
+          daysLateData[submissionDate] = [];
         }
-      });
+        daysLateData[submissionDate].push(daysLate); // Store days late for each date
+      }
     });
 
     // Step 2: Convert date strings to Date objects for sorting

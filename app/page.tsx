@@ -2,12 +2,20 @@
 
 import { useState } from "react";
 import * as XLSX from "xlsx";
-import StatusChart from "./StatusChart";
-import WorkflowStatusChart from "./WorkflowStatusChart";
+import StatusChart from "./@supplier/StatusChart";
+import WorkflowStatusChart from "./@workflow/WorkflowStatusChart";
+import LateAnalysis from "./@supplier/LateAnalysis";
+import ReviewChart from "./@supplier/Review Status";
+import SankeyChart from "./@supplier/SankeyChart";
+import SubmissionStatus from "./@supplier/SubmissionStatus";
+import StatusOutcomeHeatMap from "./@workflow/StepStatusOutcomeChart";
+import SankeyChartWorkFlow from "./@workflow/SankeyChartWorkFlow";
+import LateCompletionAnalysis from "./@workflow/LateCompletionAnalysis";
+import MonthlyPlannedSubmissionDates from "./@workflow/MonthlyPlannedSubmissionDates";
 
 export default function Home() {
   const [files, setFiles] = useState<File[]>([]);
-  const [indexRows, setIndexRows] = useState<number[]>([0, 0, 0]);
+  const [indexRows, setIndexRows] = useState<number[]>([8, 8, 8]);
   const [data, setData] = useState<any[][]>([]);
   const [error, setError] = useState<string | null>(null); // Error state
   const [isReadyToGenerate, setIsReadyToGenerate] = useState<boolean>(false); // Generate button readiness
@@ -154,9 +162,18 @@ export default function Home() {
         <div className="mt-6">
           <div className="flex justify-evenly">
             <StatusChart data={data[0]} />
+            <ReviewChart data={data[0]} />
+            <SubmissionStatus data={data[0]} />
           </div>
+          <LateAnalysis data={data[0]} />
+          <SankeyChart data={data[0]} />
+          <MonthlyPlannedSubmissionDates data={data[0]} />
+
           <div className="w-full">
             <WorkflowStatusChart data={data[1]} />
+            <LateCompletionAnalysis data={data[1]} />
+            <StatusOutcomeHeatMap data={data[1]} />
+            <SankeyChartWorkFlow data={data[1]} />
           </div>
         </div>
       )}

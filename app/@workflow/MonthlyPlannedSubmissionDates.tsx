@@ -14,25 +14,39 @@ const MonthlyPlannedSubmissionDates: React.FC<
   const transformDataForHeatmap = () => {
     const submissionCounts: { [key: string]: number } = {};
 
-    data.forEach((fileData) => {
-      fileData.forEach((row: any) => {
-        const plannedSubmissionDate = row["Planned Submission Date"]; // Replace with your dataset's key
+    data.forEach((row: any) => {
+      const plannedSubmissionDate = row["Planned Submission Date"];
+      if (plannedSubmissionDate) {
+        let formattedDate: Date | null = null;
 
-        if (plannedSubmissionDate) {
-          const [day, month, year] = plannedSubmissionDate
+        if (typeof plannedSubmissionDate === "string") {
+          // Handle string date in DD/MM/YYYY format
+          const parts = plannedSubmissionDate
             .split("/")
             .map((part: any) => parseInt(part, 10));
-          const formattedDate = new Date(year, month - 1, day);
-
-          if (isNaN(formattedDate.getTime())) {
-            console.error(`Invalid date: ${plannedSubmissionDate}`);
-            return; // Skip invalid dates
+          if (parts.length === 3) {
+            const [day, month, year] = parts;
+            formattedDate = new Date(year, month - 1, day);
           }
+        } else if (typeof plannedSubmissionDate === "number") {
+          // Handle numeric serial date (Excel-style)
+          const baseDate = new Date(1899, 11, 30); // Excel's base date is Dec 30, 1899
+          formattedDate = new Date(
+            baseDate.getTime() + plannedSubmissionDate * 86400000
+          ); // Add days in milliseconds
+        }
 
+        if (
+          formattedDate &&
+          !isNaN(formattedDate.getTime()) &&
+          formattedDate.getFullYear() > 1970
+        ) {
           const isoDate = formattedDate.toISOString().split("T")[0];
           submissionCounts[isoDate] = (submissionCounts[isoDate] || 0) + 1;
+        } else {
+          console.error(`Invalid or unwanted date: ${plannedSubmissionDate}`);
         }
-      });
+      }
     });
 
     return Object.keys(submissionCounts).map((date) => ({
@@ -45,7 +59,9 @@ const MonthlyPlannedSubmissionDates: React.FC<
 
   const years = Array.from(
     new Set(heatmapData.map((d) => new Date(d.date).getFullYear()))
-  ).sort();
+  )
+    .filter((year) => year > 1970) // Exclude years <= 1970
+    .sort();
 
   const [selectedYear, setSelectedYear] = useState<number>(years[0]);
 
@@ -71,7 +87,7 @@ const MonthlyPlannedSubmissionDates: React.FC<
           className="p-2 border rounded text-slate-800"
         >
           {years.map((year) => (
-            <option key={year} value={year} className=" ">
+            <option key={year} value={year}>
               {year}
             </option>
           ))}
@@ -93,7 +109,7 @@ const MonthlyPlannedSubmissionDates: React.FC<
             return "color-scale-4";
           }}
           tooltipDataAttrs={(value: any) => ({
-            "data-tooltip-id": "my-tooltip", // Assign tooltip id based on the date
+            "data-tooltip-id": "my-tooltip",
             "data-tooltip-content": value
               ? `${value.date}: ${value.count} planned submissions`
               : "No data",
@@ -102,8 +118,7 @@ const MonthlyPlannedSubmissionDates: React.FC<
         />
       </div>
       {/* React Tooltip */}
-      <ReactTooltip.Tooltip id="my-tooltip" />{" "}
-      {/* Correct usage of ReactTooltip */}
+      <ReactTooltip.Tooltip id="my-tooltip" />
     </div>
   );
 };

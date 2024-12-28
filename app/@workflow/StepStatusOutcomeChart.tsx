@@ -14,46 +14,38 @@ const StatusOutcomeHeatMap: React.FC<StatusOutcomeHeatMapProps> = ({
   const transformDataForHeatmap = () => {
     const submissionCounts: { [key: string]: number } = {};
 
-    data.forEach((fileData) => {
-      fileData.forEach((row: any) => {
-        let plannedSubmissionDate = row["Original Due Date"]; // Date column
+    data.forEach((row: any) => {
+      let plannedSubmissionDate = row["Original Due Date"]; // Date column
 
-        // If the date is a number (Excel date serial), convert it to a Date object
-        if (
-          plannedSubmissionDate &&
-          typeof plannedSubmissionDate === "number"
-        ) {
-          const excelEpoch = new Date(1900, 0, 1); // January 1, 1900
-          plannedSubmissionDate = new Date(
-            excelEpoch.getTime() + (plannedSubmissionDate - 2) * 86400000
-          ); // Correct the offset
-        }
+      // If the date is a number (Excel date serial), convert it to a Date object
+      if (plannedSubmissionDate && typeof plannedSubmissionDate === "number") {
+        const excelEpoch = new Date(1900, 0, 1); // January 1, 1900
+        plannedSubmissionDate = new Date(
+          excelEpoch.getTime() + (plannedSubmissionDate - 2) * 86400000
+        ); // Correct the offset
+      }
 
-        // If the date is a string (in "DD/MM/YYYY" format), process it
-        if (
-          plannedSubmissionDate &&
-          typeof plannedSubmissionDate === "string"
-        ) {
-          const [day, month, year] = plannedSubmissionDate
-            .split("/")
-            .map((part: any) => parseInt(part, 10));
-          plannedSubmissionDate = new Date(year, month - 1, day);
-        }
+      // If the date is a string (in "DD/MM/YYYY" format), process it
+      if (plannedSubmissionDate && typeof plannedSubmissionDate === "string") {
+        const [day, month, year] = plannedSubmissionDate
+          .split("/")
+          .map((part: any) => parseInt(part, 10));
+        plannedSubmissionDate = new Date(year, month - 1, day);
+      }
 
-        // If the date is still invalid, skip this row
-        if (
-          !(plannedSubmissionDate instanceof Date) ||
-          isNaN(plannedSubmissionDate.getTime())
-        ) {
-          console.error(`Invalid date format: ${plannedSubmissionDate}`);
-          return; // Skip invalid dates
-        }
+      // If the date is still invalid, skip this row
+      if (
+        !(plannedSubmissionDate instanceof Date) ||
+        isNaN(plannedSubmissionDate.getTime())
+      ) {
+        console.error(`Invalid date format: ${plannedSubmissionDate}`);
+        return; // Skip invalid dates
+      }
 
-        const isoDate = plannedSubmissionDate.toISOString().split("T")[0];
+      const isoDate = plannedSubmissionDate.toISOString().split("T")[0];
 
-        // Increment the count for this date
-        submissionCounts[isoDate] = (submissionCounts[isoDate] || 0) + 1;
-      });
+      // Increment the count for this date
+      submissionCounts[isoDate] = (submissionCounts[isoDate] || 0) + 1;
     });
 
     // Return the transformed data with date and count

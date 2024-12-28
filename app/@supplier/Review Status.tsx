@@ -18,18 +18,14 @@ const ReviewChart: React.FC<ReviewChartProps> = ({ data }) => {
     // Combine data from all files and generate chart data
     const statusCounts: { [key: string]: number } = {};
 
-    data.forEach((fileData) => {
-      const filteredData = fileData.filter(
-        (row: any) => row["Review Status"] !== "Terminated"
-      );
-
-      filteredData.forEach((row: any) => {
+    data
+      .filter((row: any) => row["Review Status"] !== "Terminated")
+      .forEach((row: any) => {
         const status = row["Review Status"]; // Adjust to match your column name
         if (status) {
           statusCounts[status] = (statusCounts[status] || 0) + 1;
         }
       });
-    });
 
     const formattedData = Object.keys(statusCounts).map((key) => ({
       label: key.slice(0, 8),

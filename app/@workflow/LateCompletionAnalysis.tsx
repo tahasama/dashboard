@@ -12,7 +12,7 @@ import {
   TimeScale,
 } from "chart.js";
 import { Chart, Line } from "react-chartjs-2";
-import SankeyChart from "./SankeyChart";
+import SankeyChart from "../@supplier/SankeyChart";
 import { Flow, SankeyController } from "chartjs-chart-sankey";
 import "chartjs-adapter-date-fns"; // Import the date-fns adapter
 
@@ -53,9 +53,9 @@ const getColor = (daysLate) => {
 };
 
 const LateCompletionAnalysis = ({ data }) => {
-  const sampleData = data[0];
+  // const sampleData = data[0];
 
-  const ggg = sampleData.map((item) => {
+  const ggg = data.map((item) => {
     return {
       y: !item["Days Late"] ? 0 : Number(item["Days Late"].split(" ")[0]),
       x: Math.round((item["Date Due"] - 25569) * 864e5),
