@@ -14,8 +14,6 @@ const StatusChart: React.FC<StatusChartProps> = ({ data }) => {
     { label: string; value: number }[]
   >([]);
 
-  console.log("🚀 ~ chartData:", chartData);
-
   useEffect(() => {
     // Combine data from all files and generate chart data
     const statusCounts: { [key: string]: number } = {};

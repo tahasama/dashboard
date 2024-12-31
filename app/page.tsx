@@ -12,6 +12,9 @@ import StatusOutcomeHeatMap from "./@workflow/StepStatusOutcomeChart";
 import SankeyChartWorkFlow from "./@workflow/SankeyChartWorkFlow";
 import LateCompletionAnalysis from "./@workflow/LateCompletionAnalysis";
 import MonthlyPlannedSubmissionDates from "./@workflow/MonthlyPlannedSubmissionDates";
+import WorkflowStepStatusChart from "./@workflow/WorkflowStepStatusChart";
+import WorkflowOutcomeStatusChart from "./@workflow/WorkflowOutcomeStatusChart";
+import GanttChart from "./GanttChart";
 
 export default function Home() {
   const [files, setFiles] = useState<File[]>([]);
@@ -160,17 +163,25 @@ export default function Home() {
       {/* Render Charts if data is available */}
       {data.length > 0 && (
         <div className="mt-6">
-          <div className="flex justify-evenly">
-            <StatusChart data={data[0]} />
-            <ReviewChart data={data[0]} />
-            <SubmissionStatus data={data[0]} />
+          <GanttChart data={data} />
+          <div>
+            <div className="flex justify-evenly">
+              <StatusChart data={data[0]} />
+              <ReviewChart data={data[0]} />
+              <SubmissionStatus data={data[0]} />
+            </div>
+            <LateAnalysis data={data[0]} />
+            <SankeyChart data={data[0]} />
+            <MonthlyPlannedSubmissionDates data={data[0]} />
           </div>
-          <LateAnalysis data={data[0]} />
-          <SankeyChart data={data[0]} />
-          <MonthlyPlannedSubmissionDates data={data[0]} />
 
           <div className="w-full">
-            <WorkflowStatusChart data={data[1]} />
+            <div className="flex justify-evenly">
+              <WorkflowStatusChart data={data[1]} />
+              <WorkflowStepStatusChart data={data[1]} />
+              <WorkflowOutcomeStatusChart data={data[1]} />
+            </div>
+
             <LateCompletionAnalysis data={data[1]} />
             <StatusOutcomeHeatMap data={data[1]} />
             <SankeyChartWorkFlow data={data[1]} />

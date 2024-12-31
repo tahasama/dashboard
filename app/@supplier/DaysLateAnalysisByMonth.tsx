@@ -30,7 +30,6 @@ interface DaysLateAnalysisProps {
 }
 
 const DaysLateAnalysisByMonth: React.FC<DaysLateAnalysisProps> = ({ data }) => {
-  console.log("🚀 ~ data:", data);
   const [chartData, setChartData] = useState<any>(null);
 
   useEffect(() => {

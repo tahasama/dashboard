@@ -1,136 +1,193 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
-  ScatterController,
   CategoryScale,
   LinearScale,
-  PointElement,
+  BarElement,
+  LineElement,
+  Title,
   Tooltip,
   Legend,
-  LineController,
-  LineElement,
-  TimeScale,
+  PointElement,
+  Ticks,
 } from "chart.js";
-import { Chart, Line } from "react-chartjs-2";
-import SankeyChart from "../@supplier/SankeyChart";
-import { Flow, SankeyController } from "chartjs-chart-sankey";
-import "chartjs-adapter-date-fns"; // Import the date-fns adapter
 
-// Register necessary Chart.js components
+// Register chart components
 ChartJS.register(
-  ScatterController,
   CategoryScale,
   LinearScale,
-  PointElement,
-  LinearScale,
-  LineController,
+  BarElement,
   LineElement,
-  SankeyController,
-  Flow,
-  TimeScale,
+  PointElement,
+  Title,
   Tooltip,
   Legend
 );
 
-// Function to get color based on whether the task is completed on time or late
-// const getColor = (daysLate) => {
-//   if (daysLate > 0) {
-//     return "#FF5733"; // Red for late tasks
-//   } else {
-//     return "#33FF57"; // Green for on-time tasks
-//   }
-// };
+interface LateCompletionAnalysisProps {
+  data: any[];
+}
 
-const getColor = (daysLate) => {
-  console.log("🚀 ~ getColor ~ daysLate:", daysLate > 100);
-  if (daysLate > 200) return "#b52b27"; // On time
-  if (daysLate > 100) return "#c9302c"; // On time
-  if (daysLate > 50) return "#d9534f"; // On time
-  if (daysLate > 20) return "#fcb329"; // On time
-  if (daysLate > 10) return "#ffe55d"; // On time
-  if (daysLate > 5) return "#cfd959"; // Slightly late
-  return "#85d254"; // Very late
-};
+const LateCompletionAnalysis: React.FC<LateCompletionAnalysisProps> = ({
+  data,
+}) => {
+  const [chartData, setChartData] = useState<any>(null);
 
-const LateCompletionAnalysis = ({ data }) => {
-  // const sampleData = data[0];
+  useEffect(() => {
+    const daysLateData: { [key: string]: number[] } = {};
 
-  const ggg = data.map((item) => {
-    return {
-      y: !item["Days Late"] ? 0 : Number(item["Days Late"].split(" ")[0]),
-      x: Math.round((item["Date Due"] - 25569) * 864e5),
-      backgroundColor: getColor(item["Days Late"].split(" ")[0]),
-    };
-  });
+    data.forEach((row: any) => {
+      try {
+        let plannedSubmissionDate = row["Original Due Date"];
+        const daysLate = parseFloat(row["Days Late"]);
 
-  // console.log("🚀 ~ LateCompletionAnalysis ~ ggg:", ggg);
-  const chartData = {
-    datasets: [
-      {
-        label: "Late Completion",
-        data: ggg,
-        // backgroundColor: "red", // Add more hover colors
-        backgroundColor: ggg.map((item) => item.backgroundColor), // Set individual colors
-        hoverBackgroundColor: ggg.map((item) => item.backgroundColor), // Consistent hover colors
-      },
-    ],
-  };
+        // Convert Excel date or string date to a consistent Date object
+        if (
+          plannedSubmissionDate &&
+          typeof plannedSubmissionDate === "number"
+        ) {
+          const excelEpoch = new Date(1900, 0, 1); // January 1, 1900
+          plannedSubmissionDate = new Date(
+            excelEpoch.getTime() + (plannedSubmissionDate - 2) * 86400000
+          );
+        }
 
-  const options = {
+        if (
+          plannedSubmissionDate &&
+          typeof plannedSubmissionDate === "string"
+        ) {
+          const [day, month, year] = plannedSubmissionDate
+            .split("/")
+            .map((part: any) => parseInt(part, 10));
+          plannedSubmissionDate = new Date(year, month - 1, day);
+        }
+
+        if (
+          plannedSubmissionDate instanceof Date &&
+          !isNaN(plannedSubmissionDate.getTime())
+        ) {
+          const formattedDate = plannedSubmissionDate
+            .toISOString()
+            .split("T")[0]; // Format as YYYY-MM-DD
+          if (!isNaN(daysLate)) {
+            if (!daysLateData[formattedDate]) {
+              daysLateData[formattedDate] = [];
+            }
+            daysLateData[formattedDate].push(daysLate);
+          }
+        }
+      } catch (error) {
+        console.error("Error processing row:", row, error);
+      }
+    });
+
+    // Step 2: Convert data into chart data
+    try {
+      const chartLabels = Object.keys(daysLateData).sort();
+      const chartValues = chartLabels.map((date) => {
+        const dailyLateDays = daysLateData[date];
+        return (
+          dailyLateDays.reduce((acc, val) => acc + val, 0) /
+          dailyLateDays.length
+        ); // Average
+      });
+
+      let cumulativeDaysLate = 0;
+      let cumulativeDocuments = 0;
+      const cumulativeValues = chartLabels.map((date) => {
+        const dailyLateDays = daysLateData[date];
+        cumulativeDaysLate += dailyLateDays.reduce((acc, val) => acc + val, 0);
+        cumulativeDocuments += dailyLateDays.length;
+        return cumulativeDaysLate / cumulativeDocuments; // Cumulative average
+      });
+
+      setChartData({
+        labels: chartLabels,
+        datasets: [
+          {
+            label: "Cumulative Average Days Late (Line)",
+            data: cumulativeValues,
+            fill: false,
+            borderColor: "rgba(75, 192, 192, 1)",
+            tension: 0.1,
+            type: "line",
+          },
+          {
+            label: "Average Days Late (Bar)",
+            data: chartValues,
+            backgroundColor: "rgba(255, 99, 132, 0.6)",
+            borderColor: "rgba(255, 99, 132, 1)",
+            borderWidth: 1,
+            type: "bar",
+          },
+        ],
+      });
+    } catch (error) {
+      console.error("Error preparing chart data:", error);
+    }
+  }, [data]);
+
+  const chartOptions = {
     responsive: true,
     plugins: {
+      title: {
+        display: true,
+        text: "Days Late Analysis", // Chart title
+      },
       tooltip: {
         callbacks: {
-          title: (tooltipItems) => tooltipItems[0].raw.tooltip, // Tooltip showing the message
-        },
-      },
-      legend: {
-        display: true,
-        position: "bottom",
-      },
-    },
-
-    scales: {
-      x: {
-        type: "time", // Set x-axis type to 'time'
-        time: {
-          // Customize time formatting as needed
-          unit: "day", // Display dates in days
-          // parser: 'YYYY-MM-DD', // If your dates are in a specific format
-          displayFormats: {
-            day: "MMM d", // Display dates as "Jan 1", "Feb 5", etc.
+          label: function (context: any) {
+            if (context.dataset.type === "line") {
+              return `${context.label}: ${context.raw.toFixed(
+                2
+              )} days cumulative (Average)`;
+            } else {
+              return `${context.label}: ${context.raw.toFixed(
+                2
+              )} days late (Average)`;
+            }
           },
         },
+      },
+    },
+    scales: {
+      x: {
         title: {
           display: true,
-          text: "Original Due Date", // Label for Y-axis
-          // color: "blue", // Set label color to blue
+          text: "Planned Submission Date", // X-axis label
         },
-        grid: {
-          color: "#191919", // Set grid color to gray
-        },
+        // ticks: {
+        //   callback: function (value: any) {
+        //     // Ensure the value is a string
+        //     if (typeof value === "string") {
+        //       const [day, month, year] = value.split("/");
+        //       return `${day}/${month}/${year}`;
+        //     } else {
+        //       // If the value is not a string, return it as is
+        //       return value;
+        //     }
+        //   },
+        // },
       },
       y: {
         title: {
           display: true,
-          text: "Days Late", // Label for X-axis
-          // color: "green", // Set label color to green
+          text: "Days Late", // Y-axis label
         },
-        grid: {
-          color: "#191919", // Set grid color to light gray
-        },
+        beginAtZero: true,
       },
     },
   };
 
   return (
-    <div style={{ width: "80%", margin: "auto", height: "500px" }}>
-      <Chart
-        type="scatter"
-        data={chartData}
-        options={options}
-        // className="bg-white"
-      />
+    <div className="max-w-4xl">
+      <h2 className="text-lg font-bold">Days Late Analysis</h2>
+      {chartData ? (
+        <Line data={chartData} options={chartOptions} />
+      ) : (
+        <p>Loading data...</p>
+      )}
     </div>
   );
 };

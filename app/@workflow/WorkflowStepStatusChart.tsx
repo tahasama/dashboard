@@ -3,10 +3,10 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend, Title } from "chart.js";
 
 ChartJS.register(ArcElement, Tooltip, Legend, Title);
 
-const WorkflowStatusChart = ({ data }) => {
+const WorkflowStepStatusChart = ({ data }) => {
   // Count the statuses dynamically from the rows prop
   const statusCounts = data.reduce((acc, row) => {
-    const status = row["Workflow Status"];
+    const status = row["Step Status"];
     acc[status] = (acc[status] || 0) + 1;
     return acc;
   }, {});
@@ -42,4 +42,4 @@ const WorkflowStatusChart = ({ data }) => {
   );
 };
 
-export default WorkflowStatusChart;
+export default WorkflowStepStatusChart;
