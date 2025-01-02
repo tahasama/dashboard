@@ -6,6 +6,34 @@ import { Chart } from "react-chartjs-2";
 // Register necessary Chart.js components
 ChartJS.register(...registerables, SankeyController, Flow);
 
+// Define the type for a single data item
+type DataItem = {
+  "Submission Status": string;
+  "Review Status": string;
+  Status: string;
+};
+
+// Define the type for the dataProps
+export type dataProps = {
+  data: DataItem[]; // Expecting an array of DataItem objects
+};
+
+// Define the possible keys for labelMap
+type LabelKey =
+  | "C1 Reviewed & accepted as final & certified"
+  | "C2 Reviewed & accepted as marked revise & resubmi"
+  | "C2 Reviewed & accepted as marked revise & resubmit"
+  | "C3 Reviewed & returned Correct and resubmit";
+
+// Define the labelMap with an explicit type
+const labelMap: Record<LabelKey, string> = {
+  "C1 Reviewed & accepted as final & certified": "C1 Accepted",
+  "C2 Reviewed & accepted as marked revise & resubmi": "C2 with Comments",
+  "C3 Reviewed & returned Correct and resubmit": "C3 Rejected",
+  "C2 Reviewed & accepted as marked revise & resubmit": "C2 with Comments",
+};
+
+// Define the colors
 const colorList = [
   "#0D47A1", // Bold Blue
   "#2196F3", // Medium Blue
@@ -19,42 +47,49 @@ const colorList = [
   "#7D6FB3", // Deep Purple
 ];
 
-const labelMap = {
-  "C1 Reviewed & accepted as final & certified": "C1 Accepted",
-  "C2 Reviewed & accepted as marked revise & resubmi": "C2 with Comments",
-  "C3 Reviewed & returned Correct and resubmit":
-    "C3 Rejected                                    ",
+// Get color from colorList based on the index
+const getColor = (index: number) => colorList[index % colorList.length]; // Loop through the color list
+
+// Type the return value of prepareDataset
+type DatasetItem = {
+  from: string;
+  to: string;
+  flow: number;
 };
 
-const getColor = (index) => colorList[index % colorList.length]; // Loop through the color list
-
-const prepareDataset = (data) => {
-  const tempDataset = [];
-  const labelsSet = new Set();
+const prepareDataset = (data: DataItem[]) => {
+  const tempDataset: DatasetItem[] = [];
+  const labelsSet = new Set<string>();
 
   data.forEach((item) => {
     // Add flow: Submission → Review → Status
     tempDataset.push({
-      from: labelMap[item["Submission Status"]] || item["Submission Status"],
-      to: labelMap[item["Review Status"]] || item["Review Status"],
+      from:
+        labelMap[item["Submission Status"] as LabelKey] ||
+        item["Submission Status"], // Use type assertion here
+      to: labelMap[item["Review Status"] as LabelKey] || item["Review Status"], // Use type assertion here
       flow: 1,
     });
     tempDataset.push({
-      from: labelMap[item["Review Status"]] || item["Review Status"],
-      to: labelMap[item["Status"]] || item["Status"],
+      from:
+        labelMap[item["Review Status"] as LabelKey] || item["Review Status"], // Use type assertion here
+      to: labelMap[item["Status"] as LabelKey] || item["Status"], // Use type assertion here
       flow: 1,
     });
 
     // Add the mapped labels to the set
     labelsSet.add(
-      labelMap[item["Submission Status"]] || item["Submission Status"]
+      labelMap[item["Submission Status"] as LabelKey] ||
+        item["Submission Status"]
     );
-    labelsSet.add(labelMap[item["Review Status"]] || item["Review Status"]);
-    labelsSet.add(labelMap[item["Status"]] || item["Status"]);
+    labelsSet.add(
+      labelMap[item["Review Status"] as LabelKey] || item["Review Status"]
+    );
+    labelsSet.add(labelMap[item["Status"] as LabelKey] || item["Status"]);
   });
 
   // Aggregate duplicate flows for better performance
-  const flowMap = {};
+  const flowMap: { [key: string]: DatasetItem } = {};
   tempDataset.forEach(({ from, to, flow }) => {
     const key = `${from}->${to}`;
     if (flowMap[key]) {
@@ -70,7 +105,7 @@ const prepareDataset = (data) => {
   };
 };
 
-const SankeyChart = ({ data }) => {
+const SankeyChart: React.FC<dataProps> = ({ data }) => {
   const dataset = prepareDataset(data);
 
   const chartData = {
@@ -78,10 +113,10 @@ const SankeyChart = ({ data }) => {
       {
         label: "Status Flow",
         data: dataset.dataset,
-        colorFrom: (c) => getColor(c.dataIndex), // Use color from colorList
-        colorTo: (c) => getColor(c.dataIndex + 1), // Use color from colorList
-        hoverColorFrom: (c) => getColor(c.dataIndex),
-        hoverColorTo: (c) => getColor(c.dataIndex + 1),
+        colorFrom: (c: any) => getColor(c.dataIndex), // Use color from colorList
+        colorTo: (c: any) => getColor(c.dataIndex + 1), // Use color from colorList
+        hoverColorFrom: (c: any) => getColor(c.dataIndex),
+        hoverColorTo: (c: any) => getColor(c.dataIndex + 1),
       },
     ],
   };
@@ -89,7 +124,7 @@ const SankeyChart = ({ data }) => {
   return (
     <div
       style={{ width: "80%", margin: "auto", height: "500px" }}
-      className="bg-slate-500"
+      // className="bg-slate-500"
     >
       <Chart
         type="sankey"

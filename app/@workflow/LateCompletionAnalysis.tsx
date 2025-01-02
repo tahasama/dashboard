@@ -12,6 +12,7 @@ import {
   PointElement,
   Ticks,
 } from "chart.js";
+import { dataProps } from "../types";
 
 // Register chart components
 ChartJS.register(
@@ -25,13 +26,7 @@ ChartJS.register(
   Legend
 );
 
-interface LateCompletionAnalysisProps {
-  data: any[];
-}
-
-const LateCompletionAnalysis: React.FC<LateCompletionAnalysisProps> = ({
-  data,
-}) => {
+const LateCompletionAnalysis: React.FC<dataProps> = ({ data }) => {
   const [chartData, setChartData] = useState<any>(null);
 
   useEffect(() => {

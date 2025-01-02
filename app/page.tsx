@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 import * as XLSX from "xlsx";
 import StatusChart from "./@supplier/StatusChart";
@@ -115,7 +114,7 @@ export default function Home() {
             setData(allData);
             setError(null); // Reset error if validation passes
           }
-        } catch (err) {
+        } catch (err: any) {
           setError(`Error processing file ${fileIndex + 1}: ${err.message}`);
         }
       };
@@ -123,12 +122,16 @@ export default function Home() {
     });
   };
 
-  const labels = { 0: "Supplier Docs", 1: "Workflow Docs", 2: "Other Docs" };
+  const labels: { [key: number]: string } = {
+    0: "Supplier Docs",
+    1: "Workflow Docs",
+    2: "Other Docs",
+  };
 
   return (
     <div className="p-4">
       <h1 className="text-xl font-bold mb-4">Excel to Table and Chart</h1>
-      {[0, 1].map((fileIndex) => (
+      {[0, 1].map((fileIndex: number) => (
         <div key={fileIndex} className="mb-4">
           <label htmlFor="">{labels[fileIndex]}</label>
           <input
@@ -136,7 +139,7 @@ export default function Home() {
             accept=".xlsx, .xls"
             onChange={(e) => handleFileUpload(e, fileIndex)}
             className="mb-2"
-            id={fileIndex}
+            id={fileIndex.toString()} // Ensure the ID is a string if needed
           />
           <input
             value={indexRows[fileIndex]}

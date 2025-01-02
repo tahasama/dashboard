@@ -1,15 +1,12 @@
 import { useState, useEffect } from "react";
 import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, Title } from "chart.js";
+import { dataProps } from "../types";
 
 // Register necessary components for Chart.js
 ChartJS.register(ArcElement, Tooltip, Legend, Title);
 
-interface SubmissionStatusProps {
-  data: any[]; // Type this according to your actual data structure
-}
-
-const SubmissionStatus: React.FC<SubmissionStatusProps> = ({ data }) => {
+const SubmissionStatus: React.FC<dataProps> = ({ data }) => {
   const [chartData, setChartData] = useState<
     { label: string; value: number }[]
   >([]);
@@ -71,7 +68,7 @@ const SubmissionStatus: React.FC<SubmissionStatusProps> = ({ data }) => {
         display: true,
         text: "Submission Status Distribution",
       },
-      legend: { position: "bottom" },
+      legend: { position: "bottom" as const },
       tooltip: {
         callbacks: {
           label: function (context: any) {

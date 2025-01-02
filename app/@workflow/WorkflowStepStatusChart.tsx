@@ -1,9 +1,10 @@
 import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, Title } from "chart.js"; // Import necessary Chart.js elements
+import { dataProps } from "../types";
 
 ChartJS.register(ArcElement, Tooltip, Legend, Title);
 
-const WorkflowStepStatusChart = ({ data }) => {
+const WorkflowStepStatusChart: React.FC<dataProps> = ({ data }) => {
   // Count the statuses dynamically from the rows prop
   const statusCounts = data.reduce((acc, row) => {
     const status = row["Step Status"];
@@ -29,8 +30,11 @@ const WorkflowStepStatusChart = ({ data }) => {
     responsive: true,
     plugins: {
       legend: {
-        position: "top",
-        labels: "None",
+        position: "top" as const,
+        labels: {
+          // Assuming you want to hide the labels; it needs to be an object if you're using Chart.js 2.x or higher
+          generateLabels: () => [], // Example to disable the labels, customize as necessary
+        },
       },
     },
   };

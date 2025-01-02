@@ -1,16 +1,16 @@
 import React, { useState } from "react";
-import CalendarHeatmap from "react-calendar-heatmap";
+import CalendarHeatmap, { TooltipDataAttrs } from "react-calendar-heatmap";
 import * as ReactTooltip from "react-tooltip"; // Import react-tooltip as a namespace
 import "react-calendar-heatmap/dist/styles.css";
 import "react-tooltip/dist/react-tooltip.css";
+import { dataProps } from "../types";
 
-interface MonthlyPlannedSubmissionDatesProps {
-  data: any[];
-}
+type ExtendedTooltipDataAttrs = TooltipDataAttrs & {
+  "data-tooltip-id"?: string;
+  "data-tooltip-content"?: string;
+};
 
-const MonthlyPlannedSubmissionDates: React.FC<
-  MonthlyPlannedSubmissionDatesProps
-> = ({ data }) => {
+const MonthlyPlannedSubmissionDates: React.FC<dataProps> = ({ data }) => {
   const transformDataForHeatmap = () => {
     const submissionCounts: { [key: string]: number } = {};
 
@@ -108,12 +108,18 @@ const MonthlyPlannedSubmissionDates: React.FC<
             if (value.count < 20) return "color-scale-3";
             return "color-scale-4";
           }}
-          tooltipDataAttrs={(value: any) => ({
-            "data-tooltip-id": "my-tooltip",
-            "data-tooltip-content": value
-              ? `${value.date}: ${value.count} planned submissions`
-              : "No data",
-          })}
+          tooltipDataAttrs={(value: any): ExtendedTooltipDataAttrs => {
+            if (!value || !value.date) {
+              return {};
+            }
+
+            return {
+              "data-tooltip-id": "my-tooltip",
+              "data-tooltip-content": value
+                ? `${value.date}: ${value.count} planned submissions`
+                : "No data",
+            };
+          }}
           showWeekdayLabels={true}
         />
       </div>

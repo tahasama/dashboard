@@ -1,15 +1,12 @@
 import { useState, useEffect } from "react";
 import { Doughnut } from "react-chartjs-2"; // Import Doughnut chart from react-chartjs-2
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, Title } from "chart.js"; // Import necessary Chart.js elements
+import { dataProps } from "../types";
 
 // Register necessary components for Chart.js
 ChartJS.register(ArcElement, Tooltip, Legend, Title);
 
-interface StatusChartProps {
-  data: any[]; // Type this according to your actual data structure
-}
-
-const StatusChart: React.FC<StatusChartProps> = ({ data }) => {
+const StatusChart: React.FC<dataProps> = ({ data }) => {
   const [chartData, setChartData] = useState<
     { label: string; value: number }[]
   >([]);
@@ -47,7 +44,7 @@ const StatusChart: React.FC<StatusChartProps> = ({ data }) => {
         display: true,
         text: "General Status Chart",
       },
-      legend: { position: "bottom" },
+      legend: { position: "bottom" as const },
       tooltip: {
         callbacks: {
           label: function (context: any) {

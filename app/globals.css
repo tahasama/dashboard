@@ -55,7 +55,6 @@ body {
   color: #acc70e;
 }
 
-
 /* .apexcharts-xaxis-label {
   white-space: nowrap;
   overflow: hidden;
@@ -63,34 +62,3 @@ body {
   max-width: 250px; 
   display: block;
 } */
-
-/* Tooltip styling */
-.yaxis-label {
-  position: relative;
-  cursor: pointer; /* Indicate it's interactable */
-}
-
-.yaxis-label:hover::after {
-  content: attr(data-tooltip); /* Display the tooltip text from the data-tooltip attribute */
-  position: absolute;
-  left: 100%; /* Place the tooltip slightly to the right of the label */
-  top: 50%;
-  transform: translateY(-50%); /* Center it vertically */
-  background-color: rgba(0, 0, 0, 0.7); /* Tooltip background */
-  color: white; /* Tooltip text color */
-  padding: 5px 10px;
-  border-radius: 4px;
-  font-size: 12px;
-  white-space: nowrap;
-  opacity: 1;
-  transition: opacity 0.3s ease-in-out; /* Smooth fade-in/fade-out */
-}
-
-/* Optional: Tooltip fade-out when mouse leaves */
-.yaxis-label:hover::after {
-  opacity: 1;
-}
-.yaxis-label::after {
-  opacity: 0;
-  transition: opacity 0.3s ease-in-out;
-}

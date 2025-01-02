@@ -12,6 +12,7 @@ import {
   PointElement,
   Ticks,
 } from "chart.js";
+import { dataProps } from "../types";
 
 // Register chart components
 ChartJS.register(
@@ -25,19 +26,13 @@ ChartJS.register(
   Legend
 );
 
-interface LateCompletionAnalysisByMonthProps {
-  data: any[];
-}
-
-const LateCompletionAnalysisByMonth: React.FC<
-  LateCompletionAnalysisByMonthProps
-> = ({ data }) => {
-  const [chartData, setChartData] = useState<any>(null);
+const LateCompletionAnalysisByMonth: React.FC<dataProps> = ({ data }) => {
+  const [chartData, setChartData] = useState<any | null>(null);
 
   useEffect(() => {
     const monthsLateData: { [key: string]: number[] } = {};
 
-    data.forEach((row: any) => {
+    data.forEach((row) => {
       try {
         let plannedSubmissionDate = row["Original Due Date"];
         const daysLate = parseFloat(row["Days Late"]);
@@ -59,11 +54,14 @@ const LateCompletionAnalysisByMonth: React.FC<
         ) {
           const [day, month, year] = plannedSubmissionDate
             .split("/")
-            .map((part: any) => parseInt(part, 10));
+            .map((part) => parseInt(part, 10));
           plannedSubmissionDate = new Date(year, month - 1, day);
         }
 
+        // Ensure plannedSubmissionDate is a Date object before using instanceof
         if (
+          plannedSubmissionDate &&
+          typeof plannedSubmissionDate === "object" &&
           plannedSubmissionDate instanceof Date &&
           !isNaN(plannedSubmissionDate.getTime())
         ) {
@@ -72,6 +70,7 @@ const LateCompletionAnalysisByMonth: React.FC<
           )
             .toString()
             .padStart(2, "0")}`; // Format as YYYY-MM
+
           if (!isNaN(daysLate)) {
             if (!monthsLateData[formattedMonth]) {
               monthsLateData[formattedMonth] = [];
@@ -125,6 +124,8 @@ const LateCompletionAnalysisByMonth: React.FC<
             borderColor: "rgba(255, 99, 132, 1)",
             borderWidth: 1,
             type: "bar",
+            fill: false,
+            tension: 0,
           },
         ],
       });

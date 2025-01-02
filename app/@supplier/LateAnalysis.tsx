@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import DaysLateAnalysis from "./DaysLateAnalysis";
 import DaysLateAnalysisByMonth from "./DaysLateAnalysisByMonth";
+import { dataProps } from "../types";
 
-const LateAnalysis = ({ data }: any) => {
+const LateAnalysis: React.FC<dataProps> = ({ data }) => {
   const [byDay, setByDay] = useState<boolean>(true);
 
   return (

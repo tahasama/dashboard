@@ -12,6 +12,7 @@ import {
   PointElement,
   Ticks,
 } from "chart.js";
+import { dataProps } from "../types";
 
 // Register chart components
 ChartJS.register(
@@ -29,7 +30,7 @@ interface DaysLateAnalysisProps {
   data: any[];
 }
 
-const DaysLateAnalysisByMonth: React.FC<DaysLateAnalysisProps> = ({ data }) => {
+const DaysLateAnalysisByMonth: React.FC<dataProps> = ({ data }) => {
   const [chartData, setChartData] = useState<any>(null);
 
   useEffect(() => {
