@@ -14,7 +14,7 @@ import LateCompletionAnalysis from "./@workflow/LateCompletionAnalysis";
 import MonthlyPlannedSubmissionDates from "./@workflow/MonthlyPlannedSubmissionDates";
 import WorkflowStepStatusChart from "./@workflow/WorkflowStepStatusChart";
 import WorkflowOutcomeStatusChart from "./@workflow/WorkflowOutcomeStatusChart";
-import GanttChart from "./GanttChart";
+import LineTimeChart from "./LineTimeChart";
 
 export default function Home() {
   const [files, setFiles] = useState<File[]>([]);
@@ -163,7 +163,7 @@ export default function Home() {
       {/* Render Charts if data is available */}
       {data.length > 0 && (
         <div className="mt-6">
-          <GanttChart data={data} />
+          <LineTimeChart data={data} />
           <div>
             <div className="flex justify-evenly">
               <StatusChart data={data[0]} />
