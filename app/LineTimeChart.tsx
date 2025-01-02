@@ -101,7 +101,7 @@ const LineTimeChart = ({ data }) => {
           reviewStartDate,
           reviewEndDate,
           "Submission Status": doc["Submission Status"],
-          "Review Status": doc["Review Status"] || "Not Yet",
+          "Review Status": doc["Review Status"] || "Approved",
         };
       })
       .filter((item) => item !== null);
@@ -165,9 +165,7 @@ const LineTimeChart = ({ data }) => {
       rows.push([
         title,
         `Review: ${formattedReviewStart} - ${formattedReviewEnd} ${
-          ReviewStatus !== "Under Review"
-            ? ReviewStatus.slice(0, 2)
-            : "Under Review"
+          ReviewStatus.startsWith("C") ? ReviewStatus.slice(0, 2) : ReviewStatus
         }`,
         reviewStartDate,
         reviewEndDate,

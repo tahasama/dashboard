@@ -10,10 +10,10 @@ import SankeyChart from "./@supplier/SankeyChart";
 import SubmissionStatus from "./@supplier/SubmissionStatus";
 import StatusOutcomeHeatMap from "./@workflow/StepStatusOutcomeChart";
 import SankeyChartWorkFlow from "./@workflow/SankeyChartWorkFlow";
-import LateCompletionAnalysis from "./@workflow/LateCompletionAnalysis";
 import MonthlyPlannedSubmissionDates from "./@workflow/MonthlyPlannedSubmissionDates";
 import WorkflowStepStatusChart from "./@workflow/WorkflowStepStatusChart";
 import WorkflowOutcomeStatusChart from "./@workflow/WorkflowOutcomeStatusChart";
+import LateAnalysisReview from "./@workflow/LateAnalysisReview";
 import LineTimeChart from "./LineTimeChart";
 
 export default function Home() {
@@ -182,7 +182,7 @@ export default function Home() {
               <WorkflowOutcomeStatusChart data={data[1]} />
             </div>
 
-            <LateCompletionAnalysis data={data[1]} />
+            <LateAnalysisReview data={data[1]} />
             <StatusOutcomeHeatMap data={data[1]} />
             <SankeyChartWorkFlow data={data[1]} />
           </div>
