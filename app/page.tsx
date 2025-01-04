@@ -4,16 +4,18 @@ import * as XLSX from "xlsx";
 import StatusChart from "./@supplier/StatusChart";
 import WorkflowStatusChart from "./@workflow/WorkflowStatusChart";
 import LateAnalysis from "./@supplier/LateAnalysis";
-import ReviewChart from "./@supplier/Review Status";
 import SankeyChart from "./@supplier/SankeyChart";
 import SubmissionStatus from "./@supplier/SubmissionStatus";
 import StatusOutcomeHeatMap from "./@workflow/StepStatusOutcomeChart";
 import SankeyChartWorkFlow from "./@workflow/SankeyChartWorkFlow";
-import MonthlyPlannedSubmissionDates from "./@workflow/MonthlyPlannedSubmissionDates";
+import MonthlyPlannedSubmissionDates from "./@supplier/MonthlyPlannedSubmissionDates";
+import PieChartWithLabels from "./@supplier/PieChartWithLabels";
+
 import WorkflowStepStatusChart from "./@workflow/WorkflowStepStatusChart";
 import WorkflowOutcomeStatusChart from "./@workflow/WorkflowOutcomeStatusChart";
 import LateAnalysisReview from "./@workflow/LateAnalysisReview";
 import LineTimeChart from "./LineTimeChart";
+import ReviewStatus from "./@supplier/ReviewStatus";
 
 export default function Home() {
   const [files, setFiles] = useState<File[]>([]);
@@ -129,68 +131,109 @@ export default function Home() {
   };
 
   return (
-    <div className="p-4">
-      <h1 className="text-xl font-bold mb-4">Excel to Table and Chart</h1>
-      {[0, 1].map((fileIndex: number) => (
-        <div key={fileIndex} className="mb-4">
-          <label htmlFor="">{labels[fileIndex]}</label>
-          <input
-            type="file"
-            accept=".xlsx, .xls"
-            onChange={(e) => handleFileUpload(e, fileIndex)}
-            className="mb-2"
-            id={fileIndex.toString()} // Ensure the ID is a string if needed
-          />
-          <input
-            value={indexRows[fileIndex]}
-            onChange={(e) => handleIndexRowChange(e, fileIndex)}
-            type="number"
-            className="text-black"
-            placeholder="Header Row Index"
-          />
-        </div>
-      ))}
-      <button
-        onClick={handleGenerate}
-        className={`px-4 py-2 rounded ${
-          isReadyToGenerate ? "bg-blue-500 text-white" : "bg-gray-400"
-        }`}
-        disabled={!isReadyToGenerate}
-      >
-        Generate
-      </button>
+    <div className="p-0 space-y-6">
+      {/* Header */}
+      <h1 className="text-2xl font-bold text-center mb-6">
+        Excel to Table and Chart
+      </h1>
+      <div>
+        {/* File Upload Section */}
+        {[0, 1].map((fileIndex: number) => (
+          <div key={fileIndex} className="mb-6">
+            <label
+              htmlFor={`file-input-${fileIndex}`}
+              className="block font-medium text-gray-700 mb-2"
+            >
+              {labels[fileIndex]}
+            </label>
+            <input
+              type="file"
+              accept=".xlsx, .xls"
+              onChange={(e) => handleFileUpload(e, fileIndex)}
+              id={`file-input-${fileIndex}`}
+              className="block mb-2 p-2 border rounded w-full"
+            />
+            <input
+              value={indexRows[fileIndex]}
+              onChange={(e) => handleIndexRowChange(e, fileIndex)}
+              type="number"
+              className="p-2 border rounded w-full"
+              placeholder="Header Row Index"
+            />
+          </div>
+        ))}
 
-      {/* Display Error */}
-      {error && <div className="text-red-500 mt-4">{error}</div>}
+        {/* Generate Button */}
+        <button
+          onClick={handleGenerate}
+          className={`px-6 py-3 text-lg rounded w-full transition-colors ${
+            isReadyToGenerate
+              ? "bg-blue-500 text-white hover:bg-blue-600"
+              : "bg-gray-400 text-gray-200 cursor-not-allowed"
+          }`}
+          disabled={!isReadyToGenerate}
+        >
+          Generate
+        </button>
 
-      {/* Render Charts if data is available */}
-      {data.length > 0 && (
-        <div className="mt-6">
-          <LineTimeChart data={data} />
-          <div>
-            <div className="flex justify-evenly">
-              <StatusChart data={data[0]} />
-              <ReviewChart data={data[0]} />
-              <SubmissionStatus data={data[0]} />
+        {/* Error Message */}
+        {error && <div className="text-red-500 text-center mt-4">{error}</div>}
+      </div>
+      <div>
+        {/* Chart Display Section */}
+        {data.length > 0 && (
+          <div className="space-y-12 mt-6">
+            {/* Line Time Chart */}
+            <LineTimeChart data={data} />
+            {/* <PieChartWithLabels /> */}
+            {/* <SubmissionStatus data={data[0]} /> */}
+
+            {/* Supplier Documents Charts */}
+            <div className="bg-slate-300 flex w-full gap-0">
+              {/* Left Column: Doughnut Charts */}
+              {/* <div className="flex w-full justify-center gap-4"> */}
+              <div className="flex flex-col justify-center w-3/12 pl-0.5">
+                <div className="m-[1px] bg-white rounded-md">
+                  <ReviewStatus data={data[0]} />
+                </div>
+                <div className="m-[1px] bg-white rounded-md">
+                  <SubmissionStatus data={data[0]} />
+                </div>
+                <div className="m-[1px] bg-white rounded-md">
+                  <StatusChart data={data[0]} />
+                </div>
+              </div>
+              {/* Right Column: Detailed Charts */}
+              <div className="flex flex-col justify-between gap-0 w-9/12 py-0.5 pr-0.5">
+                <div className="pt-4 pb-[3px] bg-white shadow-md rounded-md">
+                  <LateAnalysis data={data[0]} />
+                </div>
+                <div className="pt-4 pb-1.5 px-4 bg-white shadow-md rounded-md">
+                  <MonthlyPlannedSubmissionDates data={data[0]} />
+                </div>
+                {/* </div> */}
+              </div>
             </div>
-            <LateAnalysis data={data[0]} />
+
             <SankeyChart data={data[0]} />
-            <MonthlyPlannedSubmissionDates data={data[0]} />
-          </div>
 
-          <div className="w-full">
-            <div className="flex justify-evenly">
-              <WorkflowStatusChart data={data[1]} />
-              <WorkflowStepStatusChart data={data[1]} />
-              <WorkflowOutcomeStatusChart data={data[1]} />
+            {/* Workflow Charts */}
+            <div>
+              <h2 className="text-xl font-semibold mb-4 text-center">
+                Workflow Analysis
+              </h2>
+              <div className="flex flex-wrap justify-evenly space-x-4">
+                <WorkflowStatusChart data={data[1]} />
+                <WorkflowStepStatusChart data={data[1]} />
+                <WorkflowOutcomeStatusChart data={data[1]} />
+              </div>
+              <LateAnalysisReview data={data[1]} />
+              <StatusOutcomeHeatMap data={data[1]} />
+              <SankeyChartWorkFlow data={data[1]} />
             </div>
-
-            <LateAnalysisReview data={data[1]} />
-            <StatusOutcomeHeatMap data={data[1]} />
-            <SankeyChartWorkFlow data={data[1]} />
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

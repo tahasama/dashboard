@@ -13,6 +13,7 @@ import {
   Ticks,
 } from "chart.js";
 import { dataProps } from "../types";
+import { lightColorsLineBars } from "../colors";
 
 // Register chart components
 ChartJS.register(
@@ -112,20 +113,21 @@ const LateCompletionAnalysisByMonth: React.FC<dataProps> = ({ data }) => {
           {
             label: "Cumulative Average Days Late (Line)",
             data: cumulativeValues,
-            fill: false,
-            borderColor: "rgba(75, 192, 192, 1)",
-            tension: 0.1,
+            backgroundColor: "rgba(255, 99, 132, 0.1)",
+            borderColor: lightColorsLineBars.line,
+            tension: 0.6,
             type: "line",
+            fill: true, // Enable fill beneath the line
+            borderWidth: 4,
+            pointRadius: 0, // Hide points
           },
           {
             label: "Average Days Late (Bar)",
             data: chartValues,
-            backgroundColor: "rgba(255, 99, 132, 0.6)",
-            borderColor: "rgba(255, 99, 132, 1)",
+            backgroundColor: lightColorsLineBars.bar,
+            borderColor: lightColorsLineBars.border,
             borderWidth: 1,
             type: "bar",
-            fill: false,
-            tension: 0,
           },
         ],
       });

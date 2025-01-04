@@ -1,18 +1,19 @@
-import { useState, useEffect } from "react";
-import { Pie } from "react-chartjs-2";
-import { Chart as ChartJS, ArcElement, Tooltip, Legend, Title } from "chart.js";
-import { dataProps } from "../types";
+import React, { useEffect, useState, useRef } from "react";
+import * as echarts from "echarts";
+import { nightColors } from "../colors";
 
-// Register necessary components for Chart.js
-ChartJS.register(ArcElement, Tooltip, Legend, Title);
-
-const SubmissionStatus: React.FC<dataProps> = ({ data }) => {
+const SubmissionStatus: React.FC<any> = ({ data }) => {
   const [chartData, setChartData] = useState<
     { label: string; value: number }[]
   >([]);
+  const chartRef = useRef<HTMLDivElement>(null);
 
+  // Define custom colors (you can modify these)
+
+  // Prepare the data when component mounts
   useEffect(() => {
     const statusCounts: { [key: string]: number } = {};
+
     data
       .filter(
         (row: any) =>
@@ -20,7 +21,7 @@ const SubmissionStatus: React.FC<dataProps> = ({ data }) => {
           row["Submission Status"] !== "Cancelled"
       )
       .forEach((row: any) => {
-        const status = row["Submission Status"]; // Replace with your actual status key
+        const status = row["Submission Status"];
         if (status) {
           statusCounts[status] = (statusCounts[status] || 0) + 1;
         }
@@ -34,56 +35,95 @@ const SubmissionStatus: React.FC<dataProps> = ({ data }) => {
     setChartData(formattedData);
   }, [data]);
 
-  const chartLabels = chartData.map((item) => item.label);
-  const chartValues = chartData.map((item) => item.value);
+  // Initialize and render the chart when the data is ready
+  useEffect(() => {
+    if (!chartRef.current || chartData.length === 0) return;
 
-  const chartDataset = {
-    labels: chartLabels,
-    datasets: [
-      {
-        data: chartValues,
-        backgroundColor: [
-          "rgba(75, 192, 192, 0.3)",
-          "rgba(255, 99, 132, 0.3)",
-          "rgba(54, 162, 235, 0.3)",
-          "rgba(153, 102, 255, 0.3)",
-          "rgba(255, 159, 64, 0.3)",
-        ],
-        borderColor: [
-          "rgba(75, 192, 192, 1)",
-          "rgba(255, 99, 132, 1)",
-          "rgba(54, 162, 235, 1)",
-          "rgba(153, 102, 255, 1)",
-          "rgba(255, 159, 64, 1)",
-        ],
-        borderWidth: 1,
-      },
-    ],
-  };
+    const chartInstance = echarts.init(chartRef.current);
 
-  const chartOptions = {
-    responsive: true,
-    plugins: {
+    const option = {
       title: {
-        display: true,
-        text: "Submission Status Distribution",
-      },
-      legend: { position: "bottom" as const },
-      tooltip: {
-        callbacks: {
-          label: function (context: any) {
-            return `${context.label}: ${context.raw} submissions`;
-          },
+        text: "Submission Status",
+        left: "center",
+        top: "top",
+        // top: "20%", // Adjust this value to move the title down
+
+        textStyle: {
+          fontSize: 14,
+          fontWeight: "bold",
         },
       },
-    },
-  };
+      tooltip: {
+        trigger: "item",
+        formatter: (params: any) => {
+          return `${params.name}: ${params.value} submissions`;
+        },
+        position: "top", // Tooltip position
+      },
+
+      series: [
+        {
+          type: "pie",
+          radius: ["40%", "70%"], // Inner and outer radius for the doughnut chart
+          center: ["50%", "60%"], // Position of the pie chart
+          data: chartData.map((item, index) => ({
+            value: item.value,
+            name: item.label,
+            itemStyle: {
+              color: nightColors[index % nightColors.length], // Use your custom lightColors
+            },
+          })),
+          itemStyle: {
+            borderRadius: 7,
+            borderColor: "#fff",
+            borderWidth: 1,
+          },
+          label: {
+            show: true,
+            position: "outside", // Label outside the pie
+            formatter: "{b}: {c}",
+            fontSize: 10,
+            color: "#333",
+          },
+          labelLine: {
+            show: true,
+            length: 10,
+            length2: 20,
+            smooth: true,
+            lineStyle: {
+              color: "#333",
+            },
+          },
+        },
+      ],
+    };
+
+    chartInstance.setOption(option);
+
+    // Resize handler
+    const handleResize = () => {
+      chartInstance.resize();
+    };
+
+    // Add resize event listener
+    window.addEventListener("resize", handleResize);
+
+    // Cleanup function to dispose of the chart instance on unmount
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      chartInstance.dispose();
+    };
+  }, [chartData]);
+
+  if (chartData.length === 0) {
+    return <div>No data available</div>;
+  }
 
   return (
-    <div className="">
-      <h2 className="text-lg font-bold">Submission Status Distribution</h2>
-      <Pie data={chartDataset} options={chartOptions} />
-    </div>
+    <div
+      ref={chartRef}
+      style={{ width: "100%", height: "180px" }} // Ensuring it has width and height
+    />
   );
 };
 

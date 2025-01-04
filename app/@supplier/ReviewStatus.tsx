@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import * as echarts from "echarts";
-import { nightColors } from "../colors";
+import { lightColors, nightColors } from "../colors";
 
-const StatusChart: React.FC<any> = ({ data }) => {
+const ReviewStatus: React.FC<any> = ({ data }) => {
   const [chartData, setChartData] = useState<
     { label: string; value: number }[]
   >([]);
@@ -13,20 +13,16 @@ const StatusChart: React.FC<any> = ({ data }) => {
     const statusCounts: { [key: string]: number } = {};
 
     data
-      .filter(
-        (row: any) =>
-          row["Submission Status"] !== "Canceled" &&
-          row["Submission Status"] !== "Cancelled"
-      )
+      .filter((row: any) => row["Review Status"] !== "Terminated")
       .forEach((row: any) => {
-        const status = row["Status"]; // Adjust to match your column name
+        const status = row["Review Status"]; // Adjust to match your column name
         if (status) {
           statusCounts[status] = (statusCounts[status] || 0) + 1;
         }
       });
 
     const formattedData = Object.keys(statusCounts).map((key) => ({
-      label: key,
+      label: key.startsWith("C") ? key.slice(0, 9) : key, // Slice the label to 8 characters
       value: statusCounts[key],
     }));
 
@@ -40,7 +36,7 @@ const StatusChart: React.FC<any> = ({ data }) => {
 
     const option = {
       title: {
-        text: "General Status Chart",
+        text: "Review Status Chart",
         left: "center",
         top: "top",
         textStyle: {
@@ -113,4 +109,4 @@ const StatusChart: React.FC<any> = ({ data }) => {
   return <div ref={chartRef} style={{ width: "100%", height: "180px" }} />;
 };
 
-export default StatusChart;
+export default ReviewStatus;

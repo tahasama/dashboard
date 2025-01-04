@@ -20,7 +20,6 @@ const LateAnalysisReview: React.FC<dataProps> = ({ data }) => {
       </div>
       <div style={{ display: byDay ? "none" : "block" }}>
         <LateCompletionAnalysisByMonth data={data} />
-        OOOOOOOOOOOOOOOOOOO
       </div>
     </div>
   );

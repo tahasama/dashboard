@@ -1,12 +1,43 @@
 import React from "react";
-import { Chart } from "react-google-charts";
+import { Chart } from "react-google-charts"; // Assuming you're using this chart library
 
-const LineTimeChart = ({ data }) => {
+// Extend the DocumentData interface to include optional "Review Status"
+interface DocumentData {
+  "Document No": string;
+  "Planned Submission Date": string;
+  "Submission Status": string;
+  Title: string;
+  "Review Status"?: string; // Make "Review Status" optional
+}
+
+interface WorkflowData {
+  "Document No.": string;
+  "Date In": string;
+  "Date Completed": string;
+  "Workflow Status": string;
+}
+
+interface MergedData {
+  "Document Title": string;
+  submissionStartDate: Date;
+  submissionEndDate: Date;
+  reviewStartDate: Date;
+  reviewEndDate: Date;
+  "Submission Status": string;
+  "Review Status": string;
+}
+
+// interface LineTimeChartProps {
+//   data: [DocumentData[], WorkflowData[]];
+// }
+
+const LineTimeChart: React.FC<any> = ({ data }) => {
   const [documentData, workflowData] = data;
 
-  const parseDate = (dateString) => {
-    const dateStr = String(dateString).trim();
-    if (!isNaN(dateStr) && dateStr !== "") {
+  const parseDate = (dateString: string): Date | null => {
+    const dateStr = String(dateString).trim(); // Ensure it is a string
+    if (!isNaN(Number(dateStr)) && dateStr !== "") {
+      // Ensure we check numeric conversion correctly
       const numericValue = parseInt(dateStr, 10);
       if (numericValue > 0) {
         const baseDate = new Date(1899, 11, 30); // Excel's base date
@@ -38,20 +69,24 @@ const LineTimeChart = ({ data }) => {
   };
 
   const filteredDocumentData = React.useMemo(
-    () => documentData.filter((doc) => doc["Submission Status"] !== "Canceled"),
+    () =>
+      documentData.filter(
+        (doc: any) => doc["Submission Status"] !== "Canceled"
+      ),
     [documentData]
   );
 
   const filteredWorkflowData = React.useMemo(
-    () => workflowData.filter((wf) => wf["Workflow Status"] !== "Terminated"),
+    () =>
+      workflowData.filter((wf: any) => wf["Workflow Status"] !== "Terminated"),
     [workflowData]
   );
 
   const mergedData = React.useMemo(() => {
     return filteredDocumentData
-      .map((doc) => {
+      .map((doc: any) => {
         const workflow = filteredWorkflowData.find(
-          (wf) => wf["Document No."] === doc["Document No"]
+          (wf: any) => wf["Document No."] === doc["Document No"]
         );
 
         if (!workflow || !workflow["Date In"]) {
@@ -101,17 +136,17 @@ const LineTimeChart = ({ data }) => {
           reviewStartDate,
           reviewEndDate,
           "Submission Status": doc["Submission Status"],
-          "Review Status": doc["Review Status"] || "Approved",
+          "Review Status": doc["Review Status"] || "Approved", // Default to "Approved"
         };
       })
-      .filter((item) => item !== null);
+      .filter((item: any) => item !== null);
   }, [filteredDocumentData, filteredWorkflowData]);
 
   if (mergedData.length === 0) {
     return <div>No matching data found for Gantt Chart.</div>;
   }
 
-  const formatDate = (date) => {
+  const formatDate = (date: Date): string => {
     const day = String(date.getDate()).padStart(2, "0");
     const months = [
       "Jan",
@@ -132,7 +167,7 @@ const LineTimeChart = ({ data }) => {
   };
 
   const rows = mergedData
-    .map((doc) => {
+    .map((doc: any) => {
       const {
         submissionStartDate,
         submissionEndDate,
@@ -200,7 +235,7 @@ const LineTimeChart = ({ data }) => {
     tooltip: { isHtml: true },
   };
 
-  const handleChartClick = (e) => {
+  const handleChartClick = (e: any) => {
     const chart = e.chartWrapper.getChart();
     const selection = chart.getSelection();
     if (selection.length > 0) {

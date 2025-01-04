@@ -7,7 +7,8 @@
   --foreground: #171717;
 }
 
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) { */
+@media (prefers-color-scheme: light) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
@@ -20,41 +21,49 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-.react-calendar-heatmap .color-empty {
-  rx: 1px;
-  fill: #29436977 !important;
+.react-calendar-heatmap .react-calendar-heatmap-week .color-empty {
+  rx: 1px; /* Rounded corners */
+  fill: #dcdbdb; /* Light gray fill for empty cells */
 }
-
 .react-calendar-heatmap .color-scale-1 {
-  fill: #66b366;
+  fill: #99e699; /* Lighter green */
   rx: 1px;
 }
 
 .react-calendar-heatmap .color-scale-2 {
+  fill: #66cc66; /* Medium light green */
   rx: 1px;
-  fill: #4d994d;
 }
 
 .react-calendar-heatmap .color-scale-3 {
+  fill: #33b533; /* Darker green */
   rx: 1px;
-  fill: #338033;
 }
 
 .react-calendar-heatmap .color-scale-4 {
+  fill: #006600; /* Very dark green */
   rx: 1px;
-  fill: #194d19;
 }
 
-.react-calendar-heatmap .react-calendar-heatmap-weekday-label {
-  font-size: 7px;
-  color: #acc70e;
+.react-calendar-heatmap .color-scale-5 {
+  fill: #66aaff; /* Light Blue */
+  rx: 1px;
 }
 
-.react-calendar-heatmap .react-calendar-heatmap-month-label {
-  font-size: 7px;
-  color: #acc70e;
+.react-calendar-heatmap .color-scale-6 {
+  fill: #9b59b6; /* Purple */
+  rx: 1px;
 }
 
+.react-calendar-heatmap-weekday-labels .react-calendar-heatmap-weekday-label {
+  font-size: 8px;
+  fill: #0a0a0a;
+}
+
+.react-calendar-heatmap-month-labels .react-calendar-heatmap-month-label {
+  font-size: 8px;
+  fill: #0a0a0a;
+}
 /* .apexcharts-xaxis-label {
   white-space: nowrap;
   overflow: hidden;

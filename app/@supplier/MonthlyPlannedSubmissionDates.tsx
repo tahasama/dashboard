@@ -73,58 +73,67 @@ const MonthlyPlannedSubmissionDates: React.FC<dataProps> = ({ data }) => {
   const endDate = new Date(`${selectedYear}-12-31`);
 
   return (
-    <div>
-      <h2 className="text-lg font-bold">Monthly Planned Submission Dates</h2>
-      {/* Year Selector */}
-      <div className="mb-4">
-        <label htmlFor="year-select" className="mr-2 font-medium">
-          Select Year:
-        </label>
-        <select
-          id="year-select"
-          value={selectedYear}
-          onChange={(e) => setSelectedYear(parseInt(e.target.value, 10))}
-          className="p-2 border rounded text-slate-800"
-        >
-          {years.map((year) => (
-            <option key={year} value={year}>
-              {year}
-            </option>
-          ))}
-        </select>
-      </div>
-      {/* Heatmap */}
-      <div className="max-w-5xl">
-        <CalendarHeatmap
-          startDate={startDate}
-          endDate={endDate}
-          values={filteredData}
-          classForValue={(value: any) => {
-            if (!value || value.count === 0) {
-              return "color-empty";
-            }
-            if (value.count < 5) return "color-scale-1";
-            if (value.count < 10) return "color-scale-2";
-            if (value.count < 20) return "color-scale-3";
-            return "color-scale-4";
-          }}
-          tooltipDataAttrs={(value: any): ExtendedTooltipDataAttrs => {
-            if (!value || !value.date) {
-              return {};
-            }
+    <div className="flex justify-around">
+      <div className="w-full">
+        <div className="max-w-[50rem] relative">
+          {/* // <div className=""> */}
 
-            return {
-              "data-tooltip-id": "my-tooltip",
-              "data-tooltip-content": value
-                ? `${value.date}: ${value.count} planned submissions`
-                : "No data",
-            };
-          }}
-          showWeekdayLabels={true}
-        />
+          {/* Heatmap */}
+          <div>
+            <CalendarHeatmap
+              startDate={startDate}
+              endDate={endDate}
+              values={filteredData}
+              classForValue={(value: any) => {
+                if (!value || value.count === 0) {
+                  return "color-empty";
+                }
+                if (value.count < 5) return "color-scale-1";
+                if (value.count < 10) return "color-scale-2";
+                if (value.count < 20) return "color-scale-3";
+                return "color-scale-4";
+              }}
+              tooltipDataAttrs={(value: any): ExtendedTooltipDataAttrs => {
+                if (!value || !value.date) {
+                  return {};
+                }
+
+                return {
+                  "data-tooltip-id": "my-tooltip",
+                  "data-tooltip-content": value
+                    ? `${value.date}: ${value.count} planned submissions`
+                    : "No data",
+                };
+              }}
+              showWeekdayLabels={true}
+            />
+          </div>
+          <p className="text-md font-semibold absolute left-1/2 -translate-x-1/2 bottom-2">
+            Document Submission Heatmap
+          </p>
+
+          {/* React Tooltip */}
+          <ReactTooltip.Tooltip id="my-tooltip" />
+        </div>
       </div>
-      {/* React Tooltip */}
-      <ReactTooltip.Tooltip id="my-tooltip" />
+      <div className="flex flex-col items-start">
+        <span className="font-medium text-sm mb-2 w-24">Select Year:</span>
+        <div className="flex flex-col space-y-2">
+          {years.map((year) => (
+            <button
+              key={year}
+              onClick={() => setSelectedYear(year)}
+              className={`px-3 py-1 rounded text-sm font-semibold ${
+                selectedYear === year
+                  ? "bg-blue-500 text-white"
+                  : "text-blue-500 hover:bg-blue-100"
+              }`}
+            >
+              {year}
+            </button>
+          ))}
+        </div>
+      </div>
     </div>
   );
 };

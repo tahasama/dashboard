@@ -4,32 +4,23 @@ import { SankeyController, Flow } from "chartjs-chart-sankey";
 import { Chart } from "react-chartjs-2";
 import { TooltipDataAttrs } from "react-calendar-heatmap";
 import { dataProps } from "../types";
+import { sankeyColorList, sankeyColorListWf } from "../colors";
 
 // Register necessary Chart.js components
 ChartJS.register(...registerables, SankeyController, Flow);
-
-const colorList = [
-  "#0D47A1", // Bold Blue
-  "#2196F3", // Medium Blue
-  "#BBDEFB", // Light Blue
-  "#1B5E20", // Bold Green
-  "#4CAF50", // Medium Green
-  "#C8E6C9", // Light Green
-  "#4A148C", // Bold Purple
-  "#9C27B0", // Medium Purple
-  "#E1BEE7", // Light Purple
-  "#7D6FB3", // Deep Purple
-];
 
 const labelMap: Record<string, string> = {
   "C1 Reviewed & accepted as final & certified": "C1 Accepted",
   "C2 Reviewed & accepted as marked revise & resubmi": "C2 with Comments",
   "C3 Reviewed & returned Correct and resubmit": "C3 Rejected",
+  "C4 Review not required for information only":
+    "C4 for Information                 ",
   Terminated: "Status Terminated", // Update 'Terminated' to 'Status Terminated'
   Completed: "Status Complete", // Update 'Completed' to 'Status Complete'
 };
 
-const getColor = (index: number) => colorList[index % colorList.length]; // Loop through the color list
+const getColor = (index: number) =>
+  sankeyColorListWf[index % sankeyColorListWf.length]; // Loop through the color list
 
 type DataItem = {
   "Step Status": string;
