@@ -9,13 +9,14 @@ import SubmissionStatus from "./@supplier/SubmissionStatus";
 import StatusOutcomeHeatMap from "./@workflow/StepStatusOutcomeChart";
 import SankeyChartWorkFlow from "./@workflow/SankeyChartWorkFlow";
 import MonthlyPlannedSubmissionDates from "./@supplier/MonthlyPlannedSubmissionDates";
-import PieChartWithLabels from "./@supplier/PieChartWithLabels";
 
 import WorkflowStepStatusChart from "./@workflow/WorkflowStepStatusChart";
 import WorkflowOutcomeStatusChart from "./@workflow/WorkflowOutcomeStatusChart";
 import LateAnalysisReview from "./@workflow/LateAnalysisReview";
 import LineTimeChart from "./LineTimeChart";
 import ReviewStatus from "./@supplier/ReviewStatus";
+import HeatX from "./@supplier/HeatX";
+import DocsPerUserChart from "./@workflow/DocsPerUserChart";
 
 export default function Home() {
   const [files, setFiles] = useState<File[]>([]);
@@ -184,7 +185,7 @@ export default function Home() {
         {data.length > 0 && (
           <div className="space-y-12 mt-6">
             {/* Line Time Chart */}
-            <LineTimeChart data={data} />
+            {/* <LineTimeChart data={data} /> */}
             {/* <PieChartWithLabels /> */}
             {/* <SubmissionStatus data={data[0]} /> */}
 
@@ -204,33 +205,55 @@ export default function Home() {
                 </div>
               </div>
               {/* Right Column: Detailed Charts */}
-              <div className="flex flex-col justify-between gap-0 w-9/12 py-0.5 pr-0.5">
-                <div className="pt-4 pb-[3px] bg-white shadow-md rounded-md">
+              <div className="flex flex-col justify-between gap-0 mt-0.5 w-9/12 py-0.5 pr-0.5">
+                <div className="pt-4 pb-[3px] my-[1.5px] bg-white shadow-md rounded-md">
                   <LateAnalysis data={data[0]} />
                 </div>
-                <div className="pt-4 pb-1.5 px-4 bg-white shadow-md rounded-md">
-                  <MonthlyPlannedSubmissionDates data={data[0]} />
+                <div className="pt-[0px] mb-1 bg-white shadow-md rounded-md">
+                  {/* <MonthlyPlannedSubmissionDates data={data[0]} /> */}
+                  <HeatX data={data[0]} />
                 </div>
                 {/* </div> */}
               </div>
             </div>
 
-            <SankeyChart data={data[0]} />
-
             {/* Workflow Charts */}
-            <div>
-              <h2 className="text-xl font-semibold mb-4 text-center">
-                Workflow Analysis
-              </h2>
-              <div className="flex flex-wrap justify-evenly space-x-4">
-                <WorkflowStatusChart data={data[1]} />
-                <WorkflowStepStatusChart data={data[1]} />
-                <WorkflowOutcomeStatusChart data={data[1]} />
+
+            <div className="bg-slate-300 flex w-full gap-0">
+              {/* Left Column: Doughnut Charts */}
+              {/* <div className="flex w-full justify-center gap-4"> */}
+              <div className="flex flex-col justify-center w-3/12 pl-0.5">
+                {/* <div className="m-[1px] bg-white rounded-md">
+                </div> */}
+                {/* <div className="m-[1px] bg-white rounded-md">
+                  <DocsPerUserChart data={data[1]} />
+                </div> */}
+
+                <div className="m-[1px] bg-white rounded-md">
+                  <WorkflowStepStatusChart data={data[1]} />
+                </div>
+
+                <div className="m-[1px] bg-white rounded-md">
+                  <WorkflowStatusChart data={data[1]} />
+                </div>
               </div>
-              <LateAnalysisReview data={data[1]} />
-              <StatusOutcomeHeatMap data={data[1]} />
-              <SankeyChartWorkFlow data={data[1]} />
+              {/* Right Column: Detailed Charts */}
+              <div className="flex flex-col justify-between gap-0 mt-0.5 w-9/12 py-0.5 pr-0.5">
+                <div className="pt-4 pb-[3px] my-[1.5px] bg-white shadow-md rounded-md">
+                  <LateAnalysisReview data={data[1]} />
+                </div>
+                <div className=" my-[1.5px] bg-white shadow-md rounded-md">
+                  <DocsPerUserChart data={data[1]} />
+                </div>
+
+                <div className="pt-[0px] mb-1 bg-white shadow-md rounded-md">
+                  <StatusOutcomeHeatMap data={data[1]} />
+                </div>
+                {/* </div> */}
+              </div>
             </div>
+            <SankeyChart data={data[0]} />
+            <SankeyChartWorkFlow data={data[1]} />
           </div>
         )}
       </div>
