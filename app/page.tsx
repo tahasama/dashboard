@@ -222,29 +222,29 @@ export default function Home() {
             <div className="bg-slate-300 flex w-full gap-0">
               {/* Left Column: Doughnut Charts */}
               {/* <div className="flex w-full justify-center gap-4"> */}
-              <div className="flex flex-col justify-center w-3/12 pl-0.5">
+              <div className="flex flex-col justify-center w-3/12 py-1 pl-0.5">
                 {/* <div className="m-[1px] bg-white rounded-md">
                 </div> */}
-                {/* <div className="m-[1px] bg-white rounded-md">
+                <div className="m-[1px] bg-white rounded-md h-[66%]">
                   <DocsPerUserChart data={data[1]} />
-                </div> */}
+                </div>
 
-                <div className="m-[1px] bg-white rounded-md">
+                <div className="m-[1px] bg-white rounded-md h-[33%]">
                   <WorkflowStepStatusChart data={data[1]} />
                 </div>
 
-                <div className="m-[1px] bg-white rounded-md">
+                {/* <div className="m-[1px] bg-white rounded-md">
                   <WorkflowStatusChart data={data[1]} />
-                </div>
+                </div> */}
               </div>
               {/* Right Column: Detailed Charts */}
               <div className="flex flex-col justify-between gap-0 mt-0.5 w-9/12 py-0.5 pr-0.5">
                 <div className="pt-4 pb-[3px] my-[1.5px] bg-white shadow-md rounded-md">
                   <LateAnalysisReview data={data[1]} />
                 </div>
-                <div className=" my-[1.5px] bg-white shadow-md rounded-md">
+                {/* <div className=" my-[1.5px] bg-white shadow-md rounded-md">
                   <DocsPerUserChart data={data[1]} />
-                </div>
+                </div> */}
 
                 <div className="pt-[0px] mb-1 bg-white shadow-md rounded-md">
                   <StatusOutcomeHeatMap data={data[1]} />
