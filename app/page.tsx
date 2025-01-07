@@ -37,36 +37,68 @@ export default function Home() {
     return Array.from(new Set(allValues.filter(Boolean)));
   };
 
-  const filterData = (data: any[][], createdBy: string) => {
-    if (!createdBy) {
-      return data; // If no filter is provided, return the original data
-    }
-
-    // Find all matching "Package Number" or "Related Package" for the selected "Select List 5"
-    const matchingPackages = new Set(
+  const filterData = (data: any[][], createdBy: string, subProject: string) => {
+    // Handle "createdBy" filter
+    const matchingPackages0 = new Set(
       data
-        .flatMap(
-          (fileData) =>
-            fileData
-              .filter((row: any) => row["Select List 5"] === createdBy)
-              .map(
-                (row: any) => row["Package Number"] || row["Related Package"]
-              ) // Collect matching package values
+        .flatMap((fileData) =>
+          fileData
+            .filter((row: any) => row["Select List 5"] === createdBy)
+            .map((row: any) => row["Package Number"] || row["Related Package"])
         )
-        .filter((value) => value) // Remove undefined or null values
+        .filter((value) => value)
     );
 
-    // Filter data arrays based on matching package values
-    return data.map((fileData) =>
+    const matchingPackages0result = data.map((fileData) =>
       fileData.filter((row: any) => {
         const packageNumber = row["Package Number"];
         const relatedPackage = row["Related Package"];
         return (
-          matchingPackages.has(packageNumber) ||
-          matchingPackages.has(relatedPackage)
+          matchingPackages0.has(packageNumber) ||
+          matchingPackages0.has(relatedPackage)
         );
       })
     );
+
+    // Handle "subProject" filter
+    const matchingPackages1 = new Set(
+      data
+        .flatMap((fileData) =>
+          fileData
+            .filter((row: any) => row["Select List 3"] === subProject)
+            .map((row: any) => row["Document No"] || row["Document No."])
+        )
+        .filter((value) => value)
+    );
+
+    const matchingPackages1result = data.map((fileData) =>
+      fileData.filter((row: any) => {
+        const documentNo = row["Document No"];
+        const documentNoDot = row["Document No."];
+        return (
+          matchingPackages1.has(documentNo) ||
+          matchingPackages1.has(documentNoDot)
+        );
+      })
+    );
+
+    // Combine filters if both are provided
+    if (createdBy && subProject) {
+      return matchingPackages0result.map((fileData, index) =>
+        fileData.filter((row) =>
+          matchingPackages1result[index].some(
+            (filteredRow) => filteredRow === row
+          )
+        )
+      );
+    }
+
+    // Return results for one filter
+    if (createdBy) return matchingPackages0result;
+    if (subProject) return matchingPackages1result;
+
+    // Return original data if no filter
+    return data;
   };
 
   const applyFilters = () => {
