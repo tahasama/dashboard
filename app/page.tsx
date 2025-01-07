@@ -23,6 +23,7 @@ export default function Home() {
   const [files, setFiles] = useState<File[]>([]);
   const [indexRows, setIndexRows] = useState<number[]>([8, 8, 8]);
   const [data, setData] = useState<any[][]>([]);
+  console.log("🚀 ~ Home ~ data:", data);
   const [error, setError] = useState<string | null>(null);
   const [isReadyToGenerate, setIsReadyToGenerate] = useState<boolean>(false);
   const [showForm, setShowForm] = useState(false);
@@ -36,13 +37,34 @@ export default function Home() {
     return Array.from(new Set(allValues.filter(Boolean)));
   };
 
-  const filterData = (data: any[][], createdBy: string, subProject: string) => {
+  const filterData = (data: any[][], createdBy: string) => {
+    if (!createdBy) {
+      return data; // If no filter is provided, return the original data
+    }
+
+    // Find all matching "Package Number" or "Related Package" for the selected "Select List 5"
+    const matchingPackages = new Set(
+      data
+        .flatMap(
+          (fileData) =>
+            fileData
+              .filter((row: any) => row["Select List 5"] === createdBy)
+              .map(
+                (row: any) => row["Package Number"] || row["Related Package"]
+              ) // Collect matching package values
+        )
+        .filter((value) => value) // Remove undefined or null values
+    );
+
+    // Filter data arrays based on matching package values
     return data.map((fileData) =>
       fileData.filter((row: any) => {
-        const matchesCreatedBy = !createdBy || row["Created By"] === createdBy;
-        const matchesSubProject =
-          !subProject || row["Select List 3"] === subProject;
-        return matchesCreatedBy && matchesSubProject;
+        const packageNumber = row["Package Number"];
+        const relatedPackage = row["Related Package"];
+        return (
+          matchingPackages.has(packageNumber) ||
+          matchingPackages.has(relatedPackage)
+        );
       })
     );
   };
@@ -188,7 +210,7 @@ export default function Home() {
                 onChange={(e) => setCreatedByFilter(e.target.value)}
               >
                 <option value="">All</option>
-                {getUniqueValues(data, "Created By").map((value) => (
+                {getUniqueValues(data, "Select List 5").map((value) => (
                   <option key={value} value={value}>
                     {value}
                   </option>
@@ -224,7 +246,7 @@ export default function Home() {
             {data.length > 0 && (
               <div className="space-y-12 mt-6">
                 {/* Line Time Chart */}
-                <LineTimeChart data={data} />
+                {/* <LineTimeChart data={data} /> */}
                 {/* Supplier Documents Charts */}
                 <div className="bg-slate-300 flex w-full gap-0">
                   {/* Left Column: Doughnut Charts */}
