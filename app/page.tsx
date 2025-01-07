@@ -17,18 +17,44 @@ import LineTimeChart from "./LineTimeChart";
 import ReviewStatus from "./@supplier/ReviewStatus";
 import HeatX from "./@supplier/HeatX";
 import DocsPerUserChart from "./@workflow/DocsPerUserChart";
+import ExcelForm from "./ExcelForm";
 
 export default function Home() {
   const [files, setFiles] = useState<File[]>([]);
   const [indexRows, setIndexRows] = useState<number[]>([8, 8, 8]);
   const [data, setData] = useState<any[][]>([]);
-  const [error, setError] = useState<string | null>(null); // Error state
-  const [isReadyToGenerate, setIsReadyToGenerate] = useState<boolean>(false); // Generate button readiness
+  const [error, setError] = useState<string | null>(null);
+  const [isReadyToGenerate, setIsReadyToGenerate] = useState<boolean>(false);
+  const [showForm, setShowForm] = useState(false);
+  const [createdByFilter, setCreatedByFilter] = useState<string>("");
+  const [subProjectFilter, setSubProjectFilter] = useState<string>("");
+
+  const getUniqueValues = (data: any[][], column: string) => {
+    const allValues = data.flatMap((fileData) =>
+      fileData.map((row) => row[column])
+    );
+    return Array.from(new Set(allValues.filter(Boolean)));
+  };
+
+  const filterData = (data: any[][], createdBy: string, subProject: string) => {
+    return data.map((fileData) =>
+      fileData.filter((row: any) => {
+        const matchesCreatedBy = !createdBy || row["Created By"] === createdBy;
+        const matchesSubProject =
+          !subProject || row["Select List 3"] === subProject;
+        return matchesCreatedBy && matchesSubProject;
+      })
+    );
+  };
+
+  const applyFilters = () => {
+    const filteredData = filterData(data, createdByFilter, subProjectFilter);
+    setData(filteredData);
+  };
 
   const expectedHeaders = [
-    ["File", "Package Number", "Document No"], // Expected headers for file 1
-    ["Workflow No.", "Workflow Name"], // Expected headers for file 2
-    // ["Other A", "Other B", "Other C"], // Expected headers for file 3
+    ["File", "Package Number", "Document No"],
+    ["Workflow No.", "Workflow Name"],
   ];
 
   const handleFileUpload = (
@@ -40,8 +66,8 @@ export default function Home() {
       const newFiles = [...files];
       newFiles[fileIndex] = file;
       setFiles(newFiles);
-      setError(null); // Reset error when uploading a new file
-      validateFiles(newFiles); // Validate files on every upload
+      setError(null);
+      validateFiles(newFiles);
     }
   };
 
@@ -82,10 +108,9 @@ export default function Home() {
           const sheet = workbook.Sheets[sheetName];
 
           const sheetData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-          const headers: any = sheetData[indexRows[fileIndex]]; // Use indexRow for the current file
+          const headers: any = sheetData[indexRows[fileIndex]];
           const rows = sheetData.slice(indexRows[fileIndex] + 1);
 
-          // Validate headers
           const isValidHeaders = expectedHeaders[fileIndex].every(
             (header, idx) => headers[idx] === header
           );
@@ -102,7 +127,6 @@ export default function Home() {
             return;
           }
 
-          // Map rows to JSON objects
           const jsonData = rows.map((row: any) =>
             headers.reduce((acc: any, header: any, colIndex: number) => {
               acc[header] = row[colIndex] || "";
@@ -110,12 +134,11 @@ export default function Home() {
             }, {})
           );
 
-          // Add table data
           allData[fileIndex] = jsonData;
 
           if (fileIndex === files.length - 1 && !validationFailed) {
             setData(allData);
-            setError(null); // Reset error if validation passes
+            setError(null);
           }
         } catch (err: any) {
           setError(`Error processing file ${fileIndex + 1}: ${err.message}`);
@@ -132,131 +155,133 @@ export default function Home() {
   };
 
   return (
-    <div className="p-0 space-y-6">
-      {/* Header */}
-      <h1 className="text-2xl font-bold text-center mb-6">
-        Excel to Table and Chart
-      </h1>
-      <div>
-        {/* File Upload Section */}
-        {[0, 1].map((fileIndex: number) => (
-          <div key={fileIndex} className="mb-6">
-            <label
-              htmlFor={`file-input-${fileIndex}`}
-              className="block font-medium text-gray-700 mb-2"
-            >
-              {labels[fileIndex]}
-            </label>
-            <input
-              type="file"
-              accept=".xlsx, .xls"
-              onChange={(e) => handleFileUpload(e, fileIndex)}
-              id={`file-input-${fileIndex}`}
-              className="block mb-2 p-2 border rounded w-full"
-            />
-            <input
-              value={indexRows[fileIndex]}
-              onChange={(e) => handleIndexRowChange(e, fileIndex)}
-              type="number"
-              className="p-2 border rounded w-full"
-              placeholder="Header Row Index"
-            />
-          </div>
-        ))}
-
-        {/* Generate Button */}
+    <div>
+      <div className="flex flex-col items-center gap-5">
+        <h1 className="text-xl font-semibold">Upload Your Documents</h1>
         <button
-          onClick={handleGenerate}
-          className={`px-6 py-3 text-lg rounded w-full transition-colors ${
-            isReadyToGenerate
-              ? "bg-blue-500 text-white hover:bg-blue-600"
-              : "bg-gray-400 text-gray-200 cursor-not-allowed"
-          }`}
-          disabled={!isReadyToGenerate}
+          onClick={() => setShowForm(!showForm)}
+          className="bg-slate-900 text-white rounded-md p-2"
         >
-          Generate
+          {showForm ? "Hide Form" : "Upload"}
         </button>
-
-        {/* Error Message */}
-        {error && <div className="text-red-500 text-center mt-4">{error}</div>}
       </div>
-      <div>
-        {/* Chart Display Section */}
-        {data.length > 0 && (
-          <div className="space-y-12 mt-6">
-            {/* Line Time Chart */}
-            {/* <LineTimeChart data={data} /> */}
-            {/* <PieChartWithLabels /> */}
-            {/* <SubmissionStatus data={data[0]} /> */}
 
-            {/* Supplier Documents Charts */}
-            <div className="bg-slate-300 flex w-full gap-0">
-              {/* Left Column: Doughnut Charts */}
-              {/* <div className="flex w-full justify-center gap-4"> */}
-              <div className="flex flex-col justify-center w-3/12 pl-0.5">
-                <div className="m-[1px] bg-white rounded-md">
-                  <ReviewStatus data={data[0]} />
-                </div>
-                <div className="m-[1px] bg-white rounded-md">
-                  <SubmissionStatus data={data[0]} />
-                </div>
-                <div className="m-[1px] bg-white rounded-md">
-                  <StatusChart data={data[0]} />
-                </div>
-              </div>
-              {/* Right Column: Detailed Charts */}
-              <div className="flex flex-col justify-between gap-0 mt-0.5 w-9/12 py-0.5 pr-0.5">
-                <div className="pt-4 pb-[3px] my-[1.5px] bg-white shadow-md rounded-md">
-                  <LateAnalysis data={data[0]} />
-                </div>
-                <div className="pt-[0px] mb-1 bg-white shadow-md rounded-md">
-                  {/* <MonthlyPlannedSubmissionDates data={data[0]} /> */}
-                  <HeatX data={data[0]} />
-                </div>
-                {/* </div> */}
-              </div>
-            </div>
+      {showForm && (
+        <ExcelForm
+          handleFileUpload={handleFileUpload}
+          labels={labels}
+          handleIndexRowChange={handleIndexRowChange}
+          indexRows={indexRows}
+          handleGenerate={handleGenerate}
+          isReadyToGenerate={isReadyToGenerate}
+          error={error}
+        />
+      )}
 
-            {/* Workflow Charts */}
+      {data.length > 0 && (
+        <div className="mt-6">
+          <div className="mb-4">
+            <label>
+              Filter by Created By:
+              <select
+                value={createdByFilter}
+                onChange={(e) => setCreatedByFilter(e.target.value)}
+              >
+                <option value="">All</option>
+                {getUniqueValues(data, "Created By").map((value) => (
+                  <option key={value} value={value}>
+                    {value}
+                  </option>
+                ))}
+              </select>
+            </label>
 
-            <div className="bg-slate-300 flex w-full gap-0">
-              {/* Left Column: Doughnut Charts */}
-              {/* <div className="flex w-full justify-center gap-4"> */}
-              <div className="flex flex-col justify-center w-3/12 py-1 pl-0.5">
-                {/* <div className="m-[1px] bg-white rounded-md">
-                </div> */}
-                <div className="m-[1px] bg-white rounded-md h-[66%]">
-                  <DocsPerUserChart data={data[1]} />
-                </div>
+            <label className="ml-4">
+              Filter by SubProject:
+              <select
+                value={subProjectFilter}
+                onChange={(e) => setSubProjectFilter(e.target.value)}
+              >
+                <option value="">All</option>
+                {getUniqueValues(data, "Select List 3").map((value) => (
+                  <option key={value} value={value}>
+                    {value}
+                  </option>
+                ))}
+              </select>
+            </label>
 
-                <div className="m-[1px] bg-white rounded-md h-[33%]">
-                  <WorkflowStepStatusChart data={data[1]} />
-                </div>
-
-                {/* <div className="m-[1px] bg-white rounded-md">
-                  <WorkflowStatusChart data={data[1]} />
-                </div> */}
-              </div>
-              {/* Right Column: Detailed Charts */}
-              <div className="flex flex-col justify-between gap-0 mt-0.5 w-9/12 py-0.5 pr-0.5">
-                <div className="pt-4 pb-[3px] my-[1.5px] bg-white shadow-md rounded-md">
-                  <LateAnalysisReview data={data[1]} />
-                </div>
-                {/* <div className=" my-[1.5px] bg-white shadow-md rounded-md">
-                  <DocsPerUserChart data={data[1]} />
-                </div> */}
-
-                <div className="pt-[0px] mb-1 bg-white shadow-md rounded-md">
-                  <StatusOutcomeHeatMap data={data[1]} />
-                </div>
-                {/* </div> */}
-              </div>
-            </div>
-            <SankeyChart data={data[0]} />
-            <SankeyChartWorkFlow data={data[1]} />
+            <button
+              onClick={applyFilters}
+              className="ml-4 bg-blue-500 text-white rounded-md px-4 py-2"
+            >
+              Apply Filters
+            </button>
           </div>
-        )}
-      </div>
+
+          <div>
+            {/* Chart Display Section */}
+            {data.length > 0 && (
+              <div className="space-y-12 mt-6">
+                {/* Line Time Chart */}
+                <LineTimeChart data={data} />
+                {/* Supplier Documents Charts */}
+                <div className="bg-slate-300 flex w-full gap-0">
+                  {/* Left Column: Doughnut Charts */}
+                  <div className="flex flex-col justify-center w-3/12 pl-0.5">
+                    <div className="m-[1px] bg-white rounded-md">
+                      <ReviewStatus data={data[0]} />
+                    </div>
+                    <div className="m-[1px] bg-white rounded-md">
+                      <SubmissionStatus data={data[0]} />
+                    </div>
+                    <div className="m-[1px] bg-white rounded-md">
+                      <StatusChart data={data[0]} />
+                    </div>
+                  </div>
+                  {/* Right Column: Detailed Charts */}
+                  <div className="flex flex-col justify-between gap-0 mt-0.5 w-9/12 py-0.5 pr-0.5">
+                    <div className="pt-4 pb-[3px] my-[1.5px] bg-white shadow-md rounded-md">
+                      <LateAnalysis data={data[0]} />
+                    </div>
+                    <div className="pt-[0px] mb-1 bg-white shadow-md rounded-md">
+                      <HeatX data={data[0]} />
+                    </div>
+                    {/* </div> */}
+                  </div>
+                </div>
+
+                {/* Workflow Charts */}
+
+                <div className="bg-slate-300 flex w-full gap-0">
+                  {/* Left Column: Doughnut Charts */}
+                  <div className="flex flex-col justify-center w-3/12 py-1 pl-0.5">
+                    <div className="m-[1px] bg-white rounded-md h-[66%]">
+                      <DocsPerUserChart data={data[1]} />
+                    </div>
+                    <div className="m-[1px] bg-white rounded-md h-[33%]">
+                      <WorkflowStepStatusChart data={data[1]} />
+                    </div>
+                  </div>
+                  {/* Right Column: Detailed Charts */}
+                  <div className="flex flex-col justify-between gap-0 mt-0.5 w-9/12 py-0.5 pr-0.5">
+                    <div className="pt-4 pb-[3px] my-[1.5px] bg-white shadow-md rounded-md">
+                      <LateAnalysisReview data={data[1]} />
+                    </div>
+                    <div className="pt-[0px] mb-1 bg-white shadow-md rounded-md">
+                      <StatusOutcomeHeatMap data={data[1]} />
+                    </div>
+                  </div>
+                </div>
+                <div className="flex">
+                  <SankeyChart data={data[0]} />
+                  <SankeyChartWorkFlow data={data[1]} />
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

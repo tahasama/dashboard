@@ -11,68 +11,54 @@ const StatusOutcomeHeatMap: React.FC<dataProps> = ({ data }) => {
     // Transform data for heatmap
     const submissionCounts: { [key: string]: number } = {};
 
-    data.forEach((row: any) => {
-      const plannedSubmissionDate = row["Original Due Date"];
+    data
+      .filter((row) => row["Step Status"] !== "Terminated")
+      .forEach((row: any) => {
+        const plannedSubmissionDate = row["Original Due Date"];
 
-      if (plannedSubmissionDate) {
-        let formattedDate: Date | null = null;
+        if (plannedSubmissionDate) {
+          let formattedDate: Date | null = null;
 
-        if (typeof plannedSubmissionDate === "string") {
-          // Log the raw date before parsing
-          console.log(
-            "Attempting to parse date string:",
-            plannedSubmissionDate
-          );
+          if (typeof plannedSubmissionDate === "string") {
+            // Split the date by slashes for string format (DD/MM/YYYY)
+            const parts = plannedSubmissionDate
+              .split("/")
+              .map((part: string) => parseInt(part, 10));
 
-          // Split the date by slashes for string format (DD/MM/YYYY)
-          const parts = plannedSubmissionDate
-            .split("/")
-            .map((part: string) => parseInt(part, 10));
-          console.log("Parsed parts:", parts);
+            // Check if the split resulted in exactly 3 parts (day, month, year)
+            if (parts.length === 3) {
+              const [day, month, year] = parts;
 
-          // Check if the split resulted in exactly 3 parts (day, month, year)
-          if (parts.length === 3) {
-            const [day, month, year] = parts;
-
-            // Ensure that the parsed date makes sense (day and month within range)
-            if (day > 0 && day <= 31 && month > 0 && month <= 12) {
-              formattedDate = new Date(year, month - 1, day);
-              console.log("Formatted date:", formattedDate);
+              // Ensure that the parsed date makes sense (day and month within range)
+              if (day > 0 && day <= 31 && month > 0 && month <= 12) {
+                formattedDate = new Date(year, month - 1, day);
+              } else {
+                console.error(`Invalid day/month: ${day}/${month}`);
+              }
             } else {
-              console.error(`Invalid day/month: ${day}/${month}`);
+              console.error(`Invalid date format: ${plannedSubmissionDate}`);
             }
-          } else {
-            console.error(`Invalid date format: ${plannedSubmissionDate}`);
+          } else if (typeof plannedSubmissionDate === "number") {
+            // If it's a number (Excel date system), convert it to a valid date
+            const baseDate = new Date(1899, 11, 30); // Excel base date is 1899-12-30
+            formattedDate = new Date(
+              baseDate.getTime() + plannedSubmissionDate * 86400000
+            );
           }
-        } else if (typeof plannedSubmissionDate === "number") {
-          // If it's a number (Excel date system), convert it to a valid date
-          const baseDate = new Date(1899, 11, 30); // Excel base date is 1899-12-30
-          formattedDate = new Date(
-            baseDate.getTime() + plannedSubmissionDate * 86400000
-          );
+
+          // Validate that the date is a valid Date object
+          if (
+            formattedDate &&
+            !isNaN(formattedDate.getTime()) &&
+            formattedDate.getFullYear() > 1970
+          ) {
+            const isoDate = formattedDate.toISOString().split("T")[0];
+            submissionCounts[isoDate] = (submissionCounts[isoDate] || 0) + 1;
+          } else {
+            console.error(`Invalid or unwanted date: ${plannedSubmissionDate}`);
+          }
         }
-
-        // Validate that the date is a valid Date object
-        if (
-          formattedDate &&
-          !isNaN(formattedDate.getTime()) &&
-          formattedDate.getFullYear() > 1970
-        ) {
-          const isoDate = formattedDate.toISOString().split("T")[0];
-
-          // Logging to detect anomalies
-          console.log(
-            `Valid date found: ${isoDate}, workflows count: ${
-              submissionCounts[isoDate] || 0
-            }`
-          );
-
-          submissionCounts[isoDate] = (submissionCounts[isoDate] || 0) + 1;
-        } else {
-          console.error(`Invalid or unwanted date: ${plannedSubmissionDate}`);
-        }
-      }
-    });
+      });
 
     console.log("Final Submission Counts:", submissionCounts); // Debugging final counts
 

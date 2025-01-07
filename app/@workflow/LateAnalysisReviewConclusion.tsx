@@ -3,7 +3,8 @@ import React from "react";
 const LateAnalysisReviewConclusion: React.FC<{
   chartValues: number[];
   cumulativeValues: number[];
-}> = ({ chartValues = [], cumulativeValues = [] }) => {
+  totalDocuments: number; // Add the total documents count as a prop
+}> = ({ chartValues = [], cumulativeValues = [], totalDocuments = 0 }) => {
   const calculateStats = (arr: number[]) => {
     if (!arr.length) return { min: 0, max: 0, average: 0 };
 
@@ -20,32 +21,65 @@ const LateAnalysisReviewConclusion: React.FC<{
     average: avgDaysLate,
   } = calculateStats(chartValues);
   const { average: avgCumulative } = calculateStats(cumulativeValues);
-  console.log("🚀 ~ cumulativeValues:", cumulativeValues);
 
-  const insights =
+  // **Turnaround Time Insight**
+  const turnaroundInsight =
+    avgDaysLate <= 7
+      ? {
+          color: "bg-teal-100 ring-teal-400/90",
+          message:
+            "🟢 Turnaround Time Met: Most submissions adhered to the 7-day review policy. Performance is satisfactory.",
+        }
+      : {
+          color: "bg-red-100 ring-red-400/90",
+          message: `🔴 Turnaround Time Breached: Average days late (${avgDaysLate.toFixed(
+            0
+          )} days) is too high. Immediate action is needed.`,
+        };
+
+  // **Trend Insight (Improvement, Worsening, Stable)**
+  const trendInsight =
     avgDaysLate > avgCumulative
       ? {
           color: "bg-orange-100 ring-orange-400/90",
-          message:
-            "Recent workflows show increasing delays in review completion, possibly due to high reviewer workloads or complex document requirements.",
+          message: `🟠 Worsening Trends: Average delays (${avgDaysLate.toFixed(
+            0
+          )} days) are getting higher. This suggests a negative trend in review performance.`,
         }
-      : avgDaysLate > 1.5 * avgCumulative
+      : avgDaysLate < avgCumulative
       ? {
-          color: "bg-red-100 ring-red-400/90",
-          message:
-            "Significant delays in review workflows suggest a critical need for intervention. Review bottlenecks may be impacting project timelines.",
+          color: "bg-teal-100 ring-teal-400/90",
+          message: `🟢 Improving Trends: Average delays (${avgDaysLate.toFixed(
+            0
+          )} days) are getting lower, indicating progress in review performance.`,
         }
       : {
-          color: "bg-teal-100 ring-teal-400/90",
-          message:
-            "Recent workflows demonstrate efficient review processes, indicating steady progress and manageable reviewer workloads.",
+          color: "bg-gray-100 ring-gray-400/90",
+          message: `⚪ Stable Trends: Average delays (${avgDaysLate.toFixed(
+            0
+          )} days) are consistent with cumulative averages (${avgCumulative.toFixed(
+            0
+          )} days). Keep maintaining current efforts.`,
         };
 
+  // Check if too many documents are late or days late per document are too high
+  const isTooManyLateDocs = totalDocuments > 50; // Threshold for number of late documents
+  const isTooHighDaysLatePerDoc = avgDaysLate > 30; // Threshold for average days late per document
+
+  // Insights based on document count or days late per document
+
   return (
-    <div className="w-3/12 font-thin text-sm mb-4 mt-16 text-slate-800">
-      <p className={`p-2  ring-1 rounded-md  ${insights.color}`}>
-        {insights.message}
+    <div className="w-3/12 font-thin text-xs leading-relaxed mb-4 text-slate-800">
+      {/* Turnaround Time Insight */}
+      <p className={`p-2  rounded-md mb-2 ${turnaroundInsight.color}`}>
+        {turnaroundInsight.message}
       </p>
+
+      {/* Trend Insight */}
+      <p className={`p-2  rounded-md mb-2 ${trendInsight.color}`}>
+        {trendInsight.message}
+      </p>
+
       <br />
       <ul className="space-y-1">
         <li>

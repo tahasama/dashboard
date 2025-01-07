@@ -31,6 +31,7 @@ ChartJS.register(
 // Define the data structure for the input `data` prop
 interface DataRow {
   "Planned Submission Date": string | number;
+  "Submission Status": string;
   "Days Late": string | number;
 }
 
@@ -42,16 +43,21 @@ interface LateAnalysisProps {
 interface LateAnalysisProps {
   data: {
     "Planned Submission Date": string | number;
+    "Submission Status": string;
+
     "Days Late": string | number;
   }[];
 }
 
 const LateAnalysis: React.FC<LateAnalysisProps> = ({ data }) => {
+  console.log("🚀 ~ data44:", data);
+  // Default value set to empty array
   const [view, setView] = useState<boolean>(true); // true = daily, false = monthly
   const [chartData, setChartData] = useState<any>({
     labels: [],
     datasets: [],
   });
+  console.log("🚀 ~ chartData444:", chartData);
   const [monthlyStats, setMonthlyStats] = useState<{
     chartValues: number[];
     cumulativeValues: number[];
@@ -66,30 +72,36 @@ const LateAnalysis: React.FC<LateAnalysisProps> = ({ data }) => {
   const processData = (groupBy: "daily" | "monthly") => {
     const groupedData: Record<string, { daysLate: number; docs: number }> = {};
 
-    data.forEach((row) => {
-      let dateKey: string | null = null;
-      const rawDate = row["Planned Submission Date"];
-      const daysLate = parseFloat(String(row["Days Late"]));
+    // Ensure data is available before processing
+    console.log("🚀 ~ processData ~ data:", data && Array.isArray(data));
+    if (data && Array.isArray(data)) {
+      data
+        .filter((row) => row["Submission Status"] !== "Canceled")
+        .forEach((row) => {
+          let dateKey: string | null = null;
+          const rawDate = row["Planned Submission Date"];
+          const daysLate = parseFloat(String(row["Days Late"]));
 
-      if (typeof rawDate === "number") {
-        dateKey = excelDateToJSDate(rawDate);
-      } else if (typeof rawDate === "string") {
-        dateKey = rawDate;
-      }
+          if (typeof rawDate === "number") {
+            dateKey = excelDateToJSDate(rawDate);
+          } else if (typeof rawDate === "string") {
+            dateKey = rawDate;
+          }
 
-      if (dateKey && !isNaN(daysLate)) {
-        if (groupBy === "monthly") {
-          const [day, month, year] = dateKey.split("/");
-          dateKey = `${month}/${year}`;
-        }
+          if (dateKey && !isNaN(daysLate)) {
+            if (groupBy === "monthly") {
+              const [day, month, year] = dateKey.split("/");
+              dateKey = `${month}/${year}`;
+            }
 
-        if (!groupedData[dateKey]) {
-          groupedData[dateKey] = { daysLate: 0, docs: 0 };
-        }
-        groupedData[dateKey].daysLate += daysLate;
-        groupedData[dateKey].docs += 1;
-      }
-    });
+            if (!groupedData[dateKey]) {
+              groupedData[dateKey] = { daysLate: 0, docs: 0 };
+            }
+            groupedData[dateKey].daysLate += daysLate;
+            groupedData[dateKey].docs += 1;
+          }
+        });
+    }
 
     return groupedData;
   };
@@ -143,6 +155,8 @@ const LateAnalysis: React.FC<LateAnalysisProps> = ({ data }) => {
   };
 
   useEffect(() => {
+    if (!data || data.length === 0) return; // Prevent error if data is empty
+
     const dailyGroupedData = processData("daily");
     const monthlyGroupedData = processData("monthly");
 
@@ -150,6 +164,7 @@ const LateAnalysis: React.FC<LateAnalysisProps> = ({ data }) => {
     const groupedData = view ? dailyGroupedData : monthlyGroupedData;
     const { chartLabels, chartValues, cumulativeValues } =
       calculateChartValues(groupedData);
+    console.log("🚀 ~ useEffect ~ chartLabels:", groupedData);
 
     // Format labels as DD/MM/YY for display
     const formattedLabels = chartLabels.map((label) => {
@@ -162,7 +177,6 @@ const LateAnalysis: React.FC<LateAnalysisProps> = ({ data }) => {
         return `${day}/${month}/${year.slice(-2)}`; // Display as DD/MM/YY
       }
 
-      // If the date format is unexpected, return the label unchanged
       return label;
     });
 
@@ -239,7 +253,7 @@ const LateAnalysis: React.FC<LateAnalysisProps> = ({ data }) => {
         </div>
         <Line data={chartData} options={chartOptions} />
       </div>
-      <LateAnalysisConclusion {...monthlyStats} />
+      <LateAnalysisConclusion data={data} {...monthlyStats} />
     </div>
   );
 };

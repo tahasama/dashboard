@@ -7,6 +7,7 @@ import {
   LinearScale,
   Tooltip,
   Legend,
+  ChartOptions,
 } from "chart.js";
 import {
   lightColors,
@@ -40,32 +41,36 @@ const DocsPerUserChart: React.FC<{ data: any[] }> = ({ data }) => {
     ],
   });
 
+  const [chartHeight, setChartHeight] = useState(200); // Start with a default height
+
+  const [additionalInsights, setAdditionalInsights] = useState({
+    color: "bg-teal-100 ring-teal-400/90",
+    message:
+      "Recent workflows demonstrate efficient review processes, indicating steady progress and manageable reviewer workloads.",
+  });
+
   useEffect(() => {
+    // Process the data for overdue and current document counts
     const userDocCount: {
       [key: string]: { overdue: number; current: number };
     } = {};
+    const overdueAssignees: Set<string> = new Set(); // Track unique assignees for overdue
 
-    data
-      .filter(
-        (row) =>
-          row["Step Status"] !== "Completed" &&
-          row["Step Status"] !== "Terminated"
-      )
-      .forEach((row) => {
-        const user = row["Assigned To"];
-        const status = row["Step Status"];
-
-        if (user) {
-          if (!userDocCount[user]) {
-            userDocCount[user] = { overdue: 0, current: 0 };
-          }
-          if (status === "Overdue") {
-            userDocCount[user].overdue += 1;
-          } else if (status === "Current") {
-            userDocCount[user].current += 1;
-          }
-        }
-      });
+    data.forEach((row) => {
+      const user = row["Assigned To"];
+      const status = row["Step Status"];
+      if (!userDocCount[user]) {
+        userDocCount[user] = { overdue: 0, current: 0 };
+      }
+      if (status === "Overdue") {
+        userDocCount[user].overdue += 1;
+        overdueAssignees.add(user); // Add unique assignees
+      }
+      if (status === "Current") {
+        userDocCount[user].current += 1;
+        overdueAssignees.add(user); // Add unique assignees
+      }
+    });
 
     const filteredUserDocCount = Object.entries(userDocCount).filter(
       ([, count]) => count.overdue > 0 || count.current > 0
@@ -75,6 +80,7 @@ const DocsPerUserChart: React.FC<{ data: any[] }> = ({ data }) => {
     const overdueValues = filteredUserDocCount.map(
       ([, count]) => count.overdue
     );
+
     const currentValues = filteredUserDocCount.map(
       ([, count]) => count.current
     );
@@ -93,64 +99,105 @@ const DocsPerUserChart: React.FC<{ data: any[] }> = ({ data }) => {
         },
       ],
     }));
+    setChartHeight(overdueAssignees.size * 120); // 50px per Y label
+
+    // Calculate total overdues and determine criticality
+    const totalOverdue = overdueValues.reduce((sum, val) => sum + val, 0);
+    console.log("🚀 ~ useEffect ~ totalOverdue:", totalOverdue);
+
+    let criticality: string;
+    let color: string;
+    if (totalOverdue <= 7) {
+      criticality = "Manageable";
+      color = "green";
+    } else if (totalOverdue <= 15) {
+      criticality = "Moderate";
+      color = "orange";
+    } else {
+      criticality = "Critical";
+      color = "red";
+    }
+
+    // **Additional Insights for Too Many Late Docs or High Days Late**
+    const totalDocuments = overdueValues.reduce((sum, val) => sum + val, 0); // Calculate the total number of overdue documents
+    console.log("🚀 ~ useEffect ~ totalDocuments:", totalDocuments);
+    const avgDaysLate = 30; // Replace with actual logic to calculate average days late (example value)
+
+    const isTooManyLateDocs = totalDocuments > 50; // Threshold for number of late documents
+    const isTooHighDaysLatePerDoc = avgDaysLate > 7; // Threshold for average days late per document
+
+    if (isTooManyLateDocs) {
+      setAdditionalInsights({
+        color: "bg-red-100 ring-red-400/90",
+        message: `⚠️ Warning: Too many documents are late (${totalDocuments}). This suggests potential bottlenecks in the review process.`,
+      });
+    } else if (isTooHighDaysLatePerDoc) {
+      setAdditionalInsights({
+        color: "bg-orange-100 ring-orange-400/90",
+        message:
+          "⚠️ Warning: Average days late per document is too high. Review processes may be taking longer than acceptable.",
+      });
+    } else {
+      setAdditionalInsights({
+        color: "bg-teal-100 ring-teal-400/90",
+        message:
+          "Recent workflows demonstrate efficient review processes, indicating steady progress and manageable reviewer workloads.",
+      });
+    }
   }, [data]);
 
-  const options = {
+  // Chart options (do not remove any existing options and styling)
+  const options: ChartOptions<"bar"> = {
     responsive: true,
     maintainAspectRatio: false,
-    indexAxis: "y" as const, // Horizontal bar chart
+    indexAxis: "y", // Horizontal bar chart
     layout: {
       padding: {
         left: 10,
         right: 10,
         top: 10,
-        bottom: 10, // Reducing the padding for chart area
+        bottom: 10,
       },
     },
     scales: {
       x: {
         ticks: {
-          beginAtZero: true,
           font: {
             size: 10, // Adjust font size for X-axis
           },
         },
         grid: {
           display: true,
-          color: "#ccc", // Grid line color
+          color: "#ccc",
         },
       },
       y: {
         ticks: {
-          display: false, // Hides the default Y-axis labels
-          padding: 2, // Reduce the space between bars and grid lines
+          display: false,
+          padding: 5,
         },
         grid: {
           display: true,
-          drawOnChartArea: true, // Draw grid lines only on the chart area
-          color: "#ddd", // Lighter grid line color
-          lineWidth: 0.5, // Thinner grid lines
+          drawOnChartArea: true,
+          color: "#ddd",
+          lineWidth: 0.5,
         },
-        // Control the height of the grid cells
-        categoryPercentage: 0.9, // Reducing space between the bars vertically
-        barPercentage: 1, // Make the bars wider to occupy the space better
       },
     },
     plugins: {
       legend: {
-        display: false, // Completely hides the legend
+        display: false,
       },
-
       title: {
-        display: true, // Set to true to show the title
-        text: "Workflows in action", // Title text
-        align: "center", // Align the title horizontally (use 'center', 'left', or 'right')
-        position: "top", // Position the title at the top
+        display: true,
+        text: "Workflows in action",
+        align: "center", // Strictly use allowed values
+        position: "top",
         font: {
-          size: 16, // Font size for the title
-          weight: "600", // Use '600' for semibold
+          size: 16,
+          weight: "bold",
         },
-        color: "#3f3f46", // Title color
+        color: "black",
       },
     },
   };
@@ -174,7 +221,7 @@ const DocsPerUserChart: React.FC<{ data: any[] }> = ({ data }) => {
           ctx.textAlign = "center";
 
           // Draw the label inside or above the bar
-          const labelText = `${label} (${value})`;
+          const labelText = `${label.split(",")[0]} (${value})`;
           const textX = 150; // Adjust position slightly for horizontal alignment
           const textY = y + 5; // Center vertically relative to the bar
 
@@ -186,14 +233,25 @@ const DocsPerUserChart: React.FC<{ data: any[] }> = ({ data }) => {
   };
 
   return (
-    // <div style={{ width: "100%", height: "180px" }}>
-    <div style={{ width: "100%", height: "100%" }}>
-      {/* Adjust height for container */}
-      {chartData.labels.length > 0 ? (
-        <Bar data={chartData} options={options} plugins={[customLabelPlugin]} />
-      ) : (
-        <p>No documents to review</p>
-      )}
+    <div className="max-h-[400px] overflow-y-auto">
+      {/* Dynamically rendering criticality text with inline styles */}
+      <p
+        className={`rounded-md p-2 m-1 font-thin text-xs leading-loose mb-4 text-slate-800 ${additionalInsights.color}`}
+      >
+        {additionalInsights.message}
+      </p>
+
+      <div style={{ width: "100%", height: `${chartHeight}px` }}>
+        {chartData.labels.length > 0 ? (
+          <Bar
+            data={chartData}
+            options={options}
+            plugins={[customLabelPlugin]}
+          />
+        ) : (
+          <p>No documents to review</p>
+        )}
+      </div>
     </div>
   );
 };

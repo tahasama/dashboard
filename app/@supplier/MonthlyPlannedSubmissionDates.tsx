@@ -14,40 +14,47 @@ const MonthlyPlannedSubmissionDates: React.FC<dataProps> = ({ data }) => {
   const transformDataForHeatmap = () => {
     const submissionCounts: { [key: string]: number } = {};
 
-    data.forEach((row: any) => {
-      const plannedSubmissionDate = row["Planned Submission Date"];
-      if (plannedSubmissionDate) {
-        let formattedDate: Date | null = null;
+    data
+      .filter((row) => row["Submission Status"] !== "Canceled")
+      .forEach((row: any) => {
+        const plannedSubmissionDate = row["Planned Submission Date"];
+        console.log(
+          "Submission Status is not 'Canceled':",
+          row["Submission Status"] !== "Canceled"
+        );
+        if (plannedSubmissionDate) {
+          let formattedDate: Date | null = null;
 
-        if (typeof plannedSubmissionDate === "string") {
-          // Handle string date in DD/MM/YYYY format
-          const parts = plannedSubmissionDate
-            .split("/")
-            .map((part: any) => parseInt(part, 10));
-          if (parts.length === 3) {
-            const [day, month, year] = parts;
-            formattedDate = new Date(year, month - 1, day);
+          if (typeof plannedSubmissionDate === "string") {
+            // Handle string date in DD/MM/YYYY format
+            const parts = plannedSubmissionDate
+              .split("/")
+              .map((part: any) => parseInt(part, 10));
+            if (parts.length === 3) {
+              const [day, month, year] = parts;
+              // Create a date at midnight UTC
+              formattedDate = new Date(Date.UTC(year, month - 1, day));
+            }
+          } else if (typeof plannedSubmissionDate === "number") {
+            // Handle numeric serial date (Excel-style)
+            const baseDate = new Date(Date.UTC(1899, 11, 30)); // Excel's base date is Dec 30, 1899
+            formattedDate = new Date(
+              baseDate.getTime() + plannedSubmissionDate * 86400000
+            ); // Add days in milliseconds
           }
-        } else if (typeof plannedSubmissionDate === "number") {
-          // Handle numeric serial date (Excel-style)
-          const baseDate = new Date(1899, 11, 30); // Excel's base date is Dec 30, 1899
-          formattedDate = new Date(
-            baseDate.getTime() + plannedSubmissionDate * 86400000
-          ); // Add days in milliseconds
-        }
 
-        if (
-          formattedDate &&
-          !isNaN(formattedDate.getTime()) &&
-          formattedDate.getFullYear() > 1970
-        ) {
-          const isoDate = formattedDate.toISOString().split("T")[0];
-          submissionCounts[isoDate] = (submissionCounts[isoDate] || 0) + 1;
-        } else {
-          console.error(`Invalid or unwanted date: ${plannedSubmissionDate}`);
+          if (
+            formattedDate &&
+            !isNaN(formattedDate.getTime()) &&
+            formattedDate.getFullYear() > 1970
+          ) {
+            const isoDate = formattedDate.toISOString().split("T")[0];
+            submissionCounts[isoDate] = (submissionCounts[isoDate] || 0) + 1;
+          } else {
+            console.error(`Invalid or unwanted date: ${plannedSubmissionDate}`);
+          }
         }
-      }
-    });
+      });
 
     return Object.keys(submissionCounts).map((date) => ({
       date,

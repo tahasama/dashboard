@@ -57,6 +57,7 @@ const LateAnalysisReview: React.FC<LateAnalysisReviewProps> = ({ data }) => {
     chartValues: number[];
     cumulativeValues: number[];
   }>({ chartValues: [], cumulativeValues: [] });
+  const [totalLateDocuments, setTotalLateDocuments] = useState<number>(0); // Track total late documents
 
   const excelDateToJSDate = (serial: number): string => {
     const utcDays = Math.floor(serial - 25569);
@@ -66,6 +67,7 @@ const LateAnalysisReview: React.FC<LateAnalysisReviewProps> = ({ data }) => {
 
   const processData = (groupBy: "daily" | "monthly") => {
     const groupedData: Record<string, { daysLate: number; docs: number }> = {};
+    let totalLateDocs = 0;
 
     data.forEach((row) => {
       let dateKey: string | null = null;
@@ -89,9 +91,12 @@ const LateAnalysisReview: React.FC<LateAnalysisReviewProps> = ({ data }) => {
         }
         groupedData[dateKey].daysLate += daysLate;
         groupedData[dateKey].docs += 1;
+
+        if (daysLate > 0) totalLateDocs += 1; // Count late documents
       }
     });
 
+    setTotalLateDocuments(totalLateDocs); // Update total late documents
     return groupedData;
   };
 
@@ -102,26 +107,23 @@ const LateAnalysisReview: React.FC<LateAnalysisReviewProps> = ({ data }) => {
       const parseDate = (date: string) => {
         const parts = date.split("/").map(Number);
         return parts.length === 3
-          ? new Date(parts[2] + 2000, parts[1] - 1, parts[0]) // Use full YYYY format for sorting
+          ? new Date(parts[2] + 2000, parts[1] - 1, parts[0])
           : new Date(parts[1], parts[0] - 1); // Monthly format (MM/YYYY)
       };
 
       return parseDate(a).getTime() - parseDate(b).getTime();
     });
 
-    // Format labels as DD/MM/YY for display, with validation
     const formattedLabels = chartLabels.map((label) => {
       const parts = label.split("/");
 
       if (parts.length === 3) {
-        // Ensure valid date parts
         const day = parts[0];
         const month = parts[1];
         const year = parts[2];
-        return `${day}/${month}/${year.slice(-2)}`; // Display as DD/MM/YY
+        return `${day}/${month}/${year.slice(-2)}`;
       }
 
-      // If the date format is unexpected, return the label unchanged
       return label;
     });
 
@@ -147,12 +149,10 @@ const LateAnalysisReview: React.FC<LateAnalysisReviewProps> = ({ data }) => {
     const dailyGroupedData = processData("daily");
     const monthlyGroupedData = processData("monthly");
 
-    // Generate chart data based on view (daily/monthly)
     const groupedData = view ? dailyGroupedData : monthlyGroupedData;
     const { chartLabels, chartValues, cumulativeValues } =
       calculateChartValues(groupedData);
 
-    // Format labels as DD/MM/YY for display
     const formattedLabels = chartLabels.map((label) => {
       const parts = label.split("/");
 
@@ -160,15 +160,14 @@ const LateAnalysisReview: React.FC<LateAnalysisReviewProps> = ({ data }) => {
         const day = parts[0];
         const month = parts[1];
         const year = parts[2];
-        return `${day}/${month}/${year.slice(-2)}`; // Display as DD/MM/YY
+        return `${day}/${month}/${year.slice(-2)}`;
       }
 
-      // If the date format is unexpected, return the label unchanged
       return label;
     });
 
     setChartData({
-      labels: formattedLabels, // Use formatted labels here
+      labels: formattedLabels,
       datasets: [
         {
           label: "Cumulative Average Days Late (Line)",
@@ -192,7 +191,6 @@ const LateAnalysisReview: React.FC<LateAnalysisReviewProps> = ({ data }) => {
       ],
     });
 
-    // Always calculate monthly stats for the conclusion
     const monthlyStats = calculateChartValues(monthlyGroupedData);
     setMonthlyStats({
       chartValues: monthlyStats.chartValues,
@@ -240,7 +238,10 @@ const LateAnalysisReview: React.FC<LateAnalysisReviewProps> = ({ data }) => {
         </div>
         <Line data={chartData} options={chartOptions} />
       </div>
-      <LateAnalysisReviewConclusion {...monthlyStats} />
+      <LateAnalysisReviewConclusion
+        {...monthlyStats}
+        totalDocuments={totalLateDocuments}
+      />
     </div>
   );
 };

@@ -34,39 +34,44 @@ interface MergedData {
 const LineTimeChart: React.FC<any> = ({ data }) => {
   const [documentData, workflowData] = data;
 
-  const parseDate = (dateString: string): Date | null => {
-    const dateStr = String(dateString).trim(); // Ensure it is a string
-    if (!isNaN(Number(dateStr)) && dateStr !== "") {
-      // Ensure we check numeric conversion correctly
-      const numericValue = parseInt(dateStr, 10);
-      if (numericValue > 0) {
-        const baseDate = new Date(1899, 11, 30); // Excel's base date
-        return new Date(
-          baseDate.getTime() + numericValue * 24 * 60 * 60 * 1000
-        );
-      }
-    }
+  const parseDate = (() => {
+    const excelBaseDate = new Date(1899, 11, 30).getTime();
 
-    if (dateStr.includes("/")) {
-      const parts = dateStr.split("/");
-      if (parts.length === 3) {
-        const day = parseInt(parts[0], 10);
-        const month = parseInt(parts[1], 10) - 1;
-        const year = parseInt(parts[2], 10);
-        const parsedDate = new Date(year, month, day);
-        if (!isNaN(parsedDate.getTime())) {
-          return parsedDate;
+    return (dateString: any): Date | null => {
+      if (typeof dateString !== "string" && dateString !== null) {
+        dateString = String(dateString); // Convert non-string values to string
+      }
+
+      if (typeof dateString === "string") {
+        const trimmedDate = dateString.trim();
+        const excelNumber = Number(trimmedDate);
+        if (!isNaN(excelNumber) && excelNumber > 0) {
+          return new Date(excelBaseDate + excelNumber * 24 * 60 * 60 * 1000);
+        }
+
+        if (trimmedDate.includes("/")) {
+          const parts = trimmedDate.split("/");
+          if (parts.length === 3) {
+            const day = parseInt(parts[0], 10);
+            const month = parseInt(parts[1], 10) - 1; // Months are 0-indexed
+            const year = parseInt(parts[2], 10);
+            const parsedDate = new Date(year, month, day);
+            if (!isNaN(parsedDate.getTime())) {
+              return parsedDate;
+            }
+          }
+        }
+
+        const date = new Date(trimmedDate);
+        if (!isNaN(date.getTime())) {
+          return date;
         }
       }
-    }
 
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) {
       console.log(`Invalid date string: ${dateString}`);
-      return null; // Return null for invalid date strings
-    }
-    return date;
-  };
+      return null;
+    };
+  })();
 
   const filteredDocumentData = React.useMemo(
     () =>
@@ -235,15 +240,15 @@ const LineTimeChart: React.FC<any> = ({ data }) => {
     tooltip: { isHtml: true },
   };
 
-  const handleChartClick = (e: any) => {
-    const chart = e.chartWrapper.getChart();
-    const selection = chart.getSelection();
-    if (selection.length > 0) {
-      const selectedRow = selection[0].row;
-      const selectedDoc = mergedData[selectedRow];
-      console.log("🚀 ~ handleChartClick ~ selectedDoc:", selectedDoc);
-    }
-  };
+  // const handleChartClick = (e: any) => {
+  //   const chart = e.chartWrapper.getChart();
+  //   const selection = chart.getSelection();
+  //   if (selection.length > 0) {
+  //     const selectedRow = selection[0].row;
+  //     const selectedDoc = mergedData[selectedRow];
+  //     console.log("🚀 ~ handleChartClick ~ selectedDoc:", selectedDoc);
+  //   }
+  // };
 
   return (
     <div>
@@ -260,12 +265,12 @@ const LineTimeChart: React.FC<any> = ({ data }) => {
           { type: "date" },
         ]}
         options={options}
-        chartEvents={[
-          {
-            eventName: "select",
-            callback: handleChartClick,
-          },
-        ]}
+        // chartEvents={[
+        //   {
+        //     eventName: "select",
+        //     callback: handleChartClick,
+        //   },
+        // ]}
       />
     </div>
   );

@@ -80,10 +80,11 @@ const SubmissionStatus: React.FC<any> = ({ data }) => {
           },
           label: {
             show: true,
-            position: "outside", // Label outside the pie
-            formatter: "{b}: {c}",
-            fontSize: 10,
-            color: "#333",
+            position: "outside", // Position the label outside the pie
+            formatter: (params: any) => `${params.name}\n${params.value}`, // Name on top, value below
+            textStyle: {
+              fontSize: 9,
+            },
           },
           labelLine: {
             show: true,

@@ -8,8 +8,10 @@ const WorkflowStepStatusChart: React.FC<any> = ({ data }) => {
   >([]);
   const chartRef = useRef<HTMLDivElement>(null);
 
+  console.log("🚀 ~ chartData99:", data);
+
   useEffect(() => {
-    // Count the statuses dynamically from the data prop
+    // Combine data from all files and generate chart data
     const statusCounts: { [key: string]: number } = {};
 
     data
@@ -38,7 +40,7 @@ const WorkflowStepStatusChart: React.FC<any> = ({ data }) => {
 
     const option = {
       title: {
-        text: "Workflow Step Status Chart",
+        text: "General Status Chart",
         left: "center",
         top: "top",
         textStyle: {
@@ -48,48 +50,43 @@ const WorkflowStepStatusChart: React.FC<any> = ({ data }) => {
       },
       tooltip: {
         trigger: "item",
-      },
-      legend: {
-        orient: "vertical",
-        left: "left",
-        show: false, // Hides the legend
-      },
-      color: nightColors, // Apply the custom color scheme
-      label: {
-        show: true,
-        position: "outside", // Label outside the pie
-        formatter: "{b}: {c}",
-        fontSize: 10,
-        color: "#333",
-      },
-      labelLine: {
-        show: true,
-        length: 10,
-        length2: 20,
-        smooth: true,
-        lineStyle: {
-          color: "#333",
+        formatter: (params: any) => {
+          return `${params.name}: ${params.value} submissions`;
         },
+        position: "top",
       },
       series: [
         {
-          name: "Workflow Step Status",
           type: "pie",
-          radius: "50%", // Regular pie chart (no doughnut)
+          radius: ["40%", "70%"], // Inner and outer radius for the doughnut chart
+          center: ["50%", "55%"], // Position of the pie chart
           data: chartData.map((item, index) => ({
             value: item.value,
             name: item.label,
             itemStyle: {
-              color: nightColors[index % nightColors.length], // Apply custom colors
-              borderWidth: 4, // Increase the border width of slices
-              borderColor: "#fff", // Set the border color to white (or any color)
+              color: nightColors[index % nightColors.length], // Use your custom lightColors
             },
           })),
-          emphasis: {
-            itemStyle: {
-              shadowBlur: 10,
-              shadowOffsetX: 0,
-              shadowColor: "rgba(0, 0, 0, 0.5)",
+          itemStyle: {
+            borderRadius: 7,
+            borderColor: "#fff",
+            borderWidth: 1,
+          },
+          label: {
+            show: true,
+            position: "outside", // Position the label outside the pie
+            formatter: (params: any) => `${params.name} ${params.value}`, // Name on top, value below
+            textStyle: {
+              fontSize: 9,
+            },
+          },
+          labelLine: {
+            show: true,
+            length: 10,
+            length2: 20,
+            smooth: true,
+            lineStyle: {
+              color: "#333",
             },
           },
         },
