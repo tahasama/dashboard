@@ -20,12 +20,6 @@ const HeatX: React.FC<dataProps> = ({ data }) => {
           let formattedDate: Date | null = null;
 
           if (typeof plannedSubmissionDate === "string") {
-            // Log the raw date before parsing
-            console.log(
-              "Attempting to parse date string:",
-              plannedSubmissionDate
-            );
-
             // Split the date by slashes for string format (DD/MM/YYYY)
             const parts = plannedSubmissionDate
               .split("/")

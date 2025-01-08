@@ -60,8 +60,6 @@ const StatusOutcomeHeatMap: React.FC<dataProps> = ({ data }) => {
         }
       });
 
-    console.log("Final Submission Counts:", submissionCounts); // Debugging final counts
-
     const years = Array.from(
       new Set(
         Object.keys(submissionCounts).map((date) =>

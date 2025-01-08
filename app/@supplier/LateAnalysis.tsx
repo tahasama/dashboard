@@ -50,14 +50,12 @@ interface LateAnalysisProps {
 }
 
 const LateAnalysis: React.FC<LateAnalysisProps> = ({ data }) => {
-  console.log("🚀 ~ data44:", data);
   // Default value set to empty array
   const [view, setView] = useState<boolean>(true); // true = daily, false = monthly
   const [chartData, setChartData] = useState<any>({
     labels: [],
     datasets: [],
   });
-  console.log("🚀 ~ chartData444:", chartData);
   const [monthlyStats, setMonthlyStats] = useState<{
     chartValues: number[];
     cumulativeValues: number[];
@@ -73,7 +71,6 @@ const LateAnalysis: React.FC<LateAnalysisProps> = ({ data }) => {
     const groupedData: Record<string, { daysLate: number; docs: number }> = {};
 
     // Ensure data is available before processing
-    console.log("🚀 ~ processData ~ data:", data && Array.isArray(data));
     if (data && Array.isArray(data)) {
       data
         .filter((row) => row["Submission Status"] !== "Canceled")
@@ -164,7 +161,6 @@ const LateAnalysis: React.FC<LateAnalysisProps> = ({ data }) => {
     const groupedData = view ? dailyGroupedData : monthlyGroupedData;
     const { chartLabels, chartValues, cumulativeValues } =
       calculateChartValues(groupedData);
-    console.log("🚀 ~ useEffect ~ chartLabels:", groupedData);
 
     // Format labels as DD/MM/YY for display
     const formattedLabels = chartLabels.map((label) => {

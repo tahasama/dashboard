@@ -21,8 +21,6 @@ export default function Home() {
   const [indexRows, setIndexRows] = useState<number[]>([8, 8, 8]);
   const [data, setData] = useState<any[][]>([]);
   const [originalData, setOriginalData] = useState(data);
-
-  console.log("🚀 ~ Home ~ data:", data);
   const [error, setError] = useState<string | null>(null);
   const [isReadyToGenerate, setIsReadyToGenerate] = useState<boolean>(false);
   const [showForm, setShowForm] = useState(false);

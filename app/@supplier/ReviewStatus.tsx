@@ -3,12 +3,9 @@ import * as echarts from "echarts";
 import { lightColors, nightColors } from "../colors";
 
 const ReviewStatus: React.FC<any> = ({ data }) => {
-  console.log("🚀 ~ data:", data);
   const [chartData, setChartData] = useState<
     { label: string; value: number }[]
   >([]);
-
-  console.log("🚀 ~ chartData:", chartData);
 
   const chartRef = useRef<HTMLDivElement>(null);
 

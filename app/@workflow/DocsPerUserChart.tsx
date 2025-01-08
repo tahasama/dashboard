@@ -119,7 +119,6 @@ const DocsPerUserChart: React.FC<{ data: any[] }> = ({ data }) => {
 
     // **Additional Insights for Too Many Late Docs or High Days Late**
     const totalDocuments = overdueValues.reduce((sum, val) => sum + val, 0); // Calculate the total number of overdue documents
-    console.log("🚀 ~ useEffect ~ totalDocuments:", totalDocuments);
     const avgDaysLate = 30; // Replace with actual logic to calculate average days late (example value)
 
     const isTooManyLateDocs = totalDocuments > 30; // Threshold for number of late documents

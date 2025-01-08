@@ -8,8 +8,6 @@ const WorkflowStepStatusChart: React.FC<any> = ({ data }) => {
   >([]);
   const chartRef = useRef<HTMLDivElement>(null);
 
-  console.log("🚀 ~ chartData99:", data);
-
   useEffect(() => {
     // Combine data from all files and generate chart data
     const statusCounts: { [key: string]: number } = {};

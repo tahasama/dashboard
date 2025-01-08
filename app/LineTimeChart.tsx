@@ -4,8 +4,6 @@ import { Chart } from "react-google-charts";
 const LineTimeChart: React.FC<any> = ({ data, loading, setLoading }) => {
   const [documentData, workflowData] = data;
   const [mergedData, setMergedData] = useState<any[]>([]);
-  // const [loading, setLoading] = useState(true);
-  // console.log("🚀 ~ loading:", loading);
 
   // Function to parse dates
   const parseDate = useMemo(() => {
@@ -42,7 +40,6 @@ const LineTimeChart: React.FC<any> = ({ data, loading, setLoading }) => {
         }
       }
 
-      console.log(`Invalid date string: ${dateString}`);
       return null;
     };
   }, []);
