@@ -106,12 +106,11 @@ const SubmissionStatus: React.FC<any> = ({ data }) => {
       chartInstance.resize();
     };
 
-    // Add resize event listener
-    window.addEventListener("resize", handleResize);
+    const observer = new ResizeObserver(handleResize);
+    observer.observe(chartRef.current);
 
-    // Cleanup function to dispose of the chart instance on unmount
     return () => {
-      window.removeEventListener("resize", handleResize);
+      observer.disconnect();
       chartInstance.dispose();
     };
   }, [chartData]);
@@ -120,12 +119,7 @@ const SubmissionStatus: React.FC<any> = ({ data }) => {
     return <div>No data available</div>;
   }
 
-  return (
-    <div
-      ref={chartRef}
-      style={{ width: "100%", height: "180px" }} // Ensuring it has width and height
-    />
-  );
+  return <div ref={chartRef} style={{ width: "100%", height: "100%" }} />;
 };
 
 export default SubmissionStatus;

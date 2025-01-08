@@ -106,6 +106,7 @@ const HeatX: React.FC<dataProps> = ({ data }) => {
     const chartInstance = echarts.init(chartRef.current);
 
     const option = {
+      responsive: true,
       title: {
         text: "Document Submission Heatmap",
         left: "center",
@@ -156,8 +157,8 @@ const HeatX: React.FC<dataProps> = ({ data }) => {
       },
       calendar: {
         range: selectedYear,
-        // cellSize: ["auto", 20],
-        cellSize: 14, // Make cells perfectly square (width = height)
+        cellSize: ["auto", "auto"],
+        // cellSize: "100%", // Make cells perfectly square (width = height)
         // backgroundColor: "red", // General calendar background
         top: "32.5%", // Adjust the space from the top
         // left: "center",
@@ -213,19 +214,19 @@ const HeatX: React.FC<dataProps> = ({ data }) => {
       chartInstance.resize();
     };
 
-    window.addEventListener("resize", handleResize);
+    const observer = new ResizeObserver(handleResize);
+    observer.observe(chartRef.current);
 
     return () => {
-      window.removeEventListener("resize", handleResize);
+      observer.disconnect();
       chartInstance.dispose();
     };
   }, [heatmapData, selectedYear]);
 
   return (
-    <div className="flex justify-around">
-      <div className="w-full h-full">
-        <div ref={chartRef} style={{ width: "100%", height: "180px" }} />
-      </div>
+    // <div className="flex justify-around">
+    <div className="flex justify-between h-full">
+      <div ref={chartRef} style={{ width: "100%", height: "100%" }} />
       <div className="flex flex-col items-center justify-center">
         <span className="font-medium text-sm mb-2 w-24">Select Year:</span>
         <div className="flex flex-col space-y-2">

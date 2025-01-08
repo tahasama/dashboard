@@ -104,7 +104,7 @@ const LateAnalysisConclusion: React.FC<{
         };
 
   return (
-    <div className="w-3/12 font-thin mb-4 text-slate-800 text-xs">
+    <div className="w-3/12 font-thin mb- text-slate-800 sm:text-sm text-xl">
       {/* Turnaround Time Insights */}
       <p className={`p-2 rounded-md mb-2 ${turnaroundInsight.color}`}>
         {turnaroundInsight.message}

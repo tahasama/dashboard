@@ -6,24 +6,22 @@ const ReviewStatus: React.FC<any> = ({ data }) => {
   const [chartData, setChartData] = useState<
     { label: string; value: number }[]
   >([]);
-
   const chartRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Combine data from all files and generate chart data
+    // Process the data
     const statusCounts: { [key: string]: number } = {};
-
     data
       .filter((row: any) => row["Review Status"] !== "Terminated")
       .forEach((row: any) => {
-        const status = row["Review Status"]; // Adjust to match your column name
+        const status = row["Review Status"];
         if (status) {
           statusCounts[status] = (statusCounts[status] || 0) + 1;
         }
       });
 
     const formattedData = Object.keys(statusCounts).map((key) => ({
-      label: key.startsWith("C") ? key.slice(0, 9) : key, // Slice the label to 8 characters
+      label: key.startsWith("C") ? key.slice(0, 9) : key,
       value: statusCounts[key],
     }));
 
@@ -45,48 +43,41 @@ const ReviewStatus: React.FC<any> = ({ data }) => {
           fontWeight: "bold",
         },
       },
+
       tooltip: {
         trigger: "item",
-        formatter: (params: any) => {
-          return `${params.name}: ${params.value} submissions`;
-        },
-        position: "top",
+        formatter: (params: any) =>
+          `${params.name}: ${params.value} submissions`,
       },
       series: [
         {
           type: "pie",
-          radius: ["40%", "70%"], // Inner and outer radius for the doughnut chart
-          center: ["50%", "60%"], // Position of the pie chart
+          radius: ["40%", "70%"],
+          center: ["50%", "60%"],
           data: chartData.map((item, index) => ({
             value: item.value,
             name: item.label,
             itemStyle: {
-              color: nightColors[index % nightColors.length], // Use your custom lightColors
+              color: nightColors[index % nightColors.length],
+            },
+            label: {
+              show: true,
+              position: "outside", // Position the label outside the pie
+              formatter: (params: any) => `${params.name}\n${params.value}`, // Name on top, value below
+              textStyle: {
+                fontSize: 9,
+              },
+            },
+            labelLine: {
+              show: true,
+              length: 10,
+              length2: 20,
+              smooth: true,
+              lineStyle: {
+                color: "#333",
+              },
             },
           })),
-          itemStyle: {
-            borderRadius: 7,
-            borderColor: "#fff",
-            borderWidth: 1,
-          },
-          label: {
-            show: true,
-            position: "outside", // Position the label outside the pie
-            formatter: (params: any) => `${params.name}\n${params.value}`, // Name on top, value below
-            textStyle: {
-              fontSize: 9,
-            },
-          },
-
-          labelLine: {
-            show: true,
-            length: 10,
-            length2: 20,
-            smooth: true,
-            lineStyle: {
-              color: "#333",
-            },
-          },
         },
       ],
     };
@@ -97,10 +88,11 @@ const ReviewStatus: React.FC<any> = ({ data }) => {
       chartInstance.resize();
     };
 
-    window.addEventListener("resize", handleResize);
+    const observer = new ResizeObserver(handleResize);
+    observer.observe(chartRef.current);
 
     return () => {
-      window.removeEventListener("resize", handleResize);
+      observer.disconnect();
       chartInstance.dispose();
     };
   }, [chartData]);
@@ -109,7 +101,7 @@ const ReviewStatus: React.FC<any> = ({ data }) => {
     return <div>No data available</div>;
   }
 
-  return <div ref={chartRef} style={{ width: "100%", height: "180px" }} />;
+  return <div ref={chartRef} style={{ width: "100%", height: "100%" }} />;
 };
 
 export default ReviewStatus;

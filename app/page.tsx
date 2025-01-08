@@ -342,7 +342,7 @@ export default function Home() {
 
                 <div className="h-screen flex flex-col">
                   <ResizablePanelGroup direction="horizontal">
-                    <ResizablePanel>
+                    <ResizablePanel defaultSize={26}>
                       <ResizablePanelGroup direction="vertical">
                         <ResizablePanel>
                           <ReviewStatus data={data[0]} />
@@ -360,43 +360,17 @@ export default function Home() {
                     <ResizableHandle withHandle />
                     <ResizablePanel>
                       <ResizablePanelGroup direction="vertical">
-                        <ResizablePanel>
-                          {" "}
+                        <ResizablePanel defaultSize={70}>
                           <LateAnalysis data={data[0]} />
+                          {/* <HeatX data={data[0]} /> */}
                         </ResizablePanel>
                         <ResizableHandle withHandle />
                         <ResizablePanel>
-                          {" "}
                           <HeatX data={data[0]} />
                         </ResizablePanel>
                       </ResizablePanelGroup>
                     </ResizablePanel>
                   </ResizablePanelGroup>
-                </div>
-
-                <div className="bg-slate-300 flex w-full gap-0">
-                  {/* Left Column: Doughnut Charts */}
-                  <div className="flex flex-col justify-center w-3/12 pl-0.5">
-                    <div className="m-[1px] bg-white rounded-md">
-                      <ReviewStatus data={data[0]} />
-                    </div>
-                    <div className="m-[1px] bg-white rounded-md">
-                      <SubmissionStatus data={data[0]} />
-                    </div>
-                    <div className="m-[1px] bg-white rounded-md">
-                      <StatusChart data={data[0]} />
-                    </div>
-                  </div>
-                  {/* Right Column: Detailed Charts */}
-                  <div className="flex flex-col justify-between gap-0 mt-0.5 w-9/12 py-0.5 pr-0.5">
-                    <div className="pt-4 pb-[3px] my-[1.5px] bg-white shadow-md rounded-md">
-                      <LateAnalysis data={data[0]} />
-                    </div>
-                    <div className="pt-[0px] mb-1 bg-white shadow-md rounded-md">
-                      <HeatX data={data[0]} />
-                    </div>
-                    {/* </div> */}
-                  </div>
                 </div>
 
                 {/* Workflow Charts */}
