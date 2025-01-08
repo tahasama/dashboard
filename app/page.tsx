@@ -1,17 +1,14 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import * as XLSX from "xlsx";
 import StatusChart from "./@supplier/StatusChart";
-import WorkflowStatusChart from "./@workflow/WorkflowStatusChart";
 import LateAnalysis from "./@supplier/LateAnalysis";
 import SankeyChart from "./@supplier/SankeyChart";
 import SubmissionStatus from "./@supplier/SubmissionStatus";
 import StatusOutcomeHeatMap from "./@workflow/StepStatusOutcomeChart";
 import SankeyChartWorkFlow from "./@workflow/SankeyChartWorkFlow";
-import MonthlyPlannedSubmissionDates from "./@supplier/MonthlyPlannedSubmissionDates";
 
 import WorkflowStepStatusChart from "./@workflow/WorkflowStepStatusChart";
-import WorkflowOutcomeStatusChart from "./@workflow/WorkflowOutcomeStatusChart";
 import LateAnalysisReview from "./@workflow/LateAnalysisReview";
 import LineTimeChart from "./LineTimeChart";
 import ReviewStatus from "./@supplier/ReviewStatus";
@@ -23,12 +20,21 @@ export default function Home() {
   const [files, setFiles] = useState<File[]>([]);
   const [indexRows, setIndexRows] = useState<number[]>([8, 8, 8]);
   const [data, setData] = useState<any[][]>([]);
+  const [originalData, setOriginalData] = useState(data);
+
   console.log("🚀 ~ Home ~ data:", data);
   const [error, setError] = useState<string | null>(null);
   const [isReadyToGenerate, setIsReadyToGenerate] = useState<boolean>(false);
   const [showForm, setShowForm] = useState(false);
   const [createdByFilter, setCreatedByFilter] = useState<string>("");
   const [subProjectFilter, setSubProjectFilter] = useState<string>("");
+  const [disciplineFilter, setDisciplineFilter] = useState<string>("");
+
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    applyFilters();
+  }, [createdByFilter, subProjectFilter, disciplineFilter]);
 
   const getUniqueValues = (data: any[][], column: string) => {
     const allValues = data.flatMap((fileData) =>
@@ -37,72 +43,91 @@ export default function Home() {
     return Array.from(new Set(allValues.filter(Boolean)));
   };
 
-  const filterData = (data: any[][], createdBy: string, subProject: string) => {
-    // Handle "createdBy" filter
-    const matchingPackages0 = new Set(
-      data
-        .flatMap((fileData) =>
-          fileData
-            .filter((row: any) => row["Select List 5"] === createdBy)
-            .map((row: any) => row["Package Number"] || row["Related Package"])
-        )
-        .filter((value) => value)
-    );
-
-    const matchingPackages0result = data.map((fileData) =>
-      fileData.filter((row: any) => {
-        const packageNumber = row["Package Number"];
-        const relatedPackage = row["Related Package"];
-        return (
-          matchingPackages0.has(packageNumber) ||
-          matchingPackages0.has(relatedPackage)
-        );
-      })
-    );
-
-    // Handle "subProject" filter
-    const matchingPackages1 = new Set(
-      data
-        .flatMap((fileData) =>
-          fileData
-            .filter((row: any) => row["Select List 3"] === subProject)
-            .map((row: any) => row["Document No"] || row["Document No."])
-        )
-        .filter((value) => value)
-    );
-
-    const matchingPackages1result = data.map((fileData) =>
-      fileData.filter((row: any) => {
-        const documentNo = row["Document No"];
-        const documentNoDot = row["Document No."];
-        return (
-          matchingPackages1.has(documentNo) ||
-          matchingPackages1.has(documentNoDot)
-        );
-      })
-    );
-
-    // Combine filters if both are provided
-    if (createdBy && subProject) {
-      return matchingPackages0result.map((fileData, index) =>
-        fileData.filter((row) =>
-          matchingPackages1result[index].some(
-            (filteredRow) => filteredRow === row
+  const filterData = (
+    data: any[][],
+    createdBy: string,
+    subProject: string,
+    discipline: string
+  ) => {
+    // Define helper to filter and create a Set of matching keys
+    const getMatchingPackages = (
+      key: string,
+      value: string,
+      mapKey: string
+    ): Set<string> =>
+      new Set(
+        data
+          .flatMap((fileData) =>
+            fileData
+              .filter((row: any) => row[key] === value)
+              .map((row: any) => row[mapKey])
           )
-        )
+          .filter((value) => value)
       );
-    }
 
-    // Return results for one filter
-    if (createdBy) return matchingPackages0result;
-    if (subProject) return matchingPackages1result;
+    // Filter based on the input conditions
+    const createdByPackages = createdBy
+      ? getMatchingPackages("Select List 5", createdBy, "Package Number")
+      : null;
 
-    // Return original data if no filter
-    return data;
+    const subProjectPackages = subProject
+      ? getMatchingPackages("Select List 3", subProject, "Document No")
+      : null;
+
+    const disciplinePackages = discipline
+      ? getMatchingPackages("Select List 1", discipline, "Document No")
+      : null;
+
+    // Combine filters
+    const combineFilters = (row: any) => {
+      const packageNumber = row["Package Number"];
+      const relatedPackage = row["Related Package"];
+      const documentNo = row["Document No"];
+      const documentNoDot = row["Document No."];
+      const documentKeys = [documentNo, documentNoDot].filter(Boolean);
+
+      return (
+        (!createdByPackages ||
+          createdByPackages.has(packageNumber) ||
+          createdByPackages.has(relatedPackage)) &&
+        (!subProjectPackages ||
+          documentKeys.some((doc) => subProjectPackages.has(doc))) &&
+        (!disciplinePackages ||
+          documentKeys.some((doc) => disciplinePackages.has(doc)))
+      );
+    };
+
+    // Filter the data
+    return data.map((fileData) => fileData.filter(combineFilters));
   };
 
+  // const filterData = (data, createdBy, subProject, discipline) => {
+  //   return data.map((fileData) =>
+  //     fileData.filter((row) => {
+  //       const matchesCreatedBy = createdBy
+  //         ? row["Select List 5"] === createdBy
+  //         : true;
+  //       const matchesSubProject = subProject
+  //         ? row["Select List 3"] === subProject
+  //         : true;
+  //       const matchesDiscipline = discipline
+  //         ? row["Select List 1"] === discipline
+  //         : true;
+
+  //       // Row must match all selected filters
+  //       return matchesCreatedBy && matchesSubProject && matchesDiscipline;
+  //     })
+  //   );
+  // };
+
   const applyFilters = () => {
-    const filteredData = filterData(data, createdByFilter, subProjectFilter);
+    setLoading(true);
+    const filteredData = filterData(
+      originalData,
+      createdByFilter,
+      subProjectFilter,
+      disciplineFilter
+    );
     setData(filteredData);
   };
 
@@ -142,6 +167,10 @@ export default function Home() {
   };
 
   const handleGenerate = () => {
+    setLoading(true);
+    setCreatedByFilter("");
+    setSubProjectFilter("");
+    setDisciplineFilter("");
     if (!isReadyToGenerate) {
       setError("Please upload all required files with correct headers.");
       return;
@@ -192,6 +221,7 @@ export default function Home() {
 
           if (fileIndex === files.length - 1 && !validationFailed) {
             setData(allData);
+            setOriginalData(allData);
             setError(null);
           }
         } catch (err: any) {
@@ -242,7 +272,7 @@ export default function Home() {
                 onChange={(e) => setCreatedByFilter(e.target.value)}
               >
                 <option value="">All</option>
-                {getUniqueValues(data, "Select List 5").map((value) => (
+                {getUniqueValues(originalData, "Select List 5").map((value) => (
                   <option key={value} value={value}>
                     {value}
                   </option>
@@ -257,7 +287,22 @@ export default function Home() {
                 onChange={(e) => setSubProjectFilter(e.target.value)}
               >
                 <option value="">All</option>
-                {getUniqueValues(data, "Select List 3").map((value) => (
+                {getUniqueValues(originalData, "Select List 3").map((value) => (
+                  <option key={value} value={value}>
+                    {value}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label className="ml-4">
+              Filter by Discipline:
+              <select
+                value={subProjectFilter}
+                onChange={(e) => setDisciplineFilter(e.target.value)}
+              >
+                <option value="">All</option>
+                {getUniqueValues(originalData, "Select List 1").map((value) => (
                   <option key={value} value={value}>
                     {value}
                   </option>
@@ -278,7 +323,11 @@ export default function Home() {
             {data.length > 0 && (
               <div className="space-y-12 mt-6">
                 {/* Line Time Chart */}
-                {/* <LineTimeChart data={data} /> */}
+                <LineTimeChart
+                  data={data}
+                  loading={loading}
+                  setLoading={setLoading}
+                />
                 {/* Supplier Documents Charts */}
                 <div className="bg-slate-300 flex w-full gap-0">
                   {/* Left Column: Doughnut Charts */}

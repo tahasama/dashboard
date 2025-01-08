@@ -103,7 +103,6 @@ const DocsPerUserChart: React.FC<{ data: any[] }> = ({ data }) => {
 
     // Calculate total overdues and determine criticality
     const totalOverdue = overdueValues.reduce((sum, val) => sum + val, 0);
-    console.log("🚀 ~ useEffect ~ totalOverdue:", totalOverdue);
 
     let criticality: string;
     let color: string;
@@ -123,7 +122,7 @@ const DocsPerUserChart: React.FC<{ data: any[] }> = ({ data }) => {
     console.log("🚀 ~ useEffect ~ totalDocuments:", totalDocuments);
     const avgDaysLate = 30; // Replace with actual logic to calculate average days late (example value)
 
-    const isTooManyLateDocs = totalDocuments > 50; // Threshold for number of late documents
+    const isTooManyLateDocs = totalDocuments > 30; // Threshold for number of late documents
     const isTooHighDaysLatePerDoc = avgDaysLate > 7; // Threshold for average days late per document
 
     if (isTooManyLateDocs) {
@@ -131,13 +130,15 @@ const DocsPerUserChart: React.FC<{ data: any[] }> = ({ data }) => {
         color: "bg-red-100 ring-red-400/90",
         message: `⚠️ Warning: Too many documents are late (${totalDocuments}). This suggests potential bottlenecks in the review process.`,
       });
-    } else if (isTooHighDaysLatePerDoc) {
-      setAdditionalInsights({
-        color: "bg-orange-100 ring-orange-400/90",
-        message:
-          "⚠️ Warning: Average days late per document is too high. Review processes may be taking longer than acceptable.",
-      });
-    } else {
+    }
+    // else if (isTooHighDaysLatePerDoc) {
+    //   setAdditionalInsights({
+    //     color: "bg-orange-100 ring-orange-400/90",
+    //     message:
+    //       "⚠️ Warning: Average days late per document is too high. Review processes may be taking longer than acceptable.",
+    //   });
+    // }
+    else {
       setAdditionalInsights({
         color: "bg-teal-100 ring-teal-400/90",
         message:

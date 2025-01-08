@@ -59,7 +59,7 @@ const LateAnalysisReviewConclusion: React.FC<{
             0
           )} days) are consistent with cumulative averages (${avgCumulative.toFixed(
             0
-          )} days). Keep maintaining current efforts.`,
+          )} days).`,
         };
 
   // Check if too many documents are late or days late per document are too high
