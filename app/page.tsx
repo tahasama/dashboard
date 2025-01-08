@@ -16,6 +16,12 @@ import HeatX from "./@supplier/HeatX";
 import DocsPerUserChart from "./@workflow/DocsPerUserChart";
 import ExcelForm from "./ExcelForm";
 
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
+
 export default function Home() {
   const [files, setFiles] = useState<File[]>([]);
   const [indexRows, setIndexRows] = useState<number[]>([8, 8, 8]);
@@ -316,17 +322,58 @@ export default function Home() {
             </button>
           </div>
 
+          <ResizablePanelGroup direction="vertical">
+            <ResizablePanel className="bg-slate-600 h-40">One</ResizablePanel>
+            <ResizableHandle />
+            <ResizablePanel className="bg-slate-400 h-40">Two</ResizablePanel>
+          </ResizablePanelGroup>
+
           <div>
             {/* Chart Display Section */}
             {data.length > 0 && (
               <div className="space-y-12 mt-6">
                 {/* Line Time Chart */}
-                <LineTimeChart
+                {/* <LineTimeChart
                   data={data}
                   loading={loading}
                   setLoading={setLoading}
-                />
+                /> */}
                 {/* Supplier Documents Charts */}
+
+                <div className="h-screen flex flex-col">
+                  <ResizablePanelGroup direction="horizontal">
+                    <ResizablePanel>
+                      <ResizablePanelGroup direction="vertical">
+                        <ResizablePanel>
+                          <ReviewStatus data={data[0]} />
+                        </ResizablePanel>
+                        <ResizableHandle withHandle />
+                        <ResizablePanel>
+                          <SubmissionStatus data={data[0]} />
+                        </ResizablePanel>
+                        <ResizableHandle withHandle />
+                        <ResizablePanel>
+                          <StatusChart data={data[0]} />
+                        </ResizablePanel>
+                      </ResizablePanelGroup>
+                    </ResizablePanel>
+                    <ResizableHandle withHandle />
+                    <ResizablePanel>
+                      <ResizablePanelGroup direction="vertical">
+                        <ResizablePanel>
+                          {" "}
+                          <LateAnalysis data={data[0]} />
+                        </ResizablePanel>
+                        <ResizableHandle withHandle />
+                        <ResizablePanel>
+                          {" "}
+                          <HeatX data={data[0]} />
+                        </ResizablePanel>
+                      </ResizablePanelGroup>
+                    </ResizablePanel>
+                  </ResizablePanelGroup>
+                </div>
+
                 <div className="bg-slate-300 flex w-full gap-0">
                   {/* Left Column: Doughnut Charts */}
                   <div className="flex flex-col justify-center w-3/12 pl-0.5">

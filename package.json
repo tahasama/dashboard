@@ -28,6 +28,7 @@
     "react-dom": "^19.0.0",
     "react-google-charts": "^5.2.1",
     "react-heatmap-grid": "^0.9.1",
+    "react-resizable-panels": "^2.1.7",
     "react-tooltip": "^5.28.0",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
