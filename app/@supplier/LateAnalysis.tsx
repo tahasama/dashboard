@@ -237,17 +237,22 @@ const LateAnalysis: React.FC<LateAnalysisProps> = ({ data }) => {
 
   return (
     <div className="flex justify-around">
-      <div className="w-8/12">
-        <div className="flex justify-between pr-2">
+      <div className="w-8/12 grid place-items-center">
+        <div className="flex w-full justify-between pr-2">
           <h2>Late Submission Analysis By {view ? "Day" : "Month"}</h2>
           <button
             onClick={() => setView(!view)}
-            className="bg-orange-200 p-1 rounded ring-orange-500 ring-1 min-w-32 text-sm"
+            className="bg-orange-200 p-1 mt-0.5 rounded ring-orange-500 ring-1 min-w-32 text-sm "
           >
             Switch to {!view ? "Day" : "Month"}
           </button>
         </div>
-        <Line data={chartData} options={chartOptions} />
+
+        <Line
+          data={chartData}
+          options={chartOptions}
+          // style={{ maxWidth: "100%", maxHeight: "91%" }}
+        />
       </div>
       <LateAnalysisConclusion data={data} {...monthlyStats} />
     </div>

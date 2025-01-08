@@ -225,9 +225,17 @@ const HeatX: React.FC<dataProps> = ({ data }) => {
 
   return (
     // <div className="flex justify-around">
-    <div className="flex justify-between h-full">
-      <div ref={chartRef} style={{ width: "100%", height: "100%" }} />
-      <div className="flex flex-col items-center justify-center">
+    <div className="flex justify-between w-full h-full">
+      <div
+        ref={chartRef}
+        style={{
+          width: "100%",
+          height: "100%",
+          maxHeight: "350px",
+          minHeight: "100px",
+        }}
+      />
+      <div className="flex flex-col items-center justify-center ml-10">
         <span className="font-medium text-sm mb-2 w-24">Select Year:</span>
         <div className="flex flex-col space-y-2">
           {Array.from(

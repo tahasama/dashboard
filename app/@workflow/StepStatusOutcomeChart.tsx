@@ -106,8 +106,9 @@ const StatusOutcomeHeatMap: React.FC<dataProps> = ({ data }) => {
     const chartInstance = echarts.init(chartRef.current);
 
     const option = {
+      responsive: true,
       title: {
-        text: "Document Workflows Heatmap",
+        text: "Document Submission Heatmap",
         left: "center",
         top: "7%",
         textStyle: { fontSize: 14, fontWeight: "bold" },
@@ -119,7 +120,7 @@ const StatusOutcomeHeatMap: React.FC<dataProps> = ({ data }) => {
           const count = params.data[1];
           return `${
             date.toISOString().split("T")[0]
-          }: ${count} planned workflows`;
+          }: ${count} planned submissions`;
         },
       },
       visualMap: {
@@ -131,20 +132,20 @@ const StatusOutcomeHeatMap: React.FC<dataProps> = ({ data }) => {
         left: "center",
         bottom: "5%",
         // backgroundColor: "red",
-        inRange: {
-          color: [
-            "#fef3c7", // Soft yellow
-            "#fde68a", // Light orange
-            "#fca5a5", // Pink
-            "#f87171", // Red
-            "#34d399", // Bright green
-            "#60a5fa", // Blue
-            "#818cf8", // Purple
-          ],
-        },
+        // inRange: {
+        //   color: [
+        //     "#fef3c7", // Soft yellow
+        //     "#fde68a", // Light orange
+        //     "#fca5a5", // Pink
+        //     "#f87171", // Red
+        //     "#34d399", // Bright green
+        //     "#60a5fa", // Blue
+        //     "#818cf8", // Purple
+        //   ],
+        // },
         type: "piecewise", // Use piecewise for categorical color mapping
         pieces: [
-          { min: 0, max: 0, color: "#dcdbdb" }, // Neutral for 0 workflows
+          { min: 0, max: 0, color: "#dcdbdb" }, // Neutral for 0 submissions
           { min: 1, max: 4, color: "#99e699" }, // Light green
           { min: 5, max: 9, color: "#b2df8a" }, // Slightly darker green
           { min: 10, max: 19, color: "#66cc66" }, // Mid-green
@@ -156,8 +157,8 @@ const StatusOutcomeHeatMap: React.FC<dataProps> = ({ data }) => {
       },
       calendar: {
         range: selectedYear,
-        // cellSize: ["auto", 20],
-        cellSize: 14, // Make cells perfectly square (width = height)
+        cellSize: ["auto", "auto"],
+        // cellSize: "100%", // Make cells perfectly square (width = height)
         // backgroundColor: "red", // General calendar background
         top: "32.5%", // Adjust the space from the top
         // left: "center",
@@ -213,20 +214,28 @@ const StatusOutcomeHeatMap: React.FC<dataProps> = ({ data }) => {
       chartInstance.resize();
     };
 
-    window.addEventListener("resize", handleResize);
+    const observer = new ResizeObserver(handleResize);
+    observer.observe(chartRef.current);
 
     return () => {
-      window.removeEventListener("resize", handleResize);
+      observer.disconnect();
       chartInstance.dispose();
     };
   }, [heatmapData, selectedYear]);
 
   return (
-    <div className="flex justify-around">
-      <div className="w-full h-full">
-        <div ref={chartRef} style={{ width: "100%", height: "180px" }} />
-      </div>
-      <div className="flex flex-col items-center justify-center">
+    // <div className="flex justify-around">
+    <div className="flex justify-between w-full h-full">
+      <div
+        ref={chartRef}
+        style={{
+          width: "100%",
+          height: "100%",
+          maxHeight: "350px",
+          minHeight: "100px",
+        }}
+      />
+      <div className="flex flex-col items-center justify-center ml-10">
         <span className="font-medium text-sm mb-2 w-24">Select Year:</span>
         <div className="flex flex-col space-y-2">
           {Array.from(
@@ -253,5 +262,4 @@ const StatusOutcomeHeatMap: React.FC<dataProps> = ({ data }) => {
     </div>
   );
 };
-
 export default StatusOutcomeHeatMap;

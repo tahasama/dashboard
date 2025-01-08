@@ -59,7 +59,9 @@ const StatusChart: React.FC<any> = ({ data }) => {
       series: [
         {
           type: "pie",
-          radius: ["40%", "70%"], // Inner and outer radius for the doughnut chart
+          // radius: ["40%", "70%"], // Inner and outer radius for the doughnut chart
+          radius: ["40%", "65%"], // Inner and outer radius for the doughnut chart
+
           center: ["50%", "60%"], // Position of the pie chart
           data: chartData.map((item, index) => ({
             value: item.value,

@@ -52,32 +52,37 @@ const ReviewStatus: React.FC<any> = ({ data }) => {
       series: [
         {
           type: "pie",
-          radius: ["40%", "70%"],
+          radius: ["40%", "65%"], // Inner and outer radius for the doughnut chart
           center: ["50%", "60%"],
           data: chartData.map((item, index) => ({
             value: item.value,
             name: item.label,
             itemStyle: {
-              color: nightColors[index % nightColors.length],
-            },
-            label: {
-              show: true,
-              position: "outside", // Position the label outside the pie
-              formatter: (params: any) => `${params.name}\n${params.value}`, // Name on top, value below
-              textStyle: {
-                fontSize: 9,
-              },
-            },
-            labelLine: {
-              show: true,
-              length: 10,
-              length2: 20,
-              smooth: true,
-              lineStyle: {
-                color: "#333",
-              },
+              color: nightColors[index % nightColors.length], // Use your custom lightColors
             },
           })),
+          itemStyle: {
+            borderRadius: 7,
+            borderColor: "#fff",
+            borderWidth: 1,
+          },
+          label: {
+            show: true,
+            position: "outside", // Position the label outside the pie
+            formatter: (params: any) => `${params.name}\n${params.value}`, // Name on top, value below
+            textStyle: {
+              fontSize: 9,
+            },
+          },
+          labelLine: {
+            show: true,
+            length: 10,
+            length2: 20,
+            smooth: true,
+            lineStyle: {
+              color: "#333",
+            },
+          },
         },
       ],
     };

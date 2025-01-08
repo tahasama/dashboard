@@ -97,10 +97,11 @@ const WorkflowStepStatusChart: React.FC<any> = ({ data }) => {
       chartInstance.resize();
     };
 
-    window.addEventListener("resize", handleResize);
+    const observer = new ResizeObserver(handleResize);
+    observer.observe(chartRef.current);
 
     return () => {
-      window.removeEventListener("resize", handleResize);
+      observer.disconnect();
       chartInstance.dispose();
     };
   }, [chartData]);
@@ -109,7 +110,7 @@ const WorkflowStepStatusChart: React.FC<any> = ({ data }) => {
     return <div>No data available</div>;
   }
 
-  return <div ref={chartRef} style={{ width: "100%", height: "180px" }} />;
+  return <div ref={chartRef} style={{ width: "100%", height: "100%" }} />;
 };
 
 export default WorkflowStepStatusChart;
