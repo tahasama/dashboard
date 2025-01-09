@@ -1,19 +1,20 @@
 // Pie Doughnut colors
 export const lightColors = [
-  "rgba(255, 99, 132, 1)", // Pinkish Red (In Review)
-  "rgba(54, 162, 235, 1)", // Blue (Approved)
-  "rgba(75, 192, 192, 1)", // Teal (Pending)
-  "rgba(153, 102, 255, 1)", // Purple (Rejected)
-  "rgba(255, 159, 64, 1)", // Orange (Neutral/Other)
-  "rgba(169, 169, 169, 1)", // Gray (Greyed/Inactive)
+  "rgba(102, 153, 204, 1)", // Muted blue
+  "rgba(153, 102, 102, 1)", // Muted red
+  "rgba(102, 153, 102, 1)", // Muted green
+  "rgba(153, 153, 102, 1)", // Muted yellow
+  "rgba(102, 102, 153, 1)", // Muted purple
+  "rgba(153, 102, 153, 1)", // Muted magenta
+  "rgba(102, 102, 102, 1)", // Muted gray
+  "rgba(153, 128, 102, 1)", // Muted brown
 ];
 export const nightColors = [
-  "rgba(255, 99, 132, 0.75)", // Pinkish Red (In Review)
-  "rgba(54, 162, 235, 0.75)", // Blue (Approved)
-  "rgba(75, 192, 192, 0.75)", // Teal (Pending)
-  "rgba(153, 102, 255, 0.75)", // Purple (Rejected)
-  "rgba(255, 159, 64, 0.75)", // Orange (Neutral/Other)
-  "rgba(169, 169, 169, 0.75)", // Gray (Greyed/Inactive)
+  "#22a7f0",
+  "#76c68f",
+  "#9080ff",
+  "#d0f400",
+  "#df8879",
 ];
 
 // Miste Line/Bars chart

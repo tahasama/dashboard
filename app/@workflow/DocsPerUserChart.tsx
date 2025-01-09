@@ -99,7 +99,7 @@ const DocsPerUserChart: React.FC<{ data: any[] }> = ({ data }) => {
         },
       ],
     }));
-    setChartHeight(overdueAssignees.size * 120); // 50px per Y label
+    setChartHeight(overdueAssignees.size * 90); // 50px per Y label
 
     // Calculate total overdues and determine criticality
     const totalOverdue = overdueValues.reduce((sum, val) => sum + val, 0);
@@ -236,7 +236,7 @@ const DocsPerUserChart: React.FC<{ data: any[] }> = ({ data }) => {
     <div className="max-h-[400px] overflow-y-auto">
       {/* Dynamically rendering criticality text with inline styles */}
       <p
-        className={`rounded-md p-2 m-1 font-thin text-xs leading-loose mb-4 text-slate-800 ${additionalInsights.color}`}
+        className={`rounded-md p-2 m-1 font-thin text-xs leading-loose mb- text-slate-800 ${additionalInsights.color}`}
       >
         {additionalInsights.message}
       </p>

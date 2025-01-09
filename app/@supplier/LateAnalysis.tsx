@@ -44,13 +44,11 @@ interface LateAnalysisProps {
   data: {
     "Planned Submission Date": string | number;
     "Submission Status": string;
-
     "Days Late": string | number;
   }[];
 }
 
 const LateAnalysis: React.FC<LateAnalysisProps> = ({ data }) => {
-  // Default value set to empty array
   const [view, setView] = useState<boolean>(true); // true = daily, false = monthly
   const [chartData, setChartData] = useState<any>({
     labels: [],
@@ -60,6 +58,7 @@ const LateAnalysis: React.FC<LateAnalysisProps> = ({ data }) => {
     chartValues: number[];
     cumulativeValues: number[];
   }>({ chartValues: [], cumulativeValues: [] });
+  const [totalLateDocuments, setTotalLateDocuments] = useState<number>(0); // Track total late documents
 
   const excelDateToJSDate = (serial: number): string => {
     const utcDays = Math.floor(serial - 25569);
@@ -69,37 +68,36 @@ const LateAnalysis: React.FC<LateAnalysisProps> = ({ data }) => {
 
   const processData = (groupBy: "daily" | "monthly") => {
     const groupedData: Record<string, { daysLate: number; docs: number }> = {};
+    let totalLateDocs = 0;
 
-    // Ensure data is available before processing
-    if (data && Array.isArray(data)) {
-      data
-        .filter((row) => row["Submission Status"] !== "Canceled")
-        .forEach((row) => {
-          let dateKey: string | null = null;
-          const rawDate = row["Planned Submission Date"];
-          const daysLate = parseFloat(String(row["Days Late"]));
+    data.forEach((row) => {
+      let dateKey: string | null = null;
+      const rawDate = row["Planned Submission Date"];
+      const daysLate = parseFloat(String(row["Days Late"]));
 
-          if (typeof rawDate === "number") {
-            dateKey = excelDateToJSDate(rawDate);
-          } else if (typeof rawDate === "string") {
-            dateKey = rawDate;
-          }
+      if (typeof rawDate === "number") {
+        dateKey = excelDateToJSDate(rawDate);
+      } else if (typeof rawDate === "string") {
+        dateKey = rawDate;
+      }
 
-          if (dateKey && !isNaN(daysLate)) {
-            if (groupBy === "monthly") {
-              const [day, month, year] = dateKey.split("/");
-              dateKey = `${month}/${year}`;
-            }
+      if (dateKey && !isNaN(daysLate)) {
+        if (groupBy === "monthly") {
+          const [day, month, year] = dateKey.split("/");
+          dateKey = `${month}/${year}`;
+        }
 
-            if (!groupedData[dateKey]) {
-              groupedData[dateKey] = { daysLate: 0, docs: 0 };
-            }
-            groupedData[dateKey].daysLate += daysLate;
-            groupedData[dateKey].docs += 1;
-          }
-        });
-    }
+        if (!groupedData[dateKey]) {
+          groupedData[dateKey] = { daysLate: 0, docs: 0 };
+        }
+        groupedData[dateKey].daysLate += daysLate;
+        groupedData[dateKey].docs += 1;
 
+        if (daysLate > 0) totalLateDocs += 1; // Count late documents
+      }
+    });
+
+    setTotalLateDocuments(totalLateDocs); // Update total late documents
     return groupedData;
   };
 
@@ -110,26 +108,23 @@ const LateAnalysis: React.FC<LateAnalysisProps> = ({ data }) => {
       const parseDate = (date: string) => {
         const parts = date.split("/").map(Number);
         return parts.length === 3
-          ? new Date(parts[2] + 2000, parts[1] - 1, parts[0]) // Use full YYYY format for sorting
+          ? new Date(parts[2] + 2000, parts[1] - 1, parts[0])
           : new Date(parts[1], parts[0] - 1); // Monthly format (MM/YYYY)
       };
 
       return parseDate(a).getTime() - parseDate(b).getTime();
     });
 
-    // Format labels as DD/MM/YY for display, with validation
     const formattedLabels = chartLabels.map((label) => {
       const parts = label.split("/");
 
       if (parts.length === 3) {
-        // Ensure valid date parts
         const day = parts[0];
         const month = parts[1];
         const year = parts[2];
-        return `${day}/${month}/${year.slice(-2)}`; // Display as DD/MM/YY
+        return `${day}/${month}/${year.slice(-2)}`;
       }
 
-      // If the date format is unexpected, return the label unchanged
       return label;
     });
 
@@ -152,17 +147,13 @@ const LateAnalysis: React.FC<LateAnalysisProps> = ({ data }) => {
   };
 
   useEffect(() => {
-    if (!data || data.length === 0) return; // Prevent error if data is empty
-
     const dailyGroupedData = processData("daily");
     const monthlyGroupedData = processData("monthly");
 
-    // Generate chart data based on view (daily/monthly)
     const groupedData = view ? dailyGroupedData : monthlyGroupedData;
     const { chartLabels, chartValues, cumulativeValues } =
       calculateChartValues(groupedData);
 
-    // Format labels as DD/MM/YY for display
     const formattedLabels = chartLabels.map((label) => {
       const parts = label.split("/");
 
@@ -170,14 +161,14 @@ const LateAnalysis: React.FC<LateAnalysisProps> = ({ data }) => {
         const day = parts[0];
         const month = parts[1];
         const year = parts[2];
-        return `${day}/${month}/${year.slice(-2)}`; // Display as DD/MM/YY
+        return `${day}/${month}/${year.slice(-2)}`;
       }
 
       return label;
     });
 
     setChartData({
-      labels: formattedLabels, // Use formatted labels here
+      labels: formattedLabels,
       datasets: [
         {
           label: "Cumulative Average Days Late (Line)",
@@ -201,7 +192,6 @@ const LateAnalysis: React.FC<LateAnalysisProps> = ({ data }) => {
       ],
     });
 
-    // Always calculate monthly stats for the conclusion
     const monthlyStats = calculateChartValues(monthlyGroupedData);
     setMonthlyStats({
       chartValues: monthlyStats.chartValues,
@@ -236,23 +226,18 @@ const LateAnalysis: React.FC<LateAnalysisProps> = ({ data }) => {
   };
 
   return (
-    <div className="flex justify-around">
-      <div className="w-8/12 grid place-items-center">
-        <div className="flex w-full justify-between pr-2">
+    <div className="flex justify-around mt-1">
+      <div className="w-8/12">
+        <div className="flex justify-between pr-2">
           <h2>Late Submission Analysis By {view ? "Day" : "Month"}</h2>
           <button
             onClick={() => setView(!view)}
-            className="bg-orange-200 p-1 mt-0.5 rounded ring-orange-500 ring-1 min-w-32 text-sm "
+            className="bg-orange-200 p-1 rounded ring-orange-500 ring-1 min-w-32 text-sm"
           >
             Switch to {!view ? "Day" : "Month"}
           </button>
         </div>
-
-        <Line
-          data={chartData}
-          options={chartOptions}
-          // style={{ maxWidth: "100%", maxHeight: "91%" }}
-        />
+        <Line data={chartData} options={chartOptions} />
       </div>
       <LateAnalysisConclusion data={data} {...monthlyStats} />
     </div>

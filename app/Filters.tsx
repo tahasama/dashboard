@@ -10,8 +10,19 @@ import {
 } from "@/components/ui/select";
 import { AlertCircle } from "lucide-react";
 import React, { useEffect, useState } from "react";
+import ExcelForm from "./ExcelForm";
 
-const Filters = ({ originalData, setData }: any) => {
+const Filters = ({
+  originalData,
+  setData,
+  handleFileUpload,
+  labels,
+  handleIndexRowChange,
+  indexRows,
+  handleGenerate,
+  isReadyToGenerate,
+  error,
+}: any) => {
   const [createdByFilter, setCreatedByFilter] = useState<string>("all");
   const [subProjectFilter, setSubProjectFilter] = useState<string>("all");
   const [disciplineFilter, setDisciplineFilter] = useState<string>("all");
@@ -159,18 +170,32 @@ const Filters = ({ originalData, setData }: any) => {
           </SelectGroup>
         </SelectContent>
       </Select>
-      <Button variant="destructive" onClick={clearFilters}>
+      <Button
+        variant="outline"
+        onClick={clearFilters}
+        className="bg-purple-200 hover:bg-purple-100"
+      >
         Clear Filters
       </Button>
       <Alert
-        variant="destructive"
-        className="w-fit px-2 py-0 flex items-center justify-center gap-20"
+        variant="default"
+        className="w-fit px-2 py-0 flex items-center justify-center gap-10"
       >
         <AlertCircle className="-mt-3" />
-        <AlertDescription className="ml-2 mt-0.5 text-xs">
-          If no results are displayed. Please adjust your filters and try again.
+        <AlertDescription className="ml-2 mt-1 text-xs">
+          If no results are displayed.Please adjust your filters and try again.
         </AlertDescription>
       </Alert>
+
+      <ExcelForm
+        handleFileUpload={handleFileUpload}
+        labels={labels}
+        handleIndexRowChange={handleIndexRowChange}
+        indexRows={indexRows}
+        handleGenerate={handleGenerate}
+        isReadyToGenerate={isReadyToGenerate}
+        error={error}
+      />
     </div>
   );
 };

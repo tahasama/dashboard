@@ -31,6 +31,9 @@ import {
   SelectLabel,
 } from "@/components/ui/select";
 import Filters from "./Filters";
+import { AreaH } from "./HomePageCharts/AreaH";
+import { BarH } from "./HomePageCharts/BarH";
+import { PieH } from "./HomePageCharts/PieH";
 
 export default function Home() {
   const [files, setFiles] = useState<File[]>([]);
@@ -165,34 +168,44 @@ export default function Home() {
 
   return (
     <div>
-      <div className="flex flex-col items-center gap-5">
-        <h1 className="text-xl font-semibold">Upload Your Documents</h1>
-        <button
-          onClick={() => setShowForm(!showForm)}
-          className="bg-slate-900 text-white rounded-md p-2"
-        >
-          {showForm ? "Hide Form" : "Upload"}
-        </button>
-      </div>
-
-      {showForm && (
-        <ExcelForm
-          handleFileUpload={handleFileUpload}
-          labels={labels}
-          handleIndexRowChange={handleIndexRowChange}
-          indexRows={indexRows}
-          handleGenerate={handleGenerate}
-          isReadyToGenerate={isReadyToGenerate}
-          error={error}
-        />
+      {data.length <= 0 && (
+        <div className="flex flex-col justify-center items-center h-screen">
+          <h1>Document Data Report Creator</h1>
+          <h2>Create your reports, and generate insightful charts</h2>
+          <div className="flex max-w-3xl">
+            <AreaH />
+            <BarH />
+            <PieH />
+          </div>
+          <ExcelForm
+            handleFileUpload={handleFileUpload}
+            labels={labels}
+            handleIndexRowChange={handleIndexRowChange}
+            indexRows={indexRows}
+            handleGenerate={handleGenerate}
+            isReadyToGenerate={isReadyToGenerate}
+            error={error}
+          />
+        </div>
       )}
 
       {data.length > 0 && (
-        <div className="mt-6">
+        <div className="-mt-2">
           <div>
             {/* Chart Display Section */}
             {data.length > 0 && (
               <div className="relative">
+                <Filters
+                  originalData={originalData}
+                  setData={setData}
+                  handleFileUpload={handleFileUpload}
+                  labels={labels}
+                  handleIndexRowChange={handleIndexRowChange}
+                  indexRows={indexRows}
+                  handleGenerate={handleGenerate}
+                  isReadyToGenerate={isReadyToGenerate}
+                  error={error}
+                />
                 {/* Line Time Chart */}
                 {/* <LineTimeChart
                   data={data}
@@ -200,9 +213,9 @@ export default function Home() {
                   setLoading={setLoading}
                 /> */}
                 {/* Supplier Documents Charts */}
-                <Filters originalData={originalData} setData={setData} />
-                <div className="bg-slate- p-1 flex h-[calc(100vh-60px)] w-full">
-                  <ResizablePanelGroup direction="horizontal">
+
+                <div className="bg-slate- p-2 mx-1 rounded-md mt-0 flex h-[calc(100vh-60px)] w- shadow-md">
+                  <ResizablePanelGroup direction="horizontal" className="">
                     <ResizablePanel defaultSize={24}>
                       <ResizablePanelGroup direction="vertical">
                         <ResizablePanel>
@@ -235,7 +248,7 @@ export default function Home() {
                 </div>
 
                 {/* Workflow Charts */}
-                <div className="bg-slate- p-1 flex h-[calc(100vh-60px)] w-full">
+                <div className="bg-slate- p-2 mx-1 rounded-md mt-4 flex h-[calc(100vh-60px)] w- shadow-md">
                   <ResizablePanelGroup direction="horizontal">
                     <ResizablePanel defaultSize={24}>
                       <ResizablePanelGroup direction="vertical">
@@ -264,7 +277,7 @@ export default function Home() {
                   </ResizablePanelGroup>
                 </div>
 
-                <div className="h-[calc(100vh-60px)]">
+                <div className="h-[calc(100vh-60px)] mt-4">
                   <ResizablePanelGroup direction="horizontal">
                     <ResizablePanel>
                       <SankeyChart data={data[0]} />

@@ -62,7 +62,7 @@ const WorkflowStepStatusChart: React.FC<any> = ({ data }) => {
             value: item.value,
             name: item.label,
             itemStyle: {
-              color: nightColors[index % nightColors.length], // Use your custom lightColors
+              color: nightColors[(index % nightColors.length) - 1], // Use your custom lightColors
             },
           })),
           itemStyle: {

@@ -225,7 +225,7 @@ const LateAnalysisReview: React.FC<LateAnalysisReviewProps> = ({ data }) => {
   };
 
   return (
-    <div className="flex justify-around">
+    <div className="flex justify-around mt-1">
       <div className="w-8/12">
         <div className="flex justify-between pr-2">
           <h2>Late Submission Analysis By {view ? "Day" : "Month"}</h2>
