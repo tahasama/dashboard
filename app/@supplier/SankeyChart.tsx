@@ -113,7 +113,7 @@ const SankeyChart: React.FC<dataProps> = ({ data }) => {
 
   return (
     <div
-      style={{ width: "100%", margin: "auto", height: "500px" }}
+      style={{ width: "100%", margin: "auto", height: "100%" }}
       // className="bg-slate-500"
     >
       <Chart

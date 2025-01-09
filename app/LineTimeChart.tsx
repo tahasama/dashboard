@@ -2,16 +2,14 @@ import React, { useState, useEffect, useMemo } from "react";
 import { Chart } from "react-google-charts";
 
 const LineTimeChart: React.FC<any> = ({ data, loading, setLoading }) => {
-  const [documentData, workflowData] = data;
   const [mergedData, setMergedData] = useState<any[]>([]);
 
-  // Function to parse dates
   const parseDate = useMemo(() => {
     const excelBaseDate = new Date(1899, 11, 30).getTime();
 
     return (dateString: any): Date | null => {
       if (typeof dateString !== "string" && dateString !== null) {
-        dateString = String(dateString); // Convert non-string values to string
+        dateString = String(dateString);
       }
 
       if (typeof dateString === "string") {
@@ -25,7 +23,7 @@ const LineTimeChart: React.FC<any> = ({ data, loading, setLoading }) => {
           const parts = trimmedDate.split("/");
           if (parts.length === 3) {
             const day = parseInt(parts[0], 10);
-            const month = parseInt(parts[1], 10) - 1; // Months are 0-indexed
+            const month = parseInt(parts[1], 10) - 1;
             const year = parseInt(parts[2], 10);
             const parsedDate = new Date(year, month, day);
             if (!isNaN(parsedDate.getTime())) {
@@ -44,92 +42,89 @@ const LineTimeChart: React.FC<any> = ({ data, loading, setLoading }) => {
     };
   }, []);
 
-  // Delayed processing of merged data
   useEffect(() => {
-    // setLoading(true); // Start loading
-    if (loading) {
-      const delay = setTimeout(() => {
-        const filteredDocumentData = documentData.filter(
-          (doc: any) => doc["Submission Status"] !== "Canceled"
+    // Process new data immediately when data changes
+    setLoading(true);
+    const [documentData, workflowData] = data;
+
+    const filteredDocumentData = documentData.filter(
+      (doc: any) => doc["Submission Status"] !== "Canceled"
+    );
+
+    const filteredWorkflowData = workflowData.filter(
+      (wf: any) => wf["Workflow Status"] !== "Terminated"
+    );
+
+    const merged = filteredDocumentData
+      .map((doc: any) => {
+        const workflow = filteredWorkflowData.find(
+          (wf: any) => wf["Document No."] === doc["Document No"]
         );
 
-        const filteredWorkflowData = workflowData.filter(
-          (wf: any) => wf["Workflow Status"] !== "Terminated"
-        );
+        if (!workflow || !workflow["Date In"]) {
+          return null;
+        }
 
-        const merged = filteredDocumentData
-          .map((doc: any) => {
-            const workflow = filteredWorkflowData.find(
-              (wf: any) => wf["Document No."] === doc["Document No"]
-            );
+        const plannedSubmissionDate = parseDate(doc["Planned Submission Date"]);
+        const workflowDateIn = parseDate(workflow["Date In"]);
 
-            if (!workflow || !workflow["Date In"]) {
-              return null; // Exclude entries with empty "Date In"
-            }
+        let submissionStartDate =
+          plannedSubmissionDate &&
+          workflowDateIn &&
+          workflowDateIn < plannedSubmissionDate
+            ? workflowDateIn
+            : plannedSubmissionDate;
 
-            const plannedSubmissionDate = parseDate(
-              doc["Planned Submission Date"]
-            );
-            const workflowDateIn = parseDate(workflow["Date In"]);
+        if (!submissionStartDate) {
+          return null;
+        }
 
-            // Use workflowDateIn if it's earlier than plannedSubmissionDate
-            let submissionStartDate =
-              plannedSubmissionDate &&
-              workflowDateIn &&
-              workflowDateIn < plannedSubmissionDate
-                ? workflowDateIn
-                : plannedSubmissionDate;
+        const submissionEndDate = workflowDateIn || new Date();
 
-            if (!submissionStartDate) {
-              return null; // Exclude entries with invalid submissionStartDate
-            }
+        if (submissionStartDate > submissionEndDate) {
+          submissionStartDate = submissionEndDate;
+        }
 
-            // Calculate submissionEndDate
-            const submissionEndDate = workflowDateIn || new Date();
+        const reviewStartDate = new Date(submissionEndDate);
+        reviewStartDate.setDate(reviewStartDate.getDate() + 1);
 
-            // Ensure submissionStartDate <= submissionEndDate
-            if (submissionStartDate > submissionEndDate) {
-              submissionStartDate = submissionEndDate;
-            }
+        const workflowDateCompleted = parseDate(workflow["Date Completed"]);
+        const reviewEndDate = workflowDateCompleted || new Date();
 
-            // Calculate reviewStartDate
-            const reviewStartDate = new Date(submissionEndDate);
-            reviewStartDate.setDate(reviewStartDate.getDate() + 1);
+        if (reviewStartDate > reviewEndDate) {
+          reviewStartDate.setTime(reviewEndDate.getTime());
+        }
 
-            // Calculate reviewEndDate
-            const workflowDateCompleted = parseDate(workflow["Date Completed"]);
-            const reviewEndDate = workflowDateCompleted || new Date();
+        return {
+          "Document Title": doc["Title"],
+          submissionStartDate,
+          submissionEndDate,
+          reviewStartDate,
+          reviewEndDate,
+          "Submission Status": doc["Submission Status"],
+          "Review Status": doc["Review Status"] || "Approved",
+        };
+      })
+      .filter((item: any) => item !== null);
 
-            // Ensure reviewStartDate <= reviewEndDate
-            if (reviewStartDate > reviewEndDate) {
-              reviewStartDate.setTime(reviewEndDate.getTime());
-            }
-
-            return {
-              "Document Title": doc["Title"],
-              submissionStartDate,
-              submissionEndDate,
-              reviewStartDate,
-              reviewEndDate,
-              "Submission Status": doc["Submission Status"],
-              "Review Status": doc["Review Status"] || "Approved", // Default to "Approved"
-            };
-          })
-          .filter((item: any) => item !== null);
-
-        setMergedData(merged);
-        setLoading(false); // Stop loading
-      }, 5000); // 5-second delay
-      return () => clearTimeout(delay); // Clear timeout on unmount or data change
-    }
-  }, [documentData, workflowData, parseDate, loading]);
+    setMergedData(merged);
+    setLoading(false);
+  }, [data, parseDate, setLoading]);
 
   if (loading) {
-    return <div>Loading Gantt Chart data...</div>;
+    return (
+      <div className="w-screen h-screen grid place-content-center">
+        Loading Time Line data...
+      </div>
+    );
   }
 
   if (mergedData.length === 0) {
-    return <div>No matching data found for Gantt Chart.</div>;
+    return (
+      <div className="w-screen h-screen grid place-content-center">
+        No matching data found for the Time Line.
+      </div>
+    );
   }
 
   const formatDate = (date: Date): string => {
@@ -194,8 +189,10 @@ const LineTimeChart: React.FC<any> = ({ data, loading, setLoading }) => {
   };
 
   return (
-    <div>
-      <h1>Gantt Chart</h1>
+    <div className="snap-start h-[calc(100vh-90px)] my-4 mx-10">
+      <h1 className="mb-2">
+        Document's Time Line: {mergedData.length} result.
+      </h1>
       <Chart
         chartType="Timeline"
         rows={rows}
@@ -207,7 +204,7 @@ const LineTimeChart: React.FC<any> = ({ data, loading, setLoading }) => {
         ]}
         options={options}
         width="100%"
-        height="400px"
+        height="100%"
       />
     </div>
   );

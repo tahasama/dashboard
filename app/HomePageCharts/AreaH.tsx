@@ -17,7 +17,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { lightColors } from "../colors";
+import { nightColors } from "../colors";
 const chartData = [
   { month: "January", desktop: 186, mobile: 80 },
   { month: "February", desktop: 305, mobile: 200 },
@@ -70,17 +70,17 @@ export function AreaH() {
             <Area
               dataKey="mobile"
               type="natural"
-              fill={lightColors[0]}
+              fill={nightColors[0]}
               fillOpacity={0.4}
-              stroke={lightColors[0]}
+              stroke={nightColors[0]}
               stackId="a"
             />
             <Area
               dataKey="desktop"
               type="natural"
-              fill={lightColors[1]}
+              fill={nightColors[1]}
               fillOpacity={0.4}
-              stroke={lightColors[1]}
+              stroke={nightColors[1]}
               stackId="a"
             />
           </AreaChart>

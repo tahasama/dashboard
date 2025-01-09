@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import * as XLSX from "xlsx";
 import StatusChart from "./@supplier/StatusChart";
 import LateAnalysis from "./@supplier/LateAnalysis";
@@ -42,7 +42,7 @@ export default function Home() {
   const [originalData, setOriginalData] = useState(data);
   const [error, setError] = useState<string | null>(null);
   const [isReadyToGenerate, setIsReadyToGenerate] = useState<boolean>(false);
-  const [showForm, setShowForm] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   // const filterData = (data, createdBy, subProject, discipline) => {
   //   return data.map((fileData) =>
@@ -99,6 +99,7 @@ export default function Home() {
   };
 
   const handleGenerate = () => {
+    setLoading(true);
     if (!isReadyToGenerate) {
       setError("Please upload all required files with correct headers.");
       return;
@@ -167,16 +168,15 @@ export default function Home() {
   };
 
   return (
-    <div>
+    <div className="">
       {data.length <= 0 && (
-        <div className="flex flex-col justify-center items-center h-screen">
-          <h1>Document Data Report Creator</h1>
-          <h2>Create your reports, and generate insightful charts</h2>
-          <div className="flex max-w-3xl">
-            <AreaH />
-            <BarH />
-            <PieH />
-          </div>
+        <div className="flex flex-col items-center h-screen">
+          <h1 className="font-bold text-center mt-4 mb-4">
+            Document Data Report Creator
+          </h1>
+          <h2 className="mt-4 mb-10">
+            Create your reports, and generate insightful charts
+          </h2>
           <ExcelForm
             handleFileUpload={handleFileUpload}
             labels={labels}
@@ -186,6 +186,13 @@ export default function Home() {
             isReadyToGenerate={isReadyToGenerate}
             error={error}
           />
+          <div className="flex flex-col justify-center w-[75vw] items-center h-full">
+            <div className="flex gap-4 w-full">
+              <AreaH />
+              <BarH />
+              <PieH />
+            </div>
+          </div>
         </div>
       )}
 
@@ -205,13 +212,14 @@ export default function Home() {
                   handleGenerate={handleGenerate}
                   isReadyToGenerate={isReadyToGenerate}
                   error={error}
+                  setLoading={setLoading}
                 />
-                {/* Line Time Chart */}
                 {/* <LineTimeChart
                   data={data}
                   loading={loading}
                   setLoading={setLoading}
                 /> */}
+
                 {/* Supplier Documents Charts */}
 
                 <div className="bg-slate- p-2 mx-1 rounded-md mt-0 flex h-[calc(100vh-60px)] w- shadow-md">
@@ -236,7 +244,6 @@ export default function Home() {
                       <ResizablePanelGroup direction="vertical">
                         <ResizablePanel defaultSize={70}>
                           <LateAnalysis data={data[0]} />
-                          {/* <HeatX data={data[0]} /> */}
                         </ResizablePanel>
                         <ResizableHandle withHandle />
                         <ResizablePanel>
@@ -266,7 +273,6 @@ export default function Home() {
                       <ResizablePanelGroup direction="vertical">
                         <ResizablePanel defaultSize={70}>
                           <LateAnalysisReview data={data[1]} />
-                          {/* <HeatX data={data[0]} /> */}
                         </ResizablePanel>
                         <ResizableHandle withHandle />
                         <ResizablePanel>
@@ -277,7 +283,16 @@ export default function Home() {
                   </ResizablePanelGroup>
                 </div>
 
-                <div className="h-[calc(100vh-60px)] mt-4">
+                {/* Line Time Chart */}
+                <Suspense fallback={"........tseeeenna"}>
+                  <LineTimeChart
+                    data={data}
+                    loading={loading}
+                    setLoading={setLoading}
+                  />
+                </Suspense>
+
+                <div className="h-[calc(100vh-60px)] mt-8">
                   <ResizablePanelGroup direction="horizontal">
                     <ResizablePanel>
                       <SankeyChart data={data[0]} />

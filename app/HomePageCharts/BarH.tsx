@@ -43,7 +43,7 @@ export function BarH() {
     <Card className="w-1/3">
       <CardHeader>
         <CardTitle>Multiple Data</CardTitle>
-        <CardDescription>January - June 2025</CardDescription>
+        <CardDescription>January - June</CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>

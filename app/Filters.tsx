@@ -22,11 +22,11 @@ const Filters = ({
   handleGenerate,
   isReadyToGenerate,
   error,
+  setLoading,
 }: any) => {
   const [createdByFilter, setCreatedByFilter] = useState<string>("all");
   const [subProjectFilter, setSubProjectFilter] = useState<string>("all");
   const [disciplineFilter, setDisciplineFilter] = useState<string>("all");
-  const [clear, setClear] = useState(true);
   const clearFilters = () => {
     setCreatedByFilter("");
     setSubProjectFilter("");
@@ -121,9 +121,25 @@ const Filters = ({
     // Filter the data
     return data.map((fileData) => fileData.filter(combineFilters));
   };
+
+  const handleFilterChangeA = (value: string) => {
+    setLoading(true); // Set loading to true
+    setCreatedByFilter(value); // Update the filter value
+  };
+
+  const handleFilterChangeB = (value: string) => {
+    setLoading(true); // Set loading to true
+    setSubProjectFilter(value); // Update the filter value
+  };
+
+  const handleFilterChangeC = (value: string) => {
+    setLoading(true); // Set loading to true
+    setDisciplineFilter(value); // Update the filter value
+  };
+
   return (
     <div className="flex gap-2 my-2 sticky top-0 bg-white z-50 p-2.5 shadow-md">
-      <Select value={createdByFilter} onValueChange={setCreatedByFilter}>
+      <Select value={createdByFilter} onValueChange={handleFilterChangeA}>
         <SelectTrigger className="w-[180px]">
           <SelectValue placeholder="Select a Contractor" />
         </SelectTrigger>
@@ -139,7 +155,7 @@ const Filters = ({
         </SelectContent>
       </Select>
 
-      <Select value={subProjectFilter} onValueChange={setSubProjectFilter}>
+      <Select value={subProjectFilter} onValueChange={handleFilterChangeB}>
         <SelectTrigger className="w-[180px]">
           <SelectValue placeholder="Select a Subproject" />
         </SelectTrigger>
@@ -155,7 +171,7 @@ const Filters = ({
         </SelectContent>
       </Select>
 
-      <Select value={disciplineFilter} onValueChange={setDisciplineFilter}>
+      <Select value={disciplineFilter} onValueChange={handleFilterChangeC}>
         <SelectTrigger className="w-[180px]">
           <SelectValue placeholder="Select a Discipline" />
         </SelectTrigger>

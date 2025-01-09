@@ -17,13 +17,13 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { lightColors } from "../colors";
+import { nightColors } from "../colors";
 const chartData = [
-  { browser: "civil", visitors: 275, fill: lightColors[0] },
-  { browser: "electric", visitors: 200, fill: lightColors[1] },
-  { browser: "safety", visitors: 187, fill: lightColors[2] },
-  { browser: "piping", visitors: 173, fill: lightColors[3] },
-  { browser: "other", visitors: 90, fill: lightColors[4] },
+  { browser: "civil", visitors: 275, fill: nightColors[0] },
+  { browser: "electric", visitors: 200, fill: nightColors[1] },
+  { browser: "safety", visitors: 187, fill: nightColors[2] },
+  { browser: "piping", visitors: 173, fill: nightColors[3] },
+  { browser: "other", visitors: 90, fill: nightColors[4] },
 ];
 
 const chartConfig = {
@@ -32,23 +32,23 @@ const chartConfig = {
   },
   civil: {
     label: "Civil",
-    color: lightColors[0],
+    color: nightColors[0],
   },
   electric: {
     label: "Electric",
-    color: lightColors[1],
+    color: nightColors[1],
   },
   safety: {
     label: "Safety",
-    color: lightColors[2],
+    color: nightColors[2],
   },
   piping: {
     label: "Piping",
-    color: lightColors[3],
+    color: nightColors[3],
   },
   other: {
     label: "Other",
-    color: lightColors[4],
+    color: nightColors[4],
   },
 } satisfies ChartConfig;
 
@@ -56,17 +56,23 @@ export function PieH() {
   return (
     <Card className="w-1/3">
       <CardHeader className="items-center pb-0">
-        <CardTitle>Pie Chart - Label</CardTitle>
-        <CardDescription>January - June 2024</CardDescription>
+        <CardTitle>Data Discipline</CardTitle>
+        <CardDescription>January - June</CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
         <ChartContainer
           config={chartConfig}
-          className="mx-auto aspect-square max-h-[200px] pb-0 [&_.recharts-pie-label-text]:fill-foreground"
+          className="mx-auto aspect-square max-h-[190px] pb-0 [&_.recharts-pie-label-text]:fill-foreground"
         >
           <PieChart>
             <ChartTooltip content={<ChartTooltipContent hideLabel />} />
-            <Pie data={chartData} dataKey="visitors" label nameKey="browser" />
+            <Pie
+              data={chartData}
+              dataKey="visitors"
+              label
+              nameKey="browser"
+              innerRadius={40}
+            />
           </PieChart>
         </ChartContainer>
       </CardContent>
