@@ -15,6 +15,8 @@ import {
 } from "chart.js";
 import { lightColorsLineBars } from "../colors";
 import LateAnalysisConclusion from "./LateAnalysisConclusion";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 
 // Register chart components
 ChartJS.register(
@@ -224,6 +226,19 @@ const LateAnalysis: React.FC<LateAnalysisProps> = ({ data }) => {
       y: { title: { display: true, text: "Days Late" }, beginAtZero: true },
     },
   };
+
+  if (data.length === 0) {
+    return (
+      <span className="grid place-content-center h-full">
+        <Alert variant="destructive" className="gap-0 mt-4 w-fit">
+          <AlertCircle className="h-5 w-5 text-red-500 -mt-1.5" />
+          <AlertDescription className="text-sm text-red-600 mt-1">
+            No results were found. Please adjust your filters and try again.
+          </AlertDescription>
+        </Alert>
+      </span>
+    );
+  }
 
   return (
     <div className="flex justify-around mt-1">

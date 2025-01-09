@@ -1,8 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import * as echarts from "echarts";
 import { nightColors } from "../colors";
+import { AlertCircle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const StatusChart: React.FC<any> = ({ data }) => {
+  console.log("🚀 ~ data:", data.length, data.length !== 0);
   const [chartData, setChartData] = useState<
     { label: string; value: number }[]
   >([]);
@@ -112,7 +115,16 @@ const StatusChart: React.FC<any> = ({ data }) => {
   }, [chartData]);
 
   if (chartData.length === 0) {
-    return <div>No data available</div>;
+    return (
+      <span className="grid place-content-center h-full">
+        <Alert variant="destructive" className="gap-0 mt-4 w-fit">
+          <AlertCircle className="h-5 w-5 text-red-500 -mt-1.5" />
+          <AlertDescription className="text-xs text-red-600 mt-1">
+            No documents to found.
+          </AlertDescription>
+        </Alert>
+      </span>
+    );
   }
 
   return <div ref={chartRef} style={{ width: "100%", height: "100%" }} />;

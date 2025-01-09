@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import * as echarts from "echarts";
 import { lightColors, nightColors } from "../colors";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 
 const ReviewStatus: React.FC<any> = ({ data }) => {
   const [chartData, setChartData] = useState<
@@ -103,7 +105,16 @@ const ReviewStatus: React.FC<any> = ({ data }) => {
   }, [chartData]);
 
   if (chartData.length === 0) {
-    return <div>No data available</div>;
+    return (
+      <span className="grid place-content-center h-full">
+        <Alert variant="destructive" className="gap-0 mt-4 w-fit">
+          <AlertCircle className="h-5 w-5 text-red-500 -mt-1.5" />
+          <AlertDescription className="text-xs text-red-600 mt-1">
+            No documents to found.
+          </AlertDescription>
+        </Alert>
+      </span>
+    );
   }
 
   return <div ref={chartRef} style={{ width: "100%", height: "100%" }} />;

@@ -3,6 +3,8 @@ import { Chart as ChartJS, registerables } from "chart.js";
 import { SankeyController, Flow } from "chartjs-chart-sankey";
 import { Chart } from "react-chartjs-2";
 import { sankeyColorList } from "../colors";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 
 // Register necessary Chart.js components
 ChartJS.register(...registerables, SankeyController, Flow);
@@ -110,6 +112,19 @@ const SankeyChart: React.FC<dataProps> = ({ data }) => {
       },
     ],
   };
+
+  if (data.length === 0) {
+    return (
+      <span className="grid place-content-center h-full">
+        <Alert variant="destructive" className="gap-0 mt-4 w-fit">
+          <AlertCircle className="h-5 w-5 text-red-500 -mt-1.5" />
+          <AlertDescription className="text-sm text-red-600 mt-1">
+            No Data were found.
+          </AlertDescription>
+        </Alert>
+      </span>
+    );
+  }
 
   return (
     <div

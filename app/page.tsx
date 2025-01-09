@@ -222,7 +222,7 @@ export default function Home() {
 
                 {/* Supplier Documents Charts */}
 
-                <div className="bg-slate- p-2 mx-1 rounded-md mt-0 flex h-[calc(100vh-60px)] w- shadow-md">
+                <div className="bg-slate- p-2 mx-1 rounded-md -mt- flex h-[calc(100vh-60px)] w- shadow-md">
                   <ResizablePanelGroup direction="horizontal" className="">
                     <ResizablePanel defaultSize={24}>
                       <ResizablePanelGroup direction="vertical">

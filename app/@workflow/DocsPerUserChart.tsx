@@ -15,6 +15,8 @@ import {
   nightColors,
   sankeyColorList,
 } from "../colors";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
@@ -80,6 +82,11 @@ const DocsPerUserChart: React.FC<{ data: any[] }> = ({ data }) => {
     const overdueValues = filteredUserDocCount.map(
       ([, count]) => count.overdue
     );
+    overdueValues.sort((a, b) => b - a);
+    // console.log(
+    //   "🚀 ~ useEffect ~ overdueValues:",
+    //   overdueValues.sort((a, b) => b - a)
+    // );
 
     const currentValues = filteredUserDocCount.map(
       ([, count]) => count.current
@@ -92,6 +99,7 @@ const DocsPerUserChart: React.FC<{ data: any[] }> = ({ data }) => {
         {
           ...prev.datasets[0],
           data: overdueValues,
+          // data: overdueValues.sort((a, b) => b - a),
         },
         {
           ...prev.datasets[1],
@@ -232,8 +240,22 @@ const DocsPerUserChart: React.FC<{ data: any[] }> = ({ data }) => {
     },
   };
 
+  if (data.length === 0) {
+    return (
+      <span className="grid place-content-center h-full">
+        <Alert variant="destructive" className="gap-0 mt-4 w-fit">
+          <AlertCircle className="h-5 w-5 text-red-500 -mt-1.5" />
+          <AlertDescription className="text-xs text-red-600 mt-1">
+            No reviews to found.
+          </AlertDescription>
+        </Alert>
+      </span>
+    );
+  }
+
   return (
-    <div className="max-h-[400px] overflow-y-auto">
+    // <div className="">
+    <div className="max-h-[400px] scrollbar-thin  scrollbar-thumb-slate-600 scrollbar-track-slate-300 rounded-md scrollbar-corner-transparent overflow-y-scroll">
       {/* Dynamically rendering criticality text with inline styles */}
       <p
         className={`rounded-md p-2 m-1 font-thin text-xs leading-loose mb- text-slate-800 ${additionalInsights.color}`}
@@ -242,15 +264,7 @@ const DocsPerUserChart: React.FC<{ data: any[] }> = ({ data }) => {
       </p>
 
       <div style={{ width: "100%", height: `${chartHeight}px` }}>
-        {chartData.labels.length > 0 ? (
-          <Bar
-            data={chartData}
-            options={options}
-            plugins={[customLabelPlugin]}
-          />
-        ) : (
-          <p>No documents to review</p>
-        )}
+        <Bar data={chartData} options={options} plugins={[customLabelPlugin]} />
       </div>
     </div>
   );

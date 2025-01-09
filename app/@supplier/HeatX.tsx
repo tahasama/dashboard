@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import * as echarts from "echarts";
 import { dataProps } from "../types";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 
 const HeatX: React.FC<dataProps> = ({ data }) => {
   const chartRef = useRef<HTMLDivElement>(null);
@@ -223,6 +225,18 @@ const HeatX: React.FC<dataProps> = ({ data }) => {
     };
   }, [heatmapData, selectedYear]);
 
+  if (heatmapData.length === 0) {
+    return (
+      <span className="grid place-content-center h-full">
+        <Alert variant="destructive" className="gap-0 mt-4 w-fit">
+          <AlertCircle className="h-5 w-5 text-red-500 -mt-1.5" />
+          <AlertDescription className="text-xs text-red-600 mt-1">
+            Heat map is Empty, no document found.
+          </AlertDescription>
+        </Alert>
+      </span>
+    );
+  }
   return (
     // <div className="flex justify-around">
     <div className="flex justify-between w-full h-full">

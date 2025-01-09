@@ -193,15 +193,6 @@ const Filters = ({
       >
         Clear Filters
       </Button>
-      <Alert
-        variant="default"
-        className="w-fit px-2 py-0 flex items-center justify-center gap-10"
-      >
-        <AlertCircle className="-mt-3" />
-        <AlertDescription className="ml-2 mt-1 text-xs">
-          If no results are displayed.Please adjust your filters and try again.
-        </AlertDescription>
-      </Alert>
 
       <ExcelForm
         handleFileUpload={handleFileUpload}
