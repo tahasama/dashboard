@@ -36,7 +36,10 @@ const WorkflowStepStatusChart: React.FC<any> = ({ data }) => {
   useEffect(() => {
     if (!chartRef.current || chartData.length === 0) return;
 
-    const chartInstance = echarts.init(chartRef.current);
+    const chartInstance = echarts.init(chartRef.current, null, {
+      renderer: "svg",
+      devicePixelRatio: window.devicePixelRatio || 1,
+    });
 
     const option = {
       title: {
@@ -64,7 +67,7 @@ const WorkflowStepStatusChart: React.FC<any> = ({ data }) => {
             value: item.value,
             name: item.label,
             itemStyle: {
-              color: nightColors[(index % nightColors.length) - 1], // Use your custom lightColors
+              color: nightColors[index % nightColors.length], // Use your custom lightColors
             },
           })),
           itemStyle: {
@@ -75,7 +78,7 @@ const WorkflowStepStatusChart: React.FC<any> = ({ data }) => {
           label: {
             show: true,
             position: "outside", // Position the label outside the pie
-            formatter: (params: any) => `${params.name} ${params.value}`, // Name on top, value below
+            formatter: (params: any) => `${params.name}\n${params.value}`, // Name on top, value below
             textStyle: {
               fontSize: 9,
             },

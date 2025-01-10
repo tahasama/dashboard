@@ -13,7 +13,7 @@ export const nightColors = [
   "#22a7f0",
   "#76c68f",
   "#9080ff",
-  "#df8879",
+  "#4c4cad",
   "#d0f400",
 ];
 

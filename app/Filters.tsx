@@ -28,6 +28,7 @@ const Filters = ({
   const [subProjectFilter, setSubProjectFilter] = useState<string>("all");
   const [disciplineFilter, setDisciplineFilter] = useState<string>("all");
   const clearFilters = () => {
+    setLoading(true);
     setCreatedByFilter("");
     setSubProjectFilter("");
     setDisciplineFilter("");

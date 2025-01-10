@@ -1,35 +1,9 @@
-import React, { useState, useEffect } from "react";
-import { Line } from "react-chartjs-2";
-
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  PointElement,
-  Ticks,
-} from "chart.js";
-import { lightColorsLineBars } from "../colors";
+import React, { useState, useEffect, useRef } from "react";
 import LateAnalysisReviewConclusion from "./LateAnalysisReviewConclusion";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
-// import LateAnalysisReviewConclusion from "./LateAnalysisReviewConclusion";
 
-// Register chart components
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  LineElement,
-  PointElement,
-  Title,
-  Tooltip,
-  Legend
-);
+import * as echarts from "echarts";
 
 // Define the data structure for the input `data` prop
 interface DataRow {
@@ -60,6 +34,8 @@ const LateAnalysisReview: React.FC<LateAnalysisReviewProps> = ({ data }) => {
     cumulativeValues: number[];
   }>({ chartValues: [], cumulativeValues: [] });
   const [totalLateDocuments, setTotalLateDocuments] = useState<number>(0); // Track total late documents
+
+  const chartRef = useRef<HTMLDivElement | null>(null); // Reference for the chart container
 
   const excelDateToJSDate = (serial: number): string => {
     const utcDays = Math.floor(serial - 25569);
@@ -172,23 +148,18 @@ const LateAnalysisReview: React.FC<LateAnalysisReviewProps> = ({ data }) => {
       labels: formattedLabels,
       datasets: [
         {
-          label: "Cumulative Average Days Late (Line)",
-          data: cumulativeValues,
-          fill: true,
-          borderColor: lightColorsLineBars.line,
-          backgroundColor: lightColorsLineBars.lineFil,
-          tension: 0.6,
-          borderWidth: 4,
-          pointRadius: 0,
+          name: "Cumulative Average Days Late (Line)",
           type: "line",
+          data: cumulativeValues,
+          smooth: true,
+          lineStyle: { width: 4, color: "rgba(76, 76, 173, 0.5)" }, // A deep purple to contrast with the bar
+          areaStyle: { color: "rgba(76, 76, 173, 0.3)" }, // Soft purple area fill to match the line
         },
         {
-          label: "Average Days Late (Bar)",
-          data: chartValues,
-          backgroundColor: lightColorsLineBars.border,
-          borderColor: lightColorsLineBars.border,
-          borderWidth: 1,
+          name: "Average Days Late (Bar)",
           type: "bar",
+          data: chartValues,
+          itemStyle: { color: "#22a7f0" },
         },
       ],
     });
@@ -200,31 +171,76 @@ const LateAnalysisReview: React.FC<LateAnalysisReviewProps> = ({ data }) => {
     });
   }, [view, data]);
 
-  const chartOptions = {
-    responsive: true,
-    plugins: {
-      title: { display: false },
-      tooltip: {
-        callbacks: {
-          label: (context: any) => {
-            if (context.dataset.type === "line") {
-              return `${context.label}: ${context.raw.toFixed(
-                2
-              )} days cumulative (Average)`;
-            } else {
-              return `${context.label}: ${context.raw.toFixed(
-                2
-              )} days late (Average)`;
-            }
+  useEffect(() => {
+    if (chartRef.current) {
+      const chartInstance = echarts.init(chartRef.current, null, {
+        renderer: "svg",
+        devicePixelRatio: window.devicePixelRatio || 1,
+      });
+
+      const chartOptions = {
+        tooltip: {
+          trigger: "axis",
+          axisPointer: {
+            type: "cross", // Use a cross-pointer to indicate where both line and bar points intersect
+          },
+          formatter: function (params: any) {
+            let tooltipContent = "";
+            params.forEach((item: any) => {
+              // Conditionally format tooltips based on chart type
+              if (item.seriesType === "line") {
+                tooltipContent += `${item.seriesName}: ${item.data.toFixed(
+                  2
+                )}<br>`;
+              } else if (item.seriesType === "bar") {
+                tooltipContent += `${item.seriesName}: ${item.data.toFixed(0)}`;
+              }
+            });
+            return tooltipContent;
           },
         },
-      },
-    },
-    scales: {
-      x: { title: { display: false } },
-      y: { title: { display: true, text: "Days Late" }, beginAtZero: true },
-    },
-  };
+        legend: {
+          data: [
+            "Cumulative Average Days Late (Line)",
+            "Average Days Late (Bar)",
+          ],
+          top: 20,
+        },
+        xAxis: {
+          type: "category",
+          data: chartData.labels,
+          axisLabel: {
+            rotate: 45,
+            fontSize: 10,
+          },
+        },
+        yAxis: {
+          type: "value",
+          name: "Days Late",
+          axisLabel: {
+            formatter: (value: number) => value.toFixed(0),
+            fontSize: 10,
+          },
+          min: 0,
+        },
+        series: chartData.datasets,
+      };
+
+      chartInstance.setOption(chartOptions);
+
+      const handleResize = () => {
+        chartInstance.resize();
+      };
+
+      const observer = new ResizeObserver(handleResize);
+      observer.observe(chartRef.current);
+
+      return () => {
+        observer.disconnect();
+        chartInstance.dispose();
+      };
+    }
+  }, [chartData]);
 
   if (data.length === 0) {
     return (
@@ -232,7 +248,7 @@ const LateAnalysisReview: React.FC<LateAnalysisReviewProps> = ({ data }) => {
         <Alert variant="destructive" className="gap-0 mt-4 w-fit">
           <AlertCircle className="h-5 w-5 text-red-500 -mt-1.5" />
           <AlertDescription className="text-sm text-red-600 mt-1">
-            No reviews were found. Please adjust your filters and try again.
+            No results were found. Please adjust your filters and try again.
           </AlertDescription>
         </Alert>
       </span>
@@ -240,8 +256,8 @@ const LateAnalysisReview: React.FC<LateAnalysisReviewProps> = ({ data }) => {
   }
 
   return (
-    <div className="flex justify-around mt-1">
-      <div className="w-8/12">
+    <div className="flex justify-center mt-1 gap-0">
+      <div className="w-[67%] h-auto aspect-[16/9]">
         <div className="flex justify-between pr-2">
           <h2>Late Submission Analysis By {view ? "Day" : "Month"}</h2>
           <button
@@ -251,7 +267,11 @@ const LateAnalysisReview: React.FC<LateAnalysisReviewProps> = ({ data }) => {
             Switch to {!view ? "Day" : "Month"}
           </button>
         </div>
-        <Line data={chartData} options={chartOptions} />
+        <div
+          ref={chartRef}
+          style={{ width: "100%", height: "100%" }}
+          className="-mt-3"
+        />
       </div>
       <LateAnalysisReviewConclusion
         {...monthlyStats}

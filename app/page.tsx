@@ -222,7 +222,7 @@ export default function Home() {
 
                 {/* Supplier Documents Charts */}
 
-                <div className="bg-slate- p-2 mx-1 rounded-md -mt- flex h-[calc(100vh-60px)] w- shadow-md">
+                <div className="bg-slate- p-2 mx-1 rounded-md -mt-1 flex h-[calc(100vh-60px)] w- shadow-md">
                   <ResizablePanelGroup direction="horizontal" className="">
                     <ResizablePanel defaultSize={24}>
                       <ResizablePanelGroup direction="vertical">
@@ -259,7 +259,7 @@ export default function Home() {
                   <ResizablePanelGroup direction="horizontal">
                     <ResizablePanel defaultSize={24}>
                       <ResizablePanelGroup direction="vertical">
-                        <ResizablePanel>
+                        <ResizablePanel defaultSize={60}>
                           <DocsPerUserChart data={data[1]} />
                         </ResizablePanel>
                         <ResizableHandle withHandle />

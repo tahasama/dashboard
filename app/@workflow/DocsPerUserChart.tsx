@@ -30,7 +30,7 @@ const DocsPerUserChart: React.FC<{ data: any[] }> = ({ data }) => {
         borderColor: lightColors[1],
         borderWidth: 1,
         data: [] as number[],
-        barThickness: 20, // Controls bar height
+        barThickness: 16, // Controls bar height
       },
       {
         label: "Current",
@@ -107,7 +107,15 @@ const DocsPerUserChart: React.FC<{ data: any[] }> = ({ data }) => {
         },
       ],
     }));
-    setChartHeight(overdueAssignees.size * 90); // 50px per Y label
+    setChartHeight(
+      overdueValues.length !== 1
+        ? overdueValues.length === 2
+          ? 200
+          : overdueValues.length === 3
+          ? 260
+          : overdueValues.length * 57
+        : 120
+    ); // 50px per Y label
 
     // Calculate total overdues and determine criticality
     const totalOverdue = overdueValues.reduce((sum, val) => sum + val, 0);
@@ -225,13 +233,13 @@ const DocsPerUserChart: React.FC<{ data: any[] }> = ({ data }) => {
           const { x, y } = bar.tooltipPosition();
 
           ctx.fillStyle = "#000"; // Label color (adjust for contrast)
-          ctx.font = "12px Arial"; // Label font
+          ctx.font = "12px Garmond"; // Label font
           ctx.textAlign = "center";
 
           // Draw the label inside or above the bar
-          const labelText = `${label.split(",")[0]} (${value})`;
+          const labelText = `${label.split("-")[0]} (${value})`;
           const textX = 150; // Adjust position slightly for horizontal alignment
-          const textY = y + 5; // Center vertically relative to the bar
+          const textY = y + 4; // Center vertically relative to the bar
 
           ctx.fillText(labelText, textX, textY);
         }
@@ -263,7 +271,10 @@ const DocsPerUserChart: React.FC<{ data: any[] }> = ({ data }) => {
         {additionalInsights.message}
       </p>
 
-      <div style={{ width: "100%", height: `${chartHeight}px` }}>
+      <div
+        style={{ width: "100%", height: `${chartHeight}px` }}
+        className="-ml-2"
+      >
         <Bar data={chartData} options={options} plugins={[customLabelPlugin]} />
       </div>
     </div>

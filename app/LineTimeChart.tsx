@@ -174,6 +174,13 @@ const LineTimeChart: React.FC<any> = ({ data, loading, setLoading }) => {
   const options = {
     timeline: {
       groupByRowLabel: true,
+      rowLabelStyle: {
+        fontName: "Arial",
+        fontSize: 12,
+        color: "#282a30",
+        // width: "50px",
+      },
+      barLabelStyle: { fontName: "Arial", fontSize: 10 },
     },
     colors: ["#A7C7E7", "#C4E5D1"],
   };

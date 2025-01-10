@@ -40,7 +40,10 @@ const StatusChart: React.FC<any> = ({ data }) => {
   useEffect(() => {
     if (!chartRef.current || chartData.length === 0) return;
 
-    const chartInstance = echarts.init(chartRef.current);
+    const chartInstance = echarts.init(chartRef.current, null, {
+      renderer: "svg",
+      devicePixelRatio: window.devicePixelRatio || 1,
+    });
 
     const option = {
       title: {
