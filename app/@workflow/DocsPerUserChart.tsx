@@ -238,7 +238,7 @@ const DocsPerUserChart: React.FC<{ data: any[] }> = ({ data }) => {
 
           // Draw the label inside or above the bar
           const labelText = `${label.split("-")[0]} (${value})`;
-          const textX = 150; // Adjust position slightly for horizontal alignment
+          const textX = 100; // Adjust position slightly for horizontal alignment
           const textY = y + 4; // Center vertically relative to the bar
 
           ctx.fillText(labelText, textX, textY);

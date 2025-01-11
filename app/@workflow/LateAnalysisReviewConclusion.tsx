@@ -4,7 +4,15 @@ const LateAnalysisReviewConclusion: React.FC<{
   chartValues: number[];
   cumulativeValues: number[];
   totalDocuments: number; // Add the total documents count as a prop
-}> = ({ chartValues = [], cumulativeValues = [], totalDocuments = 0 }) => {
+  view: any;
+  setView: any;
+}> = ({
+  chartValues = [],
+  cumulativeValues = [],
+  totalDocuments = 0,
+  view,
+  setView,
+}) => {
   const calculateStats = (arr: number[]) => {
     if (!arr.length) return { min: 0, max: 0, average: 0 };
 

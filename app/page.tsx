@@ -242,7 +242,7 @@ export default function Home() {
                     <ResizableHandle withHandle />
                     <ResizablePanel>
                       <ResizablePanelGroup direction="vertical">
-                        <ResizablePanel defaultSize={70}>
+                        <ResizablePanel defaultSize={72}>
                           <LateAnalysis data={data[0]} />
                         </ResizablePanel>
                         <ResizableHandle withHandle />
@@ -271,7 +271,7 @@ export default function Home() {
                     <ResizableHandle withHandle />
                     <ResizablePanel>
                       <ResizablePanelGroup direction="vertical">
-                        <ResizablePanel defaultSize={70}>
+                        <ResizablePanel defaultSize={72}>
                           <LateAnalysisReview data={data[1]} />
                         </ResizablePanel>
                         <ResizableHandle withHandle />

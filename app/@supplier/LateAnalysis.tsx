@@ -203,12 +203,12 @@ const LateAnalysis: React.FC<LateAnalysisProps> = ({ data }) => {
           data: chartData.labels,
           axisLabel: {
             rotate: 45,
-            fontSize: 10,
+            fontSize: 9,
           },
         },
         yAxis: {
           type: "value",
-          // name: "Days Late",
+          name: "Days Late",
           axisLabel: {
             formatter: (value: number) => value.toFixed(0),
             fontSize: 10,
@@ -249,7 +249,7 @@ const LateAnalysis: React.FC<LateAnalysisProps> = ({ data }) => {
 
   return (
     <div className="flex justify-center mt-1 gap-0">
-      <div className="w-[67%] h-auto aspect-[16/9]">
+      <div className="w-[100%] aspect-[2]">
         <div className="flex justify-between pr-2">
           <h2>Late Submission Analysis By {view ? "Day" : "Month"}</h2>
           <button

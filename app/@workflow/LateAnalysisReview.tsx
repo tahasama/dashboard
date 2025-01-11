@@ -207,11 +207,12 @@ const LateAnalysisReview: React.FC<LateAnalysisReviewProps> = ({ data }) => {
           top: 20,
         },
         xAxis: {
+          // show: false,
           type: "category",
           data: chartData.labels,
           axisLabel: {
             rotate: 45,
-            fontSize: 10,
+            fontSize: 9,
           },
         },
         yAxis: {
@@ -257,9 +258,9 @@ const LateAnalysisReview: React.FC<LateAnalysisReviewProps> = ({ data }) => {
 
   return (
     <div className="flex justify-center mt-1 gap-0">
-      <div className="w-[67%] h-auto aspect-[16/9]">
+      <div className="w-[100%] aspect-[2]">
         <div className="flex justify-between pr-2">
-          <h2>Late Submission Analysis By {view ? "Day" : "Month"}</h2>
+          <h2>Late Workflows/Reviews Analysis By {view ? "Day" : "Month"}</h2>
           <button
             onClick={() => setView(!view)}
             className="bg-orange-200 p-1 rounded ring-orange-500 ring-1 min-w-32 text-sm"
@@ -276,6 +277,8 @@ const LateAnalysisReview: React.FC<LateAnalysisReviewProps> = ({ data }) => {
       <LateAnalysisReviewConclusion
         {...monthlyStats}
         totalDocuments={totalLateDocuments}
+        view={view}
+        setView={setView}
       />
     </div>
   );
