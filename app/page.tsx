@@ -292,7 +292,7 @@ export default function Home() {
                   />
                 </Suspense>
 
-                <div className="h-[calc(100vh-60px)] mt-8">
+                {/* <div className="h-[calc(100vh-60px)] mt-8">
                   <ResizablePanelGroup direction="horizontal">
                     <ResizablePanel>
                       <SankeyChart data={data[0]} />
@@ -302,7 +302,7 @@ export default function Home() {
                       <SankeyChartWorkFlow data={data[1]} />
                     </ResizablePanel>
                   </ResizablePanelGroup>
-                </div>
+                </div> */}
               </div>
             )}
           </div>

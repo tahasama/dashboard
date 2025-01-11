@@ -4,14 +4,12 @@ const LateAnalysisReviewConclusion: React.FC<{
   chartValues: number[];
   cumulativeValues: number[];
   totalDocuments: number; // Add the total documents count as a prop
-  view: any;
-  setView: any;
+  data: any[];
 }> = ({
   chartValues = [],
   cumulativeValues = [],
   totalDocuments = 0,
-  view,
-  setView,
+  data = [],
 }) => {
   const calculateStats = (arr: number[]) => {
     if (!arr.length) return { min: 0, max: 0, average: 0 };
@@ -90,6 +88,15 @@ const LateAnalysisReviewConclusion: React.FC<{
 
       <br />
       <ul className="space-y-1">
+        <li>
+          ➡️ Total docs for review:{" "}
+          {
+            data.filter(
+              (x) =>
+                x["Step Status"] === "Overdue" || x["Step Status"] === "Current"
+            ).length
+          }
+        </li>
         <li>
           ➡️ Current Delay Rate:{" "}
           {chartValues.length !== 0 &&

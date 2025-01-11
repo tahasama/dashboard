@@ -122,12 +122,7 @@ const LateAnalysisConclusion: React.FC<{
 
       <br />
       <ul className="space-y-1">
-        <li>
-          ➡️ Current Delay Rate:{" "}
-          {chartValues.length !== 0 &&
-            chartValues[chartValues.length - 1].toFixed(0)}{" "}
-          days
-        </li>
+        <li>➡️ Total documents: {data.length !== 0 && data.length}.</li>
         <li> ➡️ Average Days Late: {avgDaysLate.toFixed(0)} days</li>
         <li> ➡️ Minimum Days Late: {minDaysLate.toFixed(0)} days</li>
         <li> ➡️ Maximum Days Late: {maxDaysLate.toFixed(0)} days</li>

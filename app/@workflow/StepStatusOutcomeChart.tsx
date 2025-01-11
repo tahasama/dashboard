@@ -11,19 +11,19 @@ const StatusOutcomeHeatMap: React.FC<dataProps> = ({ data }) => {
 
   useEffect(() => {
     // Transform data for heatmap
-    const submissionCounts: { [key: string]: number } = {};
+    const workflowCounts: { [key: string]: number } = {};
 
     data
       .filter((row) => row["Step Status"] !== "Terminated")
       .forEach((row: any) => {
-        const plannedSubmissionDate = row["Original Due Date"];
+        const plannedworkflowDate = row["Original Due Date"];
 
-        if (plannedSubmissionDate) {
+        if (plannedworkflowDate) {
           let formattedDate: Date | null = null;
 
-          if (typeof plannedSubmissionDate === "string") {
+          if (typeof plannedworkflowDate === "string") {
             // Split the date by slashes for string format (DD/MM/YYYY)
-            const parts = plannedSubmissionDate
+            const parts = plannedworkflowDate
               .split("/")
               .map((part: string) => parseInt(part, 10));
 
@@ -38,13 +38,13 @@ const StatusOutcomeHeatMap: React.FC<dataProps> = ({ data }) => {
                 console.error(`Invalid day/month: ${day}/${month}`);
               }
             } else {
-              console.error(`Invalid date format: ${plannedSubmissionDate}`);
+              console.error(`Invalid date format: ${plannedworkflowDate}`);
             }
-          } else if (typeof plannedSubmissionDate === "number") {
+          } else if (typeof plannedworkflowDate === "number") {
             // If it's a number (Excel date system), convert it to a valid date
             const baseDate = new Date(1899, 11, 30); // Excel base date is 1899-12-30
             formattedDate = new Date(
-              baseDate.getTime() + plannedSubmissionDate * 86400000
+              baseDate.getTime() + plannedworkflowDate * 86400000
             );
           }
 
@@ -55,18 +55,16 @@ const StatusOutcomeHeatMap: React.FC<dataProps> = ({ data }) => {
             formattedDate.getFullYear() > 1970
           ) {
             const isoDate = formattedDate.toISOString().split("T")[0];
-            submissionCounts[isoDate] = (submissionCounts[isoDate] || 0) + 1;
+            workflowCounts[isoDate] = (workflowCounts[isoDate] || 0) + 1;
           } else {
-            console.error(`Invalid or unwanted date: ${plannedSubmissionDate}`);
+            console.error(`Invalid or unwanted date: ${plannedworkflowDate}`);
           }
         }
       });
 
     const years = Array.from(
       new Set(
-        Object.keys(submissionCounts).map((date) =>
-          new Date(date).getFullYear()
-        )
+        Object.keys(workflowCounts).map((date) => new Date(date).getFullYear())
       )
     ).filter((year) => year > 1970);
 
@@ -74,9 +72,9 @@ const StatusOutcomeHeatMap: React.FC<dataProps> = ({ data }) => {
       setSelectedYear(years[0]);
     }
 
-    const formattedData = Object.keys(submissionCounts).map((isoDate) => {
+    const formattedData = Object.keys(workflowCounts).map((isoDate) => {
       const date = new Date(isoDate);
-      return [date.getTime(), submissionCounts[isoDate]];
+      return [date.getTime(), workflowCounts[isoDate]];
     });
 
     setHeatmapData(formattedData);
@@ -112,7 +110,7 @@ const StatusOutcomeHeatMap: React.FC<dataProps> = ({ data }) => {
     const option = {
       responsive: true,
       title: {
-        text: "Document Submission Heatmap",
+        text: "Document Workflow Heatmap",
         left: "center",
         top: "7%",
         textStyle: { fontSize: 14, fontWeight: "bold" },
@@ -124,7 +122,7 @@ const StatusOutcomeHeatMap: React.FC<dataProps> = ({ data }) => {
           const count = params.data[1];
           return `${
             date.toISOString().split("T")[0]
-          }: ${count} planned submissions`;
+          }: ${count} planned workflows`;
         },
       },
       visualMap: {
@@ -149,7 +147,7 @@ const StatusOutcomeHeatMap: React.FC<dataProps> = ({ data }) => {
         // },
         type: "piecewise", // Use piecewise for categorical color mapping
         pieces: [
-          { min: 0, max: 0, color: "#dcdbdb" }, // Neutral for 0 submissions
+          { min: 0, max: 0, color: "#dcdbdb" }, // Neutral for 0 workflows
           { min: 1, max: 4, color: "#99e699" }, // Light green
           { min: 5, max: 9, color: "#b2df8a" }, // Slightly darker green
           { min: 10, max: 19, color: "#66cc66" }, // Mid-green
