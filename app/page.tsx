@@ -1,39 +1,31 @@
 "use client";
-import { Suspense, useEffect, useState } from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Suspense, useState } from "react";
 import * as XLSX from "xlsx";
-import StatusChart from "./@supplier/StatusChart";
-import LateAnalysis from "./@supplier/LateAnalysis";
-import SankeyChart from "./@supplier/SankeyChart";
-import SubmissionStatus from "./@supplier/SubmissionStatus";
-import StatusOutcomeHeatMap from "./@workflow/StepStatusOutcomeChart";
-import SankeyChartWorkFlow from "./@workflow/SankeyChartWorkFlow";
-
-import WorkflowStepStatusChart from "./@workflow/WorkflowStepStatusChart";
-import LateAnalysisReview from "./@workflow/LateAnalysisReview";
-import LineTimeChart from "./LineTimeChart";
-import ReviewStatus from "./@supplier/ReviewStatus";
-import HeatX from "./@supplier/HeatX";
-import DocsPerUserChart from "./@workflow/DocsPerUserChart";
+import StatusChart from "./(supplier)/StatusChart";
+import LateAnalysis from "./(supplier)/LateAnalysis";
+import SubmissionStatus from "./(supplier)/SubmissionStatus";
+import StatusOutcomeHeatMap from "./(workflow)/StepStatusOutcomeChart";
+import WorkflowStepStatusChart from "./(workflow)/WorkflowStepStatusChart";
+import LateAnalysisReview from "./(workflow)/LateAnalysisReview";
+// import LineTimeChart from "./LineTimeChart";
+import ReviewStatus from "./(supplier)/ReviewStatus";
+import HeatX from "./(supplier)/HeatX";
+import DocsPerUserChart from "./(workflow)/DocsPerUserChart";
 import ExcelForm from "./ExcelForm";
+
+const LazyLineTimeChart = React.lazy(() => import("./LineTimeChart"));
 
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  SelectLabel,
-} from "@/components/ui/select";
 import Filters from "./Filters";
 import { AreaH } from "./HomePageCharts/AreaH";
 import { BarH } from "./HomePageCharts/BarH";
 import { PieH } from "./HomePageCharts/PieH";
+import React from "react";
 
 export default function Home() {
   const [files, setFiles] = useState<File[]>([]);
@@ -43,7 +35,6 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [isReadyToGenerate, setIsReadyToGenerate] = useState<boolean>(false);
   const [loading, setLoading] = useState(false);
-  const [open, setOpen] = useState(false);
 
   // const filterData = (data, createdBy, subProject, discipline) => {
   //   return data.map((fileData) =>
@@ -286,8 +277,22 @@ export default function Home() {
                 </div>
 
                 {/* Line Time Chart */}
-                <Suspense fallback={"........tseeeenna"}>
+                {/* <Suspense fallback={"........tseeeenna"}>
                   <LineTimeChart
+                    data={data}
+                    loading={loading}
+                    setLoading={setLoading}
+                  />
+                </Suspense> */}
+
+                <Suspense
+                  fallback={
+                    <div className="w-screen h-screen grid place-content-center">
+                      Loading LineTimeChart...
+                    </div>
+                  }
+                >
+                  <LazyLineTimeChart
                     data={data}
                     loading={loading}
                     setLoading={setLoading}

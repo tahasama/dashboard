@@ -68,10 +68,6 @@ const LateAnalysisReviewConclusion: React.FC<{
           )} days).`,
         };
 
-  // Check if too many documents are late or days late per document are too high
-  const isTooManyLateDocs = totalDocuments > 50; // Threshold for number of late documents
-  const isTooHighDaysLatePerDoc = avgDaysLate > 30; // Threshold for average days late per document
-
   // Insights based on document count or days late per document
 
   return (

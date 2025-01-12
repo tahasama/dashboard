@@ -60,7 +60,7 @@ const LateAnalysisReview: React.FC<LateAnalysisReviewProps> = ({ data }) => {
 
       if (dateKey && !isNaN(daysLate)) {
         if (groupBy === "monthly") {
-          const [day, month, year] = dateKey.split("/");
+          const [month, year] = dateKey.split("/");
           dateKey = `${month}/${year}`;
         }
 
@@ -92,18 +92,18 @@ const LateAnalysisReview: React.FC<LateAnalysisReviewProps> = ({ data }) => {
       return parseDate(a).getTime() - parseDate(b).getTime();
     });
 
-    const formattedLabels = chartLabels.map((label) => {
-      const parts = label.split("/");
+    // const formattedLabels = chartLabels.map((label) => {
+    //   const parts = label.split("/");
 
-      if (parts.length === 3) {
-        const day = parts[0];
-        const month = parts[1];
-        const year = parts[2];
-        return `${day}/${month}/${year.slice(-2)}`;
-      }
+    //   if (parts.length === 3) {
+    //     const day = parts[0];
+    //     const month = parts[1];
+    //     const year = parts[2];
+    //     return `${day}/${month}/${year.slice(-2)}`;
+    //   }
 
-      return label;
-    });
+    //   return label;
+    // });
 
     const chartValues = chartLabels.map((label) => {
       const { daysLate, docs } = groupedData[label];

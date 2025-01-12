@@ -9,12 +9,7 @@ import {
   Legend,
   ChartOptions,
 } from "chart.js";
-import {
-  lightColors,
-  lightColorsLineBars,
-  nightColors,
-  sankeyColorList,
-} from "../colors";
+import { lightColors, sankeyColorList } from "../colors";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 
@@ -120,25 +115,12 @@ const DocsPerUserChart: React.FC<{ data: any[] }> = ({ data }) => {
     // Calculate total overdues and determine criticality
     const totalOverdue = overdueValues.reduce((sum, val) => sum + val, 0);
 
-    let criticality: string;
-    let color: string;
-    if (totalOverdue <= 7) {
-      criticality = "Manageable";
-      color = "green";
-    } else if (totalOverdue <= 15) {
-      criticality = "Moderate";
-      color = "orange";
-    } else {
-      criticality = "Critical";
-      color = "red";
-    }
-
     // **Additional Insights for Too Many Late Docs or High Days Late**
     const totalDocuments = overdueValues.reduce((sum, val) => sum + val, 0); // Calculate the total number of overdue documents
     const avgDaysLate = 30; // Replace with actual logic to calculate average days late (example value)
 
     const isTooManyLateDocs = totalDocuments > 30; // Threshold for number of late documents
-    const isTooHighDaysLatePerDoc = avgDaysLate > 7; // Threshold for average days late per document
+    // const isTooHighDaysLatePerDoc = avgDaysLate > 7; // Threshold for average days late per document
 
     if (isTooManyLateDocs) {
       setAdditionalInsights({

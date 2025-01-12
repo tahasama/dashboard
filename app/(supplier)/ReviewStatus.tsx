@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import * as echarts from "echarts";
-import { lightColors, nightColors } from "../colors";
+import { nightColors } from "../colors";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 

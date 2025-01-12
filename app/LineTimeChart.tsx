@@ -209,7 +209,7 @@ const LineTimeChart: React.FC<any> = ({ data, loading, setLoading }) => {
   return (
     <div className="snap-start h-[calc(100vh-90px)] my-4 mx-10">
       <h1 className="mb-2">
-        Document's Time Line: {mergedData.length} result.
+        Document&apos;s Time Line: {mergedData.length} result.
       </h1>
       <Chart
         chartType="Timeline"
