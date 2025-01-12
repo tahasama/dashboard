@@ -28,10 +28,16 @@ const Filters = ({
   const [subProjectFilter, setSubProjectFilter] = useState<string>("all");
   const [disciplineFilter, setDisciplineFilter] = useState<string>("all");
   const clearFilters = () => {
-    setLoading(true);
-    setCreatedByFilter("");
-    setSubProjectFilter("");
-    setDisciplineFilter("");
+    if (
+      createdByFilter !== "" ||
+      subProjectFilter !== "" ||
+      disciplineFilter !== ""
+    ) {
+      setLoading(true);
+      setCreatedByFilter("");
+      setSubProjectFilter("");
+      setDisciplineFilter("");
+    }
   };
 
   useEffect(() => {
@@ -140,22 +146,6 @@ const Filters = ({
 
   return (
     <div className="flex gap-2 my-2 sticky top-0 bg-white z-50 p-2.5 shadow-md">
-      <Select value={createdByFilter} onValueChange={handleFilterChangeA}>
-        <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder="Select a Contractor" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectGroup>
-            <SelectItem value={"all"}>All </SelectItem>
-            {getUniqueValues(originalData, "Select List 5").map((value) => (
-              <SelectItem key={value} value={value}>
-                {value}
-              </SelectItem>
-            ))}
-          </SelectGroup>
-        </SelectContent>
-      </Select>
-
       <Select value={subProjectFilter} onValueChange={handleFilterChangeB}>
         <SelectTrigger className="w-[180px]">
           <SelectValue placeholder="Select a Subproject" />
@@ -164,6 +154,22 @@ const Filters = ({
           <SelectGroup>
             <SelectItem value={"all"}>All </SelectItem>
             {getUniqueValues(originalData, "Select List 3").map((value) => (
+              <SelectItem key={value} value={value}>
+                {value}
+              </SelectItem>
+            ))}
+          </SelectGroup>
+        </SelectContent>
+      </Select>
+
+      <Select value={createdByFilter} onValueChange={handleFilterChangeA}>
+        <SelectTrigger className="w-[180px]">
+          <SelectValue placeholder="Select a Contractor" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectGroup>
+            <SelectItem value={"all"}>All </SelectItem>
+            {getUniqueValues(originalData, "Select List 5").map((value) => (
               <SelectItem key={value} value={value}>
                 {value}
               </SelectItem>

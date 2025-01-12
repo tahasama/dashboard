@@ -43,6 +43,7 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [isReadyToGenerate, setIsReadyToGenerate] = useState<boolean>(false);
   const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState(false);
 
   // const filterData = (data, createdBy, subProject, discipline) => {
   //   return data.map((fileData) =>
@@ -159,6 +160,7 @@ export default function Home() {
       };
       reader.readAsArrayBuffer(file);
     });
+    // setOpen(false);
   };
 
   const labels: { [key: number]: string } = {

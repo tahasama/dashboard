@@ -15,6 +15,8 @@ import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 
+import { useState } from "react";
+
 const ExcelForm = ({
   handleFileUpload,
   labels,
@@ -24,13 +26,41 @@ const ExcelForm = ({
   isReadyToGenerate,
   error,
 }: any) => {
+  const [isDialogOpen, setIsDialogOpen] = useState(false); // Control dialog visibility
+
+  // Handle opening of the dialog
+  // const openDialog = () => setIsDialogOpen(true);
+
+  // Handle closing of the dialog
+  const closeDialog = () => setIsDialogOpen(false);
+
+  // Handle "Generate" button click
+  const handleGenerateClick = async () => {
+    if (error) {
+      return; // Don't close the dialog if there's an error
+    }
+
+    // Proceed with the generate logic and close dialog if no error
+    const result = await handleGenerate();
+    if (!!error) {
+      closeDialog(); // Close dialog only if there's no error
+    }
+  };
+
   return (
-    <Dialog>
+    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      {/* Trigger dialog to open */}
       <DialogTrigger asChild>
-        <Button variant="outline" className="bg-black text-white">
+        <Button
+          variant="outline"
+          className="bg-black text-white"
+          // onClick={openDialog}
+        >
           Upload Documents
         </Button>
       </DialogTrigger>
+
+      {/* Dialog Content */}
       <DialogContent className="max-w-sm">
         <DialogHeader>
           <DialogTitle>Upload Documents</DialogTitle>
@@ -39,7 +69,8 @@ const ExcelForm = ({
             columns to generate your report.
           </DialogDescription>
         </DialogHeader>
-        <div className="">
+
+        <div className="space-y-4">
           {[0, 1].map((fileIndex: number) => (
             <div key={fileIndex} className="space-y-4">
               {/* File Upload Input */}
@@ -92,20 +123,19 @@ const ExcelForm = ({
             </Alert>
           )}
         </div>
+
         <DialogFooter>
-          <DialogClose asChild>
-            <Button
-              onClick={handleGenerate}
-              className={`w-full ${
-                isReadyToGenerate
-                  ? "bg-blue-600 text-white hover:bg-blue-500"
-                  : "bg-gray-300 text-gray-600 cursor-not-allowed"
-              }`}
-              disabled={!isReadyToGenerate}
-            >
-              Generate
-            </Button>
-          </DialogClose>
+          <Button
+            onClick={handleGenerateClick} // Click to handle generate logic
+            className={`w-full ${
+              isReadyToGenerate && !error
+                ? "bg-blue-600 text-white hover:bg-blue-500"
+                : "bg-gray-300 text-gray-600 cursor-not-allowed"
+            }`}
+            disabled={!isReadyToGenerate || !!error} // Disable if error exists
+          >
+            Generate
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
