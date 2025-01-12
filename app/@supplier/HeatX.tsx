@@ -33,7 +33,7 @@ const HeatX: React.FC<dataProps> = ({ data }) => {
 
               // Ensure that the parsed date makes sense (day and month within range)
               if (day > 0 && day <= 31 && month > 0 && month <= 12) {
-                formattedDate = new Date(year, month - 1, day);
+                formattedDate = new Date(Date.UTC(year, month - 1, day)); // Use UTC
               } else {
                 console.error(`Invalid day/month: ${day}/${month}`);
               }
@@ -54,7 +54,7 @@ const HeatX: React.FC<dataProps> = ({ data }) => {
             !isNaN(formattedDate.getTime()) &&
             formattedDate.getFullYear() > 1970
           ) {
-            const isoDate = formattedDate.toISOString().split("T")[0];
+            const isoDate = formattedDate.toISOString().split("T")[0]; // Get date in YYYY-MM-DD format
             submissionCounts[isoDate] = (submissionCounts[isoDate] || 0) + 1;
           } else {
             console.error(`Invalid or unwanted date: ${plannedSubmissionDate}`);
@@ -76,7 +76,7 @@ const HeatX: React.FC<dataProps> = ({ data }) => {
 
     const formattedData = Object.keys(submissionCounts).map((isoDate) => {
       const date = new Date(isoDate);
-      return [date.getTime(), submissionCounts[isoDate]];
+      return [date.getTime(), submissionCounts[isoDate]]; // Store timestamp and count
     });
 
     setHeatmapData(formattedData);
@@ -136,18 +136,6 @@ const HeatX: React.FC<dataProps> = ({ data }) => {
         orient: "horizontal",
         left: "center",
         bottom: "5%",
-        // backgroundColor: "red",
-        // inRange: {
-        //   color: [
-        //     "#fef3c7", // Soft yellow
-        //     "#fde68a", // Light orange
-        //     "#fca5a5", // Pink
-        //     "#f87171", // Red
-        //     "#34d399", // Bright green
-        //     "#60a5fa", // Blue
-        //     "#818cf8", // Purple
-        //   ],
-        // },
         type: "piecewise", // Use piecewise for categorical color mapping
         pieces: [
           { min: 0, max: 0, color: "#dcdbdb" }, // Neutral for 0 submissions
@@ -163,36 +151,26 @@ const HeatX: React.FC<dataProps> = ({ data }) => {
       calendar: {
         range: selectedYear,
         cellSize: ["auto", "auto"],
-        // cellSize: "100%", // Make cells perfectly square (width = height)
-        // backgroundColor: "red", // General calendar background
         top: "32.5%", // Adjust the space from the top
-        // left: "center",
-        // right: "5%", // Optional: Adjust right margin if needed
-        // bottom: "0%", // Reduce space at the bottom
         itemStyle: {
           borderWidth: 1.2,
           borderColor: "white",
         },
-
         dayLabel: {
-          nameMap: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"], // Map to 3-letter day names
+          nameMap: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
           fontSize: 9,
           color: "#0f172a",
         },
-
         monthLabel: {
           nameMap: "en",
           fontSize: 9,
           color: "#0f172a",
         },
-        yearLabel: {
-          show: false,
-        },
         splitLine: {
-          show: true, // Show the border lines between months
+          show: true,
           lineStyle: {
-            width: 1, // Adjust width for more prominent lines
-            color: "#334155", // Customize the color of the month separators
+            width: 1,
+            color: "#334155",
           },
         },
       },
@@ -206,8 +184,6 @@ const HeatX: React.FC<dataProps> = ({ data }) => {
           ]),
           itemStyle: {
             borderRadius: 2,
-            // borderWidth: 0.5,
-            // borderColor: "#bbbbbb",
           },
         },
       ],
@@ -240,8 +216,8 @@ const HeatX: React.FC<dataProps> = ({ data }) => {
       </span>
     );
   }
+
   return (
-    // <div className="flex justify-around">
     <div className="flex justify-between w-full h-full">
       <div
         ref={chartRef}
