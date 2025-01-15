@@ -26,11 +26,8 @@ const FiltersAndCharts = ({ originalData }: { originalData: MergedData[] }) => {
   const [loading, setLoading] = useState(false);
 
   const [createdByFilter, setCreatedByFilter] = useState<string>("all");
-  console.log("🚀 ~ FiltersAndCharts ~ createdByFilter:", createdByFilter);
   const [subProjectFilter, setSubProjectFilter] = useState<string>("all");
-  console.log("🚀 ~ FiltersAndCharts ~ subProjectFilter:", subProjectFilter);
   const [disciplineFilter, setDisciplineFilter] = useState<string>("all");
-  console.log("🚀 ~ FiltersAndCharts ~ disciplineFilter:", disciplineFilter);
   const [statusFilter, setStatusFilter] = useState<string>("all");
 
   const clearFilters = () => {
