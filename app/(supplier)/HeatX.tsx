@@ -126,7 +126,7 @@ const HeatX: React.FC<Data> = ({ data }) => {
           const count = params.data[1];
           return `${
             date.toISOString().split("T")[0]
-          }: ${count} planned submissions`;
+          }: ${count} planned workflows`;
         },
       },
       visualMap: {
@@ -137,9 +137,21 @@ const HeatX: React.FC<Data> = ({ data }) => {
         orient: "horizontal",
         left: "center",
         bottom: "5%",
+        // backgroundColor: "red",
+        // inRange: {
+        //   color: [
+        //     "#fef3c7", // Soft yellow
+        //     "#fde68a", // Light orange
+        //     "#fca5a5", // Pink
+        //     "#f87171", // Red
+        //     "#34d399", // Bright green
+        //     "#60a5fa", // Blue
+        //     "#818cf8", // Purple
+        //   ],
+        // },
         type: "piecewise", // Use piecewise for categorical color mapping
         pieces: [
-          { min: 0, max: 0, color: "#dcdbdb" }, // Neutral for 0 submissions
+          { min: 0, max: 0, color: "#dcdbdb" }, // Neutral for 0 workflows
           { min: 1, max: 4, color: "#99e699" }, // Light green
           { min: 5, max: 9, color: "#b2df8a" }, // Slightly darker green
           { min: 10, max: 19, color: "#66cc66" }, // Mid-green
@@ -152,26 +164,36 @@ const HeatX: React.FC<Data> = ({ data }) => {
       calendar: {
         range: selectedYear,
         cellSize: ["auto", "auto"],
+        // cellSize: "100%", // Make cells perfectly square (width = height)
+        // backgroundColor: "red", // General calendar background
         top: "32.5%", // Adjust the space from the top
+        // left: "center",
+        // right: "5%", // Optional: Adjust right margin if needed
+        // bottom: "0%", // Reduce space at the bottom
         itemStyle: {
           borderWidth: 1.2,
           borderColor: "white",
         },
+
         dayLabel: {
-          nameMap: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+          nameMap: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"], // Map to 3-letter day names
           fontSize: 9,
           color: "#0f172a",
         },
+
         monthLabel: {
           nameMap: "en",
           fontSize: 9,
           color: "#0f172a",
         },
+        yearLabel: {
+          show: false,
+        },
         splitLine: {
-          show: true,
+          show: true, // Show the border lines between months
           lineStyle: {
-            width: 1,
-            color: "#334155",
+            width: 1, // Adjust width for more prominent lines
+            color: "#334155", // Customize the color of the month separators
           },
         },
       },
@@ -185,6 +207,8 @@ const HeatX: React.FC<Data> = ({ data }) => {
           ]),
           itemStyle: {
             borderRadius: 2,
+            // borderWidth: 0.5,
+            // borderColor: "#bbbbbb",
           },
         },
       ],
