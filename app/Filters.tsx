@@ -10,6 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toCamelCase } from "@/lib/utils";
+import { MergedData } from "./types";
 
 const Filters = ({
   originalData,
@@ -23,7 +24,7 @@ const Filters = ({
   setStatusFilter,
   clearFilters,
 }: {
-  originalData: any[][];
+  originalData: MergedData[];
   createdByFilter: string;
   subProjectFilter: string;
   disciplineFilter: string;
@@ -34,9 +35,9 @@ const Filters = ({
   setStatusFilter: (value: string) => void;
   clearFilters: () => void;
 }) => {
-  const getUniqueValues = (data: any[][], column: string) => {
-    const camelCaseColumn = toCamelCase(column);
-    const allValues = data.map((fileData) => fileData[camelCaseColumn]);
+  const getUniqueValues = (data: any, column: string) => {
+    const camelCaseColumn: any = toCamelCase(column);
+    const allValues = data.map((fileData: string) => fileData[camelCaseColumn]);
     return Array.from(new Set(allValues.filter(Boolean)));
   };
 
@@ -49,11 +50,13 @@ const Filters = ({
         <SelectContent>
           <SelectGroup>
             <SelectItem value={"all"}>All </SelectItem>
-            {getUniqueValues(originalData, "Select List 3").map((value) => (
-              <SelectItem key={value} value={value}>
-                {value}
-              </SelectItem>
-            ))}
+            {getUniqueValues(originalData, "Select List 3").map(
+              (value: any) => (
+                <SelectItem key={value} value={value}>
+                  {value}
+                </SelectItem>
+              )
+            )}
           </SelectGroup>
         </SelectContent>
       </Select>
@@ -65,11 +68,13 @@ const Filters = ({
         <SelectContent>
           <SelectGroup>
             <SelectItem value={"all"}>All </SelectItem>
-            {getUniqueValues(originalData, "Select List 5").map((value) => (
-              <SelectItem key={value} value={value}>
-                {value}
-              </SelectItem>
-            ))}
+            {getUniqueValues(originalData, "Select List 5").map(
+              (value: any) => (
+                <SelectItem key={value} value={value}>
+                  {value}
+                </SelectItem>
+              )
+            )}
           </SelectGroup>
         </SelectContent>
       </Select>
@@ -81,11 +86,13 @@ const Filters = ({
         <SelectContent>
           <SelectGroup>
             <SelectItem value={"all"}>All </SelectItem>
-            {getUniqueValues(originalData, "Select List 1").map((value) => (
-              <SelectItem key={value} value={value}>
-                {value}
-              </SelectItem>
-            ))}
+            {getUniqueValues(originalData, "Select List 1").map(
+              (value: any) => (
+                <SelectItem key={value} value={value}>
+                  {value}
+                </SelectItem>
+              )
+            )}
           </SelectGroup>
         </SelectContent>
       </Select>
@@ -97,11 +104,13 @@ const Filters = ({
         <SelectContent>
           <SelectGroup>
             <SelectItem value={"all"}>All </SelectItem>
-            {getUniqueValues(originalData, "Review Status").map((value) => (
-              <SelectItem key={value} value={value}>
-                {value}
-              </SelectItem>
-            ))}
+            {getUniqueValues(originalData, "Review Status").map(
+              (value: any) => (
+                <SelectItem key={value} value={value}>
+                  {value}
+                </SelectItem>
+              )
+            )}
           </SelectGroup>
         </SelectContent>
       </Select>

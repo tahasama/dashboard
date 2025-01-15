@@ -5,7 +5,13 @@ import { twMerge } from "tailwind-merge";
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
-export const filterData = (data, createdBy, subProject, discipline, status) => {
+export const filterData = (
+  data: any[],
+  createdBy: string,
+  subProject: string,
+  discipline: string,
+  status: string
+) => {
   console.log(
     "🚀 ~ filterData ~ data, createdBy, subProject, discipline:",
     data,

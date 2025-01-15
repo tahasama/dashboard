@@ -10,6 +10,7 @@ import LateAnalysisReview from "@/app/(workflow)/LateAnalysisReview";
 import StatusOutcomeHeatMap from "@/app/(workflow)/StepStatusOutcomeChart";
 import WorkflowStepStatusChart from "@/app/(workflow)/WorkflowStepStatusChart";
 import Filters from "@/app/Filters";
+import { Data, MergedData } from "@/app/types";
 import {
   ResizablePanelGroup,
   ResizablePanel,
@@ -20,8 +21,8 @@ import { lazy, Suspense, useEffect, useState } from "react";
 
 const LazyLineTimeChart = lazy(() => import("../../LineTimeChart"));
 
-const FiltersAndCharts = ({ originalData }: { originalData: any[][] }) => {
-  const [filteredData, setFilteredData] = useState<any[][]>(originalData);
+const FiltersAndCharts = ({ originalData }: { originalData: MergedData[] }) => {
+  const [filteredData, setFilteredData] = useState<MergedData[]>(originalData);
   const [loading, setLoading] = useState(false);
 
   const [createdByFilter, setCreatedByFilter] = useState<string>("all");

@@ -1,11 +1,7 @@
-// app/api/projects/[projectNumber]/route.ts
 import { query } from "@/lib/db";
 import { NextResponse } from "next/server";
 
-export async function GET(
-  req: Request,
-  { params }: { params: { projectNumber: string } }
-) {
+export async function GET(req, { params }) {
   const { projectNumber } = params;
 
   try {
@@ -35,10 +31,7 @@ export async function GET(
 }
 
 // POST: Create or Update Project
-export async function POST(
-  req: Request,
-  { params }: { params: { projectNumber: string } }
-) {
+export async function POST(req, { params }) {
   const { projectNumber } = params;
   const body = await req.json();
   const mergedData = body?.mergedData;
@@ -75,10 +68,7 @@ export async function POST(
 }
 
 // PUT: Update Project
-export async function PUT(
-  req: Request,
-  { params }: { params: { projectNumber: string } }
-) {
+export async function PUT(req, { params }) {
   const { projectNumber } = params;
   const body = await req.json();
   const mergedData = body?.mergedData;
