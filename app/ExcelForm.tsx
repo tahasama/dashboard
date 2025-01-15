@@ -19,6 +19,12 @@ import * as XLSX from "xlsx";
 import { useState } from "react";
 
 import { useRouter } from "next/navigation";
+import { MergedData } from "./types";
+import {
+  createNewProject,
+  getProject,
+  updateProjectData,
+} from "./action/actions";
 
 const ExcelForm = ({}: any) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false); // Control dialog visibility
@@ -28,46 +34,9 @@ const ExcelForm = ({}: any) => {
   const [isReadyToGenerate, setIsReadyToGenerate] = useState<boolean>(false);
   const router = useRouter();
 
+  // const projectNumber = mergedData[0].documentNo?.split("-")[0];
+
   // Create new project (POST)
-  const createNewProject = async (projectNumber: string, mergedData: any[]) => {
-    const response = await fetch(`/api/projects/${projectNumber}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        mergedData, // Match API expectation
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error(
-        `Failed to create project ${projectNumber}: ${response.statusText}`
-      );
-    }
-  };
-
-  // Update existing project (PUT)
-  const updateProjectData = async (
-    projectNumber: string,
-    mergedData: any[]
-  ) => {
-    const response = await fetch(`/api/projects/${projectNumber}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        mergedData, // Match API expectation
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error(
-        `Failed to update project ${projectNumber}: ${response.statusText}`
-      );
-    }
-  };
 
   // Handle opening of the dialog
   // const openDialog = () => setIsDialogOpen(true);
@@ -217,18 +186,24 @@ const ExcelForm = ({}: any) => {
       const projectNumber = mergedData[0].documentNo?.split("-")[0];
 
       if (projectNumber) {
-        const existingProjectResponse = await fetch(
-          `/api/projects/${projectNumber}`
+        const existingProjectResponse = await getProject(projectNumber);
+        console.log(
+          "🚀 ~ handleGenerate ~ existingProjectResponse:",
+          !!existingProjectResponse.project
         );
-        if (existingProjectResponse.ok) {
+
+        if (!!existingProjectResponse.project) {
+          console.log("Updating...");
           await updateProjectData(projectNumber, mergedData);
         } else {
+          console.log("Creating...");
           await createNewProject(projectNumber, mergedData);
         }
 
         setError(null);
         router.push(`/report/${projectNumber}`);
       }
+      setIsDialogOpen(!isDialogOpen);
     } catch (err: any) {
       setError(`Error processing files: ${err.message}`);
     }
