@@ -187,16 +187,10 @@ const ExcelForm = ({}: any) => {
 
       if (projectNumber) {
         const existingProjectResponse = await getProject(projectNumber);
-        console.log(
-          "🚀 ~ handleGenerate ~ existingProjectResponse:",
-          !!existingProjectResponse.project
-        );
 
         if (!!existingProjectResponse.project) {
-          console.log("Updating...");
           await updateProjectData(projectNumber, mergedData);
         } else {
-          console.log("Creating...");
           await createNewProject(projectNumber, mergedData);
         }
 
@@ -219,7 +213,6 @@ const ExcelForm = ({}: any) => {
       );
 
       // Debugging output
-      console.log("Matching File2 Record:", matchingFile2Record);
 
       // Default file2 record to avoid errors
       const file2Record = matchingFile2Record || {};

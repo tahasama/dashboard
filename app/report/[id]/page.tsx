@@ -11,7 +11,6 @@ const Report = async ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = await params;
 
   const { project } = await getProject(id);
-  console.log("🚀 ~ Report ~ projectData:", project);
 
   if (!project.project_number) {
     return (

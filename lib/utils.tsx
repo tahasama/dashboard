@@ -12,14 +12,6 @@ export const filterData = (
   discipline: string,
   status: string
 ) => {
-  console.log(
-    "🚀 ~ filterData ~ data, createdBy, subProject, discipline:",
-    data,
-    createdBy,
-    subProject,
-    discipline,
-    status
-  );
   return data.filter((row: MergedData) => {
     // Check if each row matches the selected filter values
     const matchesCreatedBy = createdBy ? row.selectList5 === createdBy : true;
@@ -31,10 +23,6 @@ export const filterData = (
       : true;
     const matchesStatus = status ? row.reviewStatus === status : true;
 
-    console.log("🚀 ~ returndata.filter ~ createdBy:", createdBy);
-    console.log("🚀 ~ returndata.filter ~ row5:", row.selectList5);
-    console.log("🚀 ~ returndata.filter ~ row3:", row.selectList3);
-    console.log("🚀 ~ returndata.filter ~ row1:", row.selectList1);
     // Only include rows that match all active filter criteria
     return (
       matchesCreatedBy &&

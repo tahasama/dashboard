@@ -45,7 +45,6 @@ const FiltersAndCharts = ({ originalData }: { originalData: MergedData[] }) => {
       disciplineFilter === "all" ? "" : disciplineFilter,
       statusFilter === "all" ? "" : statusFilter
     );
-    console.log("🚀 ~ applyFilters ~ filtered:", filtered);
     setFilteredData(filtered);
     setLoading(false);
   };

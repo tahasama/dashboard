@@ -7,13 +7,6 @@ import { Chart } from "react-google-charts";
 import { MergedData } from "./types";
 
 const LineTimeChart: React.FC<any> = ({ data }) => {
-  console.log(
-    "🚀 ~ data0:",
-    data.filter(
-      (x: MergedData) =>
-        x.submissionStatus !== "Canceled" && x.stepStatus !== "Terminated"
-    ).length
-  );
   const parseDate = useMemo(() => {
     const excelBaseDate = new Date(1899, 11, 30).getTime();
 
@@ -165,8 +158,6 @@ const LineTimeChart: React.FC<any> = ({ data }) => {
       }
       return isValid;
     });
-
-  console.log("Filtered out documents:", filteredOutDocuments);
 
   const options = {
     timeline: {
