@@ -30,6 +30,7 @@ const FiltersAndCharts = ({ originalData }: { originalData: any[][] }) => {
   console.log("🚀 ~ FiltersAndCharts ~ subProjectFilter:", subProjectFilter);
   const [disciplineFilter, setDisciplineFilter] = useState<string>("all");
   console.log("🚀 ~ FiltersAndCharts ~ disciplineFilter:", disciplineFilter);
+  const [statusFilter, setStatusFilter] = useState<string>("all");
 
   const clearFilters = () => {
     setLoading(true);
@@ -43,7 +44,8 @@ const FiltersAndCharts = ({ originalData }: { originalData: any[][] }) => {
       originalData,
       createdByFilter === "all" ? "" : createdByFilter,
       subProjectFilter === "all" ? "" : subProjectFilter,
-      disciplineFilter === "all" ? "" : disciplineFilter
+      disciplineFilter === "all" ? "" : disciplineFilter,
+      statusFilter === "all" ? "" : statusFilter
     );
     console.log("🚀 ~ applyFilters ~ filtered:", filtered);
     setFilteredData(filtered);
@@ -52,7 +54,7 @@ const FiltersAndCharts = ({ originalData }: { originalData: any[][] }) => {
 
   useEffect(() => {
     applyFilters();
-  }, [createdByFilter, subProjectFilter, disciplineFilter]);
+  }, [createdByFilter, subProjectFilter, disciplineFilter, statusFilter]);
 
   return (
     <div>
@@ -62,9 +64,11 @@ const FiltersAndCharts = ({ originalData }: { originalData: any[][] }) => {
         createdByFilter={createdByFilter}
         subProjectFilter={subProjectFilter}
         disciplineFilter={disciplineFilter}
+        statusFilter={statusFilter}
         setCreatedByFilter={setCreatedByFilter}
         setSubProjectFilter={setSubProjectFilter}
         setDisciplineFilter={setDisciplineFilter}
+        setStatusFilter={setStatusFilter}
         clearFilters={clearFilters}
       />
       {/* Supplier Documents Charts */}

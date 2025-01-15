@@ -16,18 +16,22 @@ const Filters = ({
   createdByFilter,
   subProjectFilter,
   disciplineFilter,
+  statusFilter,
   setCreatedByFilter,
   setSubProjectFilter,
   setDisciplineFilter,
+  setStatusFilter,
   clearFilters,
 }: {
   originalData: any[][];
   createdByFilter: string;
   subProjectFilter: string;
   disciplineFilter: string;
+  statusFilter: string;
   setCreatedByFilter: (value: string) => void;
   setSubProjectFilter: (value: string) => void;
   setDisciplineFilter: (value: string) => void;
+  setStatusFilter: (value: string) => void;
   clearFilters: () => void;
 }) => {
   const getUniqueValues = (data: any[][], column: string) => {
@@ -85,6 +89,23 @@ const Filters = ({
           </SelectGroup>
         </SelectContent>
       </Select>
+
+      <Select value={statusFilter} onValueChange={setStatusFilter}>
+        <SelectTrigger className="w-[180px]">
+          <SelectValue placeholder="Select a Discipline" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectGroup>
+            <SelectItem value={"all"}>All </SelectItem>
+            {getUniqueValues(originalData, "Review Status").map((value) => (
+              <SelectItem key={value} value={value}>
+                {value}
+              </SelectItem>
+            ))}
+          </SelectGroup>
+        </SelectContent>
+      </Select>
+
       <Button
         variant="outline"
         onClick={clearFilters}

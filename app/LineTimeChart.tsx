@@ -89,74 +89,72 @@ const LineTimeChart: React.FC<any> = ({ data }) => {
         reviewStatus,
       } = item;
 
-      const submissionEndDate = parseDate(dateIn);
+      // Parse dates
+      const submissionEndDate = parseDate(dateIn); // Can be null or undefined
       const reviewStartDate = submissionEndDate
         ? new Date(submissionEndDate.getTime() + 24 * 60 * 60 * 1000)
         : null;
       const reviewEndDate = parseDate(dateCompleted);
 
-      // Parse dates and handle missing values
-      const submissionStartDate =
-        parseDate(plannedSubmissionDate) || submissionEndDate;
-      const reviewStartDateParsed = parseDate(reviewStartDate);
-
-      // Handle missing reviewEndDate
+      let validSubmissionStartDate =
+        parseDate(plannedSubmissionDate) || new Date(); // Default to today's date if null
+      let validSubmissionEndDate = submissionEndDate || new Date(); // Default to today's date if null
+      let validReviewStartDate = reviewStartDate || new Date();
       let validReviewEndDate = reviewEndDate || new Date();
 
-      // Check if any required dates are missing
-      if (
-        !submissionStartDate ||
-        !submissionEndDate ||
-        !reviewStartDateParsed ||
-        !validReviewEndDate
-      ) {
-        console.warn(
-          "Missing dates for item:",
-          title,
-          submissionStartDate,
-          submissionEndDate,
-          reviewStartDateParsed,
-          validReviewEndDate
-        );
-        return []; // Skip this item if any of the dates are missing
+      // Check if plannedSubmissionDate > today's date
+      if (plannedSubmissionDate && validSubmissionStartDate > new Date()) {
+        // If plannedSubmissionDate is greater than today's date, use it for all four dates
+        validSubmissionStartDate =
+          validSubmissionEndDate =
+          validReviewStartDate =
+          validReviewEndDate =
+            validSubmissionStartDate;
+      } else {
+        // Otherwise, use plannedSubmissionDate for submissionStartDate and today's date for the other three dates
+        if (!validSubmissionEndDate) validSubmissionEndDate = new Date();
+        if (!validReviewStartDate) validReviewStartDate = new Date();
+        if (!validReviewEndDate) validReviewEndDate = new Date();
       }
 
-      // Explicitly check and adjust if submissionStartDate > submissionEndDate
-      const validSubmissionStartDate =
-        submissionStartDate > submissionEndDate
-          ? submissionEndDate
-          : submissionStartDate;
+      // Adjust submissionStartDate to not exceed submissionEndDate
+      if (validSubmissionStartDate > validSubmissionEndDate) {
+        validSubmissionStartDate = validSubmissionEndDate;
+      }
 
-      // Ensure that reviewStartDate is not later than reviewEndDate
-      const validReviewStartDate =
-        reviewStartDateParsed &&
-        validReviewEndDate &&
-        reviewStartDateParsed > validReviewEndDate
-          ? validReviewEndDate
-          : reviewStartDateParsed;
+      // Adjust reviewStartDate to not exceed reviewEndDate
+      if (validReviewStartDate > validReviewEndDate) {
+        validReviewStartDate = validReviewEndDate;
+      }
 
       // Format the dates for display
       const formattedSubmissionStart = formatDate(validSubmissionStartDate);
-      const formattedSubmissionEnd = formatDate(submissionEndDate);
+      const formattedSubmissionEnd = formatDate(validSubmissionEndDate);
       const formattedReviewStart = formatDate(validReviewStartDate);
       const formattedReviewEnd = formatDate(validReviewEndDate);
 
-      return [
+      const rowsToReturn = [
         [
           title,
           `Submission: ${formattedSubmissionStart} - ${formattedSubmissionEnd} ${submissionStatus}`,
           validSubmissionStartDate, // Use the adjusted start date
-          submissionEndDate,
+          validSubmissionEndDate,
         ],
-        [
+      ];
+
+      // Only include review if valid dates are available
+      if (validReviewStartDate && validReviewEndDate) {
+        rowsToReturn.push([
           title,
           `Review: ${formattedReviewStart} - ${formattedReviewEnd} ${
             reviewStatus || "Approved"
           }`,
           validReviewStartDate,
           validReviewEndDate,
-        ],
-      ];
+        ]);
+      }
+
+      return rowsToReturn;
     })
     .flat()
     .filter((row: any) => {
@@ -167,6 +165,7 @@ const LineTimeChart: React.FC<any> = ({ data }) => {
       }
       return isValid;
     });
+
   console.log("Filtered out documents:", filteredOutDocuments);
 
   const options = {

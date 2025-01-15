@@ -5,13 +5,14 @@ import { twMerge } from "tailwind-merge";
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
-export const filterData = (data, createdBy, subProject, discipline) => {
+export const filterData = (data, createdBy, subProject, discipline, status) => {
   console.log(
     "🚀 ~ filterData ~ data, createdBy, subProject, discipline:",
     data,
     createdBy,
     subProject,
-    discipline
+    discipline,
+    status
   );
   return data.filter((row: MergedData) => {
     // Check if each row matches the selected filter values
@@ -22,12 +23,19 @@ export const filterData = (data, createdBy, subProject, discipline) => {
     const matchesDiscipline = discipline
       ? row.selectList1 === discipline
       : true;
+    const matchesStatus = status ? row.reviewStatus === status : true;
+
     console.log("🚀 ~ returndata.filter ~ createdBy:", createdBy);
     console.log("🚀 ~ returndata.filter ~ row5:", row.selectList5);
     console.log("🚀 ~ returndata.filter ~ row3:", row.selectList3);
     console.log("🚀 ~ returndata.filter ~ row1:", row.selectList1);
     // Only include rows that match all active filter criteria
-    return matchesCreatedBy && matchesSubProject && matchesDiscipline;
+    return (
+      matchesCreatedBy &&
+      matchesSubProject &&
+      matchesDiscipline &&
+      matchesStatus
+    );
   });
 };
 
