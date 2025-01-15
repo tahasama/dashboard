@@ -30,18 +30,15 @@ const ExcelForm = ({}: any) => {
 
   // Create new project (POST)
   const createNewProject = async (projectNumber: string, mergedData: any[]) => {
-    const response = await fetch(
-      `${process.env.BASE_URL}/api/projects/${projectNumber}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          mergedData, // Match API expectation
-        }),
-      }
-    );
+    const response = await fetch(`/api/projects/${projectNumber}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        mergedData, // Match API expectation
+      }),
+    });
 
     if (!response.ok) {
       throw new Error(
@@ -55,18 +52,15 @@ const ExcelForm = ({}: any) => {
     projectNumber: string,
     mergedData: any[]
   ) => {
-    const response = await fetch(
-      `${process.env.BASE_URL}/api/projects/${projectNumber}`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          mergedData, // Match API expectation
-        }),
-      }
-    );
+    const response = await fetch(`/api/projects/${projectNumber}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        mergedData, // Match API expectation
+      }),
+    });
 
     if (!response.ok) {
       throw new Error(
@@ -224,7 +218,7 @@ const ExcelForm = ({}: any) => {
 
       if (projectNumber) {
         const existingProjectResponse = await fetch(
-          `${process.env.BASE_URL}/api/projects/${projectNumber}`
+          `/api/projects/${projectNumber}`
         );
         if (existingProjectResponse.ok) {
           await updateProjectData(projectNumber, mergedData);
