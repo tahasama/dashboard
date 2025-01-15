@@ -1,20 +1,16 @@
-// lib/db.ts
-import { Client } from 'pg';
+import { Pool } from 'pg';
 
-let client: Client | null = null;
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL, // Your connection string
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : undefined, // Enable SSL for production
+});
 
-export async function getClient() {
-  // Check if client is already created and connected
-  if (client) {
-    return client;
+export async function query(text: string, params: any[] = []) {
+  const client = await pool.connect(); // Get a client from the pool
+  try {
+    const result = await client.query(text, params); // Perform the query
+    return result;
+  } finally {
+    client.release(); // Release the client back to the pool
   }
-
-  client = new Client({
-    connectionString: process.env.DATABASE_URL, // Your connection string from Vercel
-    // ssl: {
-    //     rejectUnauthorized: false, // If using SSL for secure connection
-    //   },
-  });
-  await client.connect();
-  return client;
 }

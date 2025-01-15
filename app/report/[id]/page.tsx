@@ -8,11 +8,13 @@ import LateAnalysisReview from "@/app/(workflow)/LateAnalysisReview";
 import StatusOutcomeHeatMap from "@/app/(workflow)/StepStatusOutcomeChart";
 import WorkflowStepStatusChart from "@/app/(workflow)/WorkflowStepStatusChart";
 import Filters from "@/app/Filters";
+import { Button } from "@/components/ui/button";
 import {
   ResizablePanelGroup,
   ResizablePanel,
   ResizableHandle,
 } from "@/components/ui/resizable";
+import Link from "next/link";
 import React from "react";
 import { Suspense } from "react";
 
@@ -35,7 +37,21 @@ async function getProjectData(projectNumber: string) {
 
 const Report = async ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = await params;
-  const { data } = await getProjectData(id);
+
+  const projectData = await getProjectData(id);
+
+  if (!projectData) {
+    return (
+      <div className="w-screen h-screen grid place-content-center gap-6">
+        <p>Project data not found. Please check the project ID.</p>
+        <Button asChild>
+          <Link href="/">Go back home</Link>
+        </Button>
+      </div>
+    );
+  }
+
+  const { data } = projectData;
 
   //   const data: string | any[] = [];
   return (

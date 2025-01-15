@@ -1,16 +1,15 @@
 // app/api/projects/[projectNumber]/route.ts
-import { getClient } from "@/lib/db";
+import { query } from "@/lib/db";
 import { NextResponse } from "next/server";
 
 export async function GET(
   req: Request,
-  { params }: { params: Promise<{ projectNumber: string }> }
+  { params }: { params: { projectNumber: string } }
 ) {
-  const { projectNumber } = await params;
-  const client = await getClient();
+  const { projectNumber } = params;
 
   try {
-    const result = await client.query(
+    const result = await query(
       "SELECT project_number, data FROM projects WHERE project_number = $1",
       [projectNumber]
     );
@@ -27,7 +26,7 @@ export async function GET(
       );
     }
   } catch (error) {
-    console.error(error);
+    console.error("Database query error:", error);
     return NextResponse.json(
       { message: "Internal Server Error" },
       { status: 500 }
@@ -35,20 +34,30 @@ export async function GET(
   }
 }
 
+// POST: Create or Update Project
 export async function POST(
   req: Request,
-  { params }: { params: Promise<{ projectNumber: string }> }
+  { params }: { params: { projectNumber: string } }
 ) {
-  const { projectNumber } = await params;
-  const { mergedData } = await req.json();
-  const client = await getClient();
+  const { projectNumber } = params;
+  const body = await req.json();
+  const mergedData = body?.mergedData;
+
+  if (!projectNumber || !mergedData) {
+    return NextResponse.json(
+      { message: "Invalid request: Missing projectNumber or mergedData" },
+      { status: 400 }
+    );
+  }
 
   try {
-    await client.query(
-      `INSERT INTO projects (project_number, data)
-       VALUES ($1, $2)
-       ON CONFLICT (project_number)
-       DO UPDATE SET data = $2`,
+    await query(
+      `
+      INSERT INTO projects (project_number, data)
+      VALUES ($1, $2)
+      ON CONFLICT (project_number)
+      DO UPDATE SET data = $2, updated_at = CURRENT_TIMESTAMP
+      `,
       [projectNumber, JSON.stringify(mergedData)]
     );
 
@@ -57,7 +66,7 @@ export async function POST(
       { status: 201 }
     );
   } catch (error) {
-    console.error(error);
+    console.error("Error in POST /projects:", error);
     return NextResponse.json(
       { message: "Internal Server Error" },
       { status: 500 }
@@ -65,20 +74,30 @@ export async function POST(
   }
 }
 
+// PUT: Update Project
 export async function PUT(
   req: Request,
-  { params }: { params: Promise<{ projectNumber: string }> }
+  { params }: { params: { projectNumber: string } }
 ) {
-  const { projectNumber } = await params;
-  const { mergedData } = await req.json();
-  const client = await getClient();
+  const { projectNumber } = params;
+  const body = await req.json();
+  const mergedData = body?.mergedData;
+
+  if (!projectNumber || !mergedData) {
+    return NextResponse.json(
+      { message: "Invalid request: Missing projectNumber or mergedData" },
+      { status: 400 }
+    );
+  }
 
   try {
-    const result = await client.query(
-      `UPDATE projects
-       SET data = $2, updated_at = CURRENT_TIMESTAMP
-       WHERE project_number = $1
-       RETURNING project_number, data`,
+    const result = await query(
+      `
+      UPDATE projects
+      SET data = $2, updated_at = CURRENT_TIMESTAMP
+      WHERE project_number = $1
+      RETURNING project_number, data
+      `,
       [projectNumber, JSON.stringify(mergedData)]
     );
 
@@ -97,7 +116,7 @@ export async function PUT(
       );
     }
   } catch (error) {
-    console.error(error);
+    console.error("Error in PUT /projects:", error);
     return NextResponse.json(
       { message: "Internal Server Error" },
       { status: 500 }

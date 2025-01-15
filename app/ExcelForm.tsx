@@ -88,10 +88,7 @@ const ExcelForm = ({}: any) => {
     }
   };
 
-  const expectedHeaders = [
-    ["File", "Package Number", "Document No"],
-    ["Workflow No.", "Workflow Name"],
-  ];
+  const expectedHeaders = [[], []];
 
   const validateFiles = (currentFiles: File[]) => {
     const allUploaded = expectedHeaders.every(
@@ -139,164 +136,138 @@ const ExcelForm = ({}: any) => {
       return;
     }
 
-    const allData: any[][] = [];
-    let validationFailed = false;
-
-    files.forEach((file, fileIndex) => {
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = async (event) => {
-        try {
-          const binaryStr = event.target?.result;
-          const workbook = XLSX.read(binaryStr, { type: "binary" });
-          const sheetName = workbook.SheetNames[0];
-          const sheet = workbook.Sheets[sheetName];
-
-          const sheetData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-          const headers: any = sheetData[indexRows[fileIndex]];
-          const rows = sheetData.slice(indexRows[fileIndex] + 1);
-
-          const isValidHeaders = expectedHeaders[fileIndex].every(
-            (header, idx) => headers[idx] === header
-          );
-
-          if (!isValidHeaders) {
-            validationFailed = true;
-            setError(
-              `File ${
-                fileIndex + 1
-              } has incorrect headers. Expected: ${expectedHeaders[
-                fileIndex
-              ].join(", ")}`
-            );
-            return;
-          }
-
-          const jsonData = rows.map((row: any) =>
-            headers.reduce((acc: any, header: any, colIndex: number) => {
-              acc[header] = row[colIndex] || "";
-              return acc;
-            }, {})
-          );
-
-          allData[fileIndex] = jsonData;
-
-          if (fileIndex === files.length - 1 && !validationFailed) {
-            const firstFileColumns = [
-              "Document No",
-              "Title",
-              "Submission Status",
-              "Review Status",
-              "Created By",
-              "Days Late",
-              "Planned Submission Date",
-              "Select List 1",
-              "Select List 3",
-              "Select List 5",
-              "Status",
-            ];
-            const secondFileColumns = [
-              "Document No.",
-              "Document Title",
-              "Assigned To",
-              "Step Status",
-              "Original Due Date",
-              "Days Late",
-              "Date In",
-              "Date Completed",
-            ];
-
-            const filteredFirstFileData = filterColumns(
-              allData[0],
-              firstFileColumns
-            );
-            const filteredSecondFileData = filterColumns(
-              allData[1],
-              secondFileColumns
-            );
-
-            const mergedData = mergeFileData(
-              filteredFirstFileData,
-              filteredSecondFileData
-            );
-
-            const projectNumber = mergedData[0].documentNo?.split("-")[0];
-
-            if (projectNumber) {
+    try {
+      const allData: any[][] = await Promise.all(
+        files.map((file, fileIndex) => {
+          return new Promise<any[]>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (event) => {
               try {
-                const existingProjectResponse = await fetch(
-                  `/api/projects/${projectNumber}`
-                );
+                const binaryStr = event.target?.result;
+                const workbook = XLSX.read(binaryStr, { type: "binary" });
+                const sheetName = workbook.SheetNames[0];
+                const sheet = workbook.Sheets[sheetName];
 
-                if (existingProjectResponse.ok) {
-                  await updateProjectData(projectNumber, mergedData);
-                } else {
-                  await createNewProject(projectNumber, mergedData);
+                const sheetData = XLSX.utils.sheet_to_json(sheet, {
+                  header: 1,
+                });
+                const headers = sheetData[indexRows[fileIndex]];
+                const rows = sheetData.slice(indexRows[fileIndex] + 1);
+
+                if (!headers || !Array.isArray(headers)) {
+                  throw new Error(
+                    `File ${fileIndex + 1}: Invalid or missing headers.`
+                  );
                 }
 
-                setError(null);
-                router.push(`/report/${projectNumber}`);
-              } catch (err: any) {
-                setError(
-                  `Error processing project ${projectNumber}: ${err.message}`
+                const jsonData = rows.map((row: any) =>
+                  headers.reduce((acc: any, header: any, colIndex: number) => {
+                    acc[header] = row[colIndex] || "";
+                    return acc;
+                  }, {})
                 );
-              }
-            }
-          }
-        } catch (err: any) {
-          setError(`Error processing file ${fileIndex + 1}: ${err.message}`);
-        }
-      };
 
-      reader.readAsArrayBuffer(file);
-    });
+                resolve(jsonData);
+              } catch (err) {
+                reject(err);
+              }
+            };
+            reader.onerror = (err) => reject(err);
+            reader.readAsArrayBuffer(file);
+          });
+        })
+      );
+
+      // Process allData after all files are read
+      const firstFileColumns = [
+        "Document No",
+        "Title",
+        "Submission Status",
+        "Review Status",
+        "Created By",
+        "Days Late",
+        "Planned Submission Date",
+        "Select List 1",
+        "Select List 3",
+        "Select List 5",
+        "Status",
+      ];
+      const secondFileColumns = [
+        "Document No.",
+        "Document Title",
+        "Assigned To",
+        "Step Status",
+        "Original Due Date",
+        "Days Late",
+        "Date In",
+        "Date Completed",
+        "Workflow Status",
+      ];
+
+      const filteredFirstFileData = filterColumns(allData[0], firstFileColumns);
+      const filteredSecondFileData = filterColumns(
+        allData[1],
+        secondFileColumns
+      );
+
+      const mergedData = mergeFileData(
+        filteredFirstFileData,
+        filteredSecondFileData
+      );
+      const projectNumber = mergedData[0].documentNo?.split("-")[0];
+
+      if (projectNumber) {
+        const existingProjectResponse = await fetch(
+          `/api/projects/${projectNumber}`
+        );
+        if (existingProjectResponse.ok) {
+          await updateProjectData(projectNumber, mergedData);
+        } else {
+          await createNewProject(projectNumber, mergedData);
+        }
+
+        setError(null);
+        router.push(`/report/${projectNumber}`);
+      }
+    } catch (err: any) {
+      setError(`Error processing files: ${err.message}`);
+    }
   };
 
   // Helper function to merge the data from both files
   const mergeFileData = (file1Data: any[], file2Data: any[]) => {
-    const defaultSecondFileValues = {
-      "Assigned To": "",
-      "Step Status": "",
-      "Original Due Date": "",
-      "Days Late": "",
-      "Date In": "",
-      "Date Completed": "",
-    };
-
-    return file1Data.map((file1Record: any) => {
-      // Find the corresponding record from the second file
+    return file1Data.map((file1Record) => {
+      // Find matching file2 record
       const matchingFile2Record = file2Data.find(
-        (file2Record: any) =>
+        (file2Record) =>
           file2Record["Document No."] === file1Record["Document No"]
       );
 
-      const file2Record = matchingFile2Record || defaultSecondFileValues;
+      // Debugging output
+      console.log("Matching File2 Record:", matchingFile2Record);
 
-      // Merge fields from both files
+      // Default file2 record to avoid errors
+      const file2Record = matchingFile2Record || {};
+
       return {
-        documentNo: file1Record["Document No"] || file2Record["Document No."],
+        documentNo: file1Record["Document No"],
         title: file1Record["Title"] || file2Record["Document Title"],
-        assignedTo: file2Record["Assigned To"],
-        stepStatus: file2Record["Step Status"],
-        originalDueDate: file2Record["Original Due Date"],
-
-        // Days Late fields from both files
-        daysLateSubmission: file1Record["Days Late"] || "",
-        daysLateReview: file2Record["Days Late"],
-
-        // Include all other necessary columns from file1
+        assignedTo: file2Record["Assigned To"] || "",
+        stepStatus: file2Record["Step Status"] || "",
+        originalDueDate: file2Record["Original Due Date"] || "",
+        daysLateSubmission: file1Record["Days Late"] || 0,
+        daysLateReview: file2Record["Days Late"] || 0,
         submissionStatus: file1Record["Submission Status"] || "",
         reviewStatus: file1Record["Review Status"] || "",
         createdBy: file1Record["Created By"] || "",
         plannedSubmissionDate: file1Record["Planned Submission Date"] || "",
-        dateIn: file1Record["Date In"] || "",
+        dateIn: file2Record["Date In"] || "",
+        dateCompleted: file2Record["Date Completed"] || "",
         selectList1: file1Record["Select List 1"] || "",
         selectList3: file1Record["Select List 3"] || "",
         selectList5: file1Record["Select List 5"] || "",
         status: file1Record["Status"] || "",
-        workflowStatus: file1Record["Workflow Status"] || "",
-        dateCompleted: file1Record["Date Completed"] || "",
+        workflowStatus: file2Record["Workflow Status"] || "",
       };
     });
   };
