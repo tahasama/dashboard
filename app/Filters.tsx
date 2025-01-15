@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/select";
 import { toCamelCase } from "@/lib/utils";
 import { MergedData } from "./types";
+import { useMemo } from "react";
 
 const Filters = ({
   originalData,
@@ -36,10 +37,32 @@ const Filters = ({
   clearFilters: () => void;
 }) => {
   const getUniqueValues = (data: any, column: string) => {
-    const camelCaseColumn: any = toCamelCase(column);
-    const allValues = data.map((fileData: string) => fileData[camelCaseColumn]);
-    return Array.from(new Set(allValues.filter(Boolean)));
+    const camelCaseColumn = toCamelCase(column);
+    const uniqueValues = new Set<string>();
+    data.forEach((fileData: any) => {
+      if (fileData[camelCaseColumn]) {
+        uniqueValues.add(fileData[camelCaseColumn]);
+      }
+    });
+    return Array.from(uniqueValues);
   };
+
+  const uniqueSubProjects = useMemo(
+    () => getUniqueValues(originalData, "Select List 3"),
+    [originalData]
+  );
+  const uniqueCreatedBy = useMemo(
+    () => getUniqueValues(originalData, "Select List 5"),
+    [originalData]
+  );
+  const uniqueDisciplines = useMemo(
+    () => getUniqueValues(originalData, "Select List 1"),
+    [originalData]
+  );
+  const uniqueStatuses = useMemo(
+    () => getUniqueValues(originalData, "Review Status"),
+    [originalData]
+  );
 
   return (
     <div className="flex gap-2 my-2 sticky top-0 bg-white z-50 p-2.5 shadow-md">
@@ -50,13 +73,11 @@ const Filters = ({
         <SelectContent>
           <SelectGroup>
             <SelectItem value={"all"}>All </SelectItem>
-            {getUniqueValues(originalData, "Select List 3").map(
-              (value: any) => (
-                <SelectItem key={value} value={value}>
-                  {value}
-                </SelectItem>
-              )
-            )}
+            {uniqueSubProjects.map((value: any) => (
+              <SelectItem key={value} value={value}>
+                {value}
+              </SelectItem>
+            ))}
           </SelectGroup>
         </SelectContent>
       </Select>
@@ -68,13 +89,11 @@ const Filters = ({
         <SelectContent>
           <SelectGroup>
             <SelectItem value={"all"}>All </SelectItem>
-            {getUniqueValues(originalData, "Select List 5").map(
-              (value: any) => (
-                <SelectItem key={value} value={value}>
-                  {value}
-                </SelectItem>
-              )
-            )}
+            {uniqueCreatedBy.map((value: any) => (
+              <SelectItem key={value} value={value}>
+                {value}
+              </SelectItem>
+            ))}
           </SelectGroup>
         </SelectContent>
       </Select>
@@ -86,13 +105,11 @@ const Filters = ({
         <SelectContent>
           <SelectGroup>
             <SelectItem value={"all"}>All </SelectItem>
-            {getUniqueValues(originalData, "Select List 1").map(
-              (value: any) => (
-                <SelectItem key={value} value={value}>
-                  {value}
-                </SelectItem>
-              )
-            )}
+            {uniqueDisciplines.map((value: any) => (
+              <SelectItem key={value} value={value}>
+                {value}
+              </SelectItem>
+            ))}
           </SelectGroup>
         </SelectContent>
       </Select>
@@ -104,13 +121,11 @@ const Filters = ({
         <SelectContent>
           <SelectGroup>
             <SelectItem value={"all"}>All </SelectItem>
-            {getUniqueValues(originalData, "Review Status").map(
-              (value: any) => (
-                <SelectItem key={value} value={value}>
-                  {value}
-                </SelectItem>
-              )
-            )}
+            {uniqueStatuses.map((value: any) => (
+              <SelectItem key={value} value={value}>
+                {value}
+              </SelectItem>
+            ))}
           </SelectGroup>
         </SelectContent>
       </Select>

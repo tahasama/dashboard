@@ -10,6 +10,7 @@ import LateAnalysisReview from "@/app/(workflow)/LateAnalysisReview";
 import StatusOutcomeHeatMap from "@/app/(workflow)/StepStatusOutcomeChart";
 import WorkflowStepStatusChart from "@/app/(workflow)/WorkflowStepStatusChart";
 import Filters from "@/app/Filters";
+import LineTimeChart from "@/app/LineTimeChart";
 import { Data, MergedData } from "@/app/types";
 import {
   ResizablePanelGroup,
@@ -17,12 +18,10 @@ import {
   ResizableHandle,
 } from "@/components/ui/resizable";
 import { filterData } from "@/lib/utils";
-import { lazy, Suspense, useEffect, useState } from "react";
-
-const LazyLineTimeChart = lazy(() => import("../../LineTimeChart"));
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 
 const FiltersAndCharts = ({ originalData }: { originalData: MergedData[] }) => {
-  const [filteredData, setFilteredData] = useState<MergedData[]>(originalData);
+  const [filteredData, setFilteredData] = useState<any[]>(originalData);
   const [loading, setLoading] = useState(false);
 
   const [createdByFilter, setCreatedByFilter] = useState<string>("all");
@@ -35,16 +34,27 @@ const FiltersAndCharts = ({ originalData }: { originalData: MergedData[] }) => {
     setCreatedByFilter("all");
     setSubProjectFilter("all");
     setDisciplineFilter("all");
+    setStatusFilter("all");
   };
 
-  const applyFilters = () => {
-    const filtered = filterData(
+  const filtered = useMemo(() => {
+    return filterData(
       originalData,
       createdByFilter === "all" ? "" : createdByFilter,
       subProjectFilter === "all" ? "" : subProjectFilter,
       disciplineFilter === "all" ? "" : disciplineFilter,
       statusFilter === "all" ? "" : statusFilter
     );
+  }, [
+    createdByFilter,
+    subProjectFilter,
+    disciplineFilter,
+    statusFilter,
+    originalData,
+  ]);
+
+  const applyFilters = () => {
+    filtered;
     setFilteredData(filtered);
     setLoading(false);
   };
@@ -156,7 +166,7 @@ const FiltersAndCharts = ({ originalData }: { originalData: MergedData[] }) => {
           </div>
         }
       >
-        <LazyLineTimeChart data={filteredData} />
+        <LineTimeChart data={filteredData} />
       </Suspense>
     </div>
   );

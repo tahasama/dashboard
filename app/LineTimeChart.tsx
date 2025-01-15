@@ -1,52 +1,61 @@
 "use client";
-
+import React, { useMemo, useState, useEffect, useCallback } from "react";
+import { FixedSizeList as List } from "react-window";
+import Chart from "react-google-charts";
+import { debounce } from "lodash";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
-import React, { useState, useEffect, useMemo } from "react";
-import { Chart } from "react-google-charts";
-import { MergedData } from "./types";
 
-const LineTimeChart: React.FC<any> = ({ data }) => {
-  const parseDate = useMemo(() => {
+interface MergedData {
+  title: string;
+  plannedSubmissionDate: string;
+  dateIn: string;
+  dateCompleted: string;
+  submissionStatus: string;
+  reviewStatus: string;
+  stepStatus: string;
+}
+
+const LineTimeChart: React.FC<{ data: MergedData[] }> = ({ data }) => {
+  const [rows, setRows] = useState<any[][]>([]);
+  const [isInitialLoad, setIsInitialLoad] = useState(true); // Flag for initial load
+
+  // Function to parse date
+  const parseDate = (dateString: any): Date | null => {
     const excelBaseDate = new Date(1899, 11, 30).getTime();
+    if (typeof dateString !== "string" && dateString !== null) {
+      dateString = String(dateString);
+    }
 
-    return (dateString: any): Date | null => {
-      if (typeof dateString !== "string" && dateString !== null) {
-        dateString = String(dateString);
+    if (typeof dateString === "string") {
+      const trimmedDate = dateString.trim();
+      const excelNumber = Number(trimmedDate);
+      if (!isNaN(excelNumber) && excelNumber > 0) {
+        return new Date(excelBaseDate + excelNumber * 24 * 60 * 60 * 1000);
       }
-
-      if (typeof dateString === "string") {
-        const trimmedDate = dateString.trim();
-        const excelNumber = Number(trimmedDate);
-        if (!isNaN(excelNumber) && excelNumber > 0) {
-          return new Date(excelBaseDate + excelNumber * 24 * 60 * 60 * 1000);
-        }
-
-        if (trimmedDate.includes("/")) {
-          const parts = trimmedDate.split("/");
-          if (parts.length === 3) {
-            const day = parseInt(parts[0], 10);
-            const month = parseInt(parts[1], 10) - 1;
-            const year = parseInt(parts[2], 10);
-            const parsedDate = new Date(year, month, day);
-            if (!isNaN(parsedDate.getTime())) {
-              return parsedDate;
-            }
+      if (trimmedDate.includes("/")) {
+        const parts = trimmedDate.split("/");
+        if (parts.length === 3) {
+          const day = parseInt(parts[0], 10);
+          const month = parseInt(parts[1], 10) - 1;
+          const year = parseInt(parts[2], 10);
+          const parsedDate = new Date(year, month, day);
+          if (!isNaN(parsedDate.getTime())) {
+            return parsedDate;
           }
         }
-
-        const date = new Date(trimmedDate);
-        if (!isNaN(date.getTime())) {
-          return date;
-        }
       }
+      const date = new Date(trimmedDate);
+      if (!isNaN(date.getTime())) {
+        return date;
+      }
+    }
+    return null;
+  };
 
-      return null;
-    };
-  }, []);
-
+  // Function to format date
   const formatDate = (date: Date): string => {
-    if (!date || isNaN(date.getTime())) return ""; // Check if the date is valid
+    if (!date || isNaN(date.getTime())) return "";
     const day = String(date.getDate()).padStart(2, "0");
     const months = [
       "Jan",
@@ -65,114 +74,186 @@ const LineTimeChart: React.FC<any> = ({ data }) => {
     const month = months[date.getMonth()];
     return `${day} ${month}`;
   };
-  const filteredOutDocuments: any[] = []; // To store the filtered-out documents
 
-  const rows = data
-    .filter(
-      (x: MergedData) =>
-        x.submissionStatus !== "Canceled" && x.stepStatus !== "Terminated"
-    )
-    .map((item: MergedData) => {
-      const {
-        title,
-        plannedSubmissionDate,
-        dateIn,
-        dateCompleted,
-        submissionStatus,
-        reviewStatus,
-      } = item;
+  // Optimized data update
+  const updateRows = useCallback(
+    debounce((data: MergedData[]) => {
+      const newRows: any[] = [];
 
-      // Parse dates
-      const submissionEndDate = parseDate(dateIn); // Can be null or undefined
-      const reviewStartDate = submissionEndDate
-        ? new Date(submissionEndDate.getTime() + 24 * 60 * 60 * 1000)
-        : null;
-      const reviewEndDate = parseDate(dateCompleted);
+      data.forEach((item) => {
+        const {
+          title,
+          plannedSubmissionDate,
+          dateIn,
+          dateCompleted,
+          submissionStatus,
+          reviewStatus,
+        } = item;
 
-      let validSubmissionStartDate =
-        parseDate(plannedSubmissionDate) || new Date(); // Default to today's date if null
-      let validSubmissionEndDate = submissionEndDate || new Date(); // Default to today's date if null
-      let validReviewStartDate = reviewStartDate || new Date();
-      let validReviewEndDate = reviewEndDate || new Date();
+        const submissionEndDate = parseDate(dateIn);
+        const reviewStartDate = submissionEndDate
+          ? new Date(submissionEndDate.getTime() + 24 * 60 * 60 * 1000)
+          : null;
+        const reviewEndDate = parseDate(dateCompleted);
 
-      // Check if plannedSubmissionDate > today's date
-      if (plannedSubmissionDate && validSubmissionStartDate > new Date()) {
-        // If plannedSubmissionDate is greater than today's date, use it for all four dates
-        validSubmissionStartDate =
-          validSubmissionEndDate =
-          validReviewStartDate =
-          validReviewEndDate =
-            validSubmissionStartDate;
-      } else {
-        // Otherwise, use plannedSubmissionDate for submissionStartDate and today's date for the other three dates
-        if (!validSubmissionEndDate) validSubmissionEndDate = new Date();
-        if (!validReviewStartDate) validReviewStartDate = new Date();
-        if (!validReviewEndDate) validReviewEndDate = new Date();
-      }
+        let validSubmissionStartDate =
+          parseDate(plannedSubmissionDate) || new Date();
+        let validSubmissionEndDate = submissionEndDate || new Date();
+        let validReviewStartDate = reviewStartDate || new Date();
+        let validReviewEndDate = reviewEndDate || new Date();
 
-      // Adjust submissionStartDate to not exceed submissionEndDate
-      if (validSubmissionStartDate > validSubmissionEndDate) {
-        validSubmissionStartDate = validSubmissionEndDate;
-      }
+        if (plannedSubmissionDate && validSubmissionStartDate > new Date()) {
+          validSubmissionStartDate =
+            validSubmissionEndDate =
+            validReviewStartDate =
+            validReviewEndDate =
+              validSubmissionStartDate;
+        }
 
-      // Adjust reviewStartDate to not exceed reviewEndDate
-      if (validReviewStartDate > validReviewEndDate) {
-        validReviewStartDate = validReviewEndDate;
-      }
+        if (validSubmissionStartDate > validSubmissionEndDate) {
+          validSubmissionStartDate = validSubmissionEndDate;
+        }
+        if (validReviewStartDate > validReviewEndDate) {
+          validReviewStartDate = validReviewEndDate;
+        }
 
-      // Format the dates for display
-      const formattedSubmissionStart = formatDate(validSubmissionStartDate);
-      const formattedSubmissionEnd = formatDate(validSubmissionEndDate);
-      const formattedReviewStart = formatDate(validReviewStartDate);
-      const formattedReviewEnd = formatDate(validReviewEndDate);
+        const formattedSubmissionStart = formatDate(validSubmissionStartDate);
+        const formattedSubmissionEnd = formatDate(validSubmissionEndDate);
+        const formattedReviewStart = formatDate(validReviewStartDate);
+        const formattedReviewEnd = formatDate(validReviewEndDate);
 
-      const rowsToReturn = [
-        [
+        // Skip rows where submissionStatus is "Canceled"
+        if (submissionStatus === "Canceled") {
+          return;
+        }
+
+        // Add submission row
+        newRows.push([
           title,
           `Submission: ${formattedSubmissionStart} - ${formattedSubmissionEnd} ${submissionStatus}`,
-          validSubmissionStartDate, // Use the adjusted start date
+          validSubmissionStartDate,
           validSubmissionEndDate,
-        ],
-      ];
-
-      // Only include review if valid dates are available
-      if (validReviewStartDate && validReviewEndDate) {
-        rowsToReturn.push([
-          title,
-          `Review: ${formattedReviewStart} - ${formattedReviewEnd} ${
-            reviewStatus || "Approved"
-          }`,
-          validReviewStartDate,
-          validReviewEndDate,
         ]);
-      }
 
-      return rowsToReturn;
-    })
-    .flat()
-    .filter((row: any) => {
-      const isValid = row.length > 0;
-      if (!isValid) {
-        // Capture the filtered-out rows here
-        filteredOutDocuments.push(row);
-      }
-      return isValid;
-    });
+        // Add review row only if validReviewStartDate and validReviewEndDate exist
+        if (validReviewStartDate && validReviewEndDate) {
+          newRows.push([
+            title,
+            `Review: ${formattedReviewStart} - ${formattedReviewEnd} ${
+              reviewStatus || "Approved"
+            }`,
+            validReviewStartDate,
+            validReviewEndDate,
+          ]);
+        }
+      });
 
-  const options = {
-    timeline: {
-      groupByRowLabel: true,
-      rowLabelStyle: {
-        fontName: "Arial",
-        fontSize: 12,
-        color: "#282a30",
+      setRows(newRows);
+      setIsInitialLoad(false); // Mark as not initial load anymore after first render
+    }, 300),
+    []
+  );
+
+  useEffect(() => {
+    if (isInitialLoad) {
+      // Immediate update for the first load (without debounce)
+      const newRows: any[] = [];
+      data.forEach((item) => {
+        const {
+          title,
+          plannedSubmissionDate,
+          dateIn,
+          dateCompleted,
+          submissionStatus,
+          reviewStatus,
+        } = item;
+        const submissionEndDate = parseDate(dateIn);
+        const reviewStartDate = submissionEndDate
+          ? new Date(submissionEndDate.getTime() + 24 * 60 * 60 * 1000)
+          : null;
+        const reviewEndDate = parseDate(dateCompleted);
+
+        let validSubmissionStartDate =
+          parseDate(plannedSubmissionDate) || new Date();
+        let validSubmissionEndDate = submissionEndDate || new Date();
+        let validReviewStartDate = reviewStartDate || new Date();
+        let validReviewEndDate = reviewEndDate || new Date();
+
+        if (plannedSubmissionDate && validSubmissionStartDate > new Date()) {
+          validSubmissionStartDate =
+            validSubmissionEndDate =
+            validReviewStartDate =
+            validReviewEndDate =
+              validSubmissionStartDate;
+        }
+
+        if (validSubmissionStartDate > validSubmissionEndDate) {
+          validSubmissionStartDate = validSubmissionEndDate;
+        }
+        if (validReviewStartDate > validReviewEndDate) {
+          validReviewStartDate = validReviewEndDate;
+        }
+
+        const formattedSubmissionStart = formatDate(validSubmissionStartDate);
+        const formattedSubmissionEnd = formatDate(validSubmissionEndDate);
+        const formattedReviewStart = formatDate(validReviewStartDate);
+        const formattedReviewEnd = formatDate(validReviewEndDate);
+
+        // Skip rows where submissionStatus is "Canceled"
+        if (submissionStatus === "Canceled") {
+          return;
+        }
+
+        // Add submission row
+        newRows.push([
+          title,
+          `Submission: ${formattedSubmissionStart} - ${formattedSubmissionEnd} ${submissionStatus}`,
+          validSubmissionStartDate,
+          validSubmissionEndDate,
+        ]);
+
+        // Add review row only if validReviewStartDate and validReviewEndDate exist
+        if (validReviewStartDate && validReviewEndDate) {
+          newRows.push([
+            title,
+            `Review: ${formattedReviewStart} - ${formattedReviewEnd} ${
+              reviewStatus || "Approved"
+            }`,
+            validReviewStartDate,
+            validReviewEndDate,
+          ]);
+        }
+      });
+      setRows(newRows);
+    } else {
+      updateRows(data); // Continue debouncing after the first load
+    }
+
+    return () => updateRows.cancel();
+  }, [data, updateRows, isInitialLoad]);
+
+  // Chart options memoized for performance
+  const options = useMemo(
+    () => ({
+      timeline: {
+        groupByRowLabel: true,
+        showRowLabels: true,
+        rowLabelStyle: {
+          fontName: "Arial",
+          fontSize: 14,
+          color: "#333",
+        },
+        barLabelStyle: { fontName: "Arial", fontSize: 10 },
+        barHeight: 25,
       },
-      barLabelStyle: { fontName: "Arial", fontSize: 10 },
-    },
-    colors: ["#A7C7E7", "#C4E5D1"],
-  };
+      // colors: ["#1E88E5", "#43A047"],
+      // colors: ["#A7C7E7", "#C4E5D1"],
+      colors: ["#63A8E6", "#84C3A3"],
+    }),
+    []
+  );
 
-  if (data.length === 0) {
+  if (rows.length === 0) {
     return (
       <span className="grid place-content-center h-[calc(100vh-90px)]">
         <Alert variant="destructive" className="gap-0 mt-4 w-fit">
@@ -188,23 +269,26 @@ const LineTimeChart: React.FC<any> = ({ data }) => {
   return (
     <div className="snap-start h-[calc(100vh-90px)] my-4 mx-10">
       <h1 className="mb-2">
-        Document&apos;s Time Line: {rows.length / 2} result.
+        Document&apos;s Time Line: {rows.length / 2} results.
       </h1>
-      <Chart
-        chartType="Timeline"
-        rows={rows}
-        columns={[
-          { type: "string" },
-          { type: "string" },
-          { type: "date" },
-          { type: "date" },
-        ]}
-        options={options}
-        width="100%"
-        height="100%"
-      />
+      <List height={480} itemCount={1} itemSize={400} width={"100%"}>
+        {() => (
+          <Chart
+            chartType="Timeline"
+            rows={rows}
+            columns={[
+              { type: "string" },
+              { type: "string" },
+              { type: "date" },
+              { type: "date" },
+            ]}
+            options={options}
+            width="100%"
+            height="470px"
+          />
+        )}
+      </List>
     </div>
   );
 };
-
 export default LineTimeChart;
