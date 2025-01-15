@@ -1,10 +1,12 @@
+"use client";
 import React, { useEffect, useState, useRef } from "react";
 import * as echarts from "echarts";
 import { nightColors } from "../colors";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
+import { Data, MergedData } from "../types";
 
-const SubmissionStatus: React.FC<any> = ({ data }) => {
+const SubmissionStatus: React.FC<Data> = ({ data }) => {
   const [chartData, setChartData] = useState<
     { label: string; value: number }[]
   >([]);
@@ -18,12 +20,12 @@ const SubmissionStatus: React.FC<any> = ({ data }) => {
 
     data
       .filter(
-        (row: any) =>
-          row["Submission Status"] !== "Canceled" &&
-          row["Submission Status"] !== "Cancelled"
+        (row: MergedData) =>
+          row.submissionStatus !== "Canceled" &&
+          row.submissionStatus !== "Cancelled"
       )
       .forEach((row: any) => {
-        const status = row["Submission Status"];
+        const status = row.submissionStatus;
         if (status) {
           statusCounts[status] = (statusCounts[status] || 0) + 1;
         }

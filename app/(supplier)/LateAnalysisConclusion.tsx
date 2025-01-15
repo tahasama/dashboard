@@ -1,10 +1,11 @@
 import React from "react";
+import { Data, MergedData } from "../types";
 
 const LateAnalysisConclusion: React.FC<{
   chartValues: number[];
   cumulativeValues: number[];
-  data: any[]; // Ensure data is passed into the component
-}> = ({ chartValues = [], cumulativeValues = [], data }) => {
+  data: MergedData[]; // Ensure data is passed into the component
+}> = ({ chartValues = [], cumulativeValues = [], data = [] }) => {
   const calculateStats = (arr: number[]) => {
     if (!arr.length) return { min: 0, max: 0, average: 0 };
 
@@ -24,8 +25,9 @@ const LateAnalysisConclusion: React.FC<{
 
   // Calculate the total number of late documents based on Days Late > 0
   const totalLateDocs = data.filter(
-    (row) =>
-      row["Days Late"] > 0 && row["Submission Status"] === "Submission Required"
+    (row: MergedData) =>
+      (row.daysLateSubmission ?? 0) > 0 &&
+      row.submissionStatus === "Submission Required"
   ).length;
 
   // Determine volume category based on totalLateDocs
@@ -125,7 +127,8 @@ const LateAnalysisConclusion: React.FC<{
         <li>
           ➡️ Total documents:{" "}
           {data.length !== 0 &&
-            data.filter((x) => x["Submission Status"] !== "Canceled").length}
+            data.filter((x: MergedData) => x.submissionStatus !== "Canceled")
+              .length}
           .
         </li>
         <li> ➡️ Average Days Late: {avgDaysLate.toFixed(0)} days</li>

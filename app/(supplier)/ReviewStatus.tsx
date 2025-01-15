@@ -1,10 +1,12 @@
+"use client";
 import React, { useEffect, useRef, useState } from "react";
 import * as echarts from "echarts";
 import { nightColors } from "../colors";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
+import { Data, MergedData } from "../types";
 
-const ReviewStatus: React.FC<any> = ({ data }) => {
+const ReviewStatus: React.FC<Data> = ({ data }) => {
   const [chartData, setChartData] = useState<
     { label: string; value: number }[]
   >([]);
@@ -14,9 +16,9 @@ const ReviewStatus: React.FC<any> = ({ data }) => {
     // Process the data
     const statusCounts: { [key: string]: number } = {};
     data
-      .filter((row: any) => row["Review Status"] !== "Terminated")
+      .filter((row: MergedData) => row.reviewStatus !== "Terminated")
       .forEach((row: any) => {
-        const status = row["Review Status"];
+        const status = row.reviewStatus;
         if (status) {
           statusCounts[status] = (statusCounts[status] || 0) + 1;
         }

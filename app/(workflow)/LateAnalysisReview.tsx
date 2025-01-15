@@ -1,9 +1,12 @@
+"use client";
+
 import React, { useState, useEffect, useRef } from "react";
 import LateAnalysisReviewConclusion from "./LateAnalysisReviewConclusion";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 
 import * as echarts from "echarts";
+import { Data, MergedData } from "../types";
 
 // Define the data structure for the input `data` prop
 interface DataRow {
@@ -23,12 +26,13 @@ interface LateAnalysisReviewProps {
   }[];
 }
 
-const LateAnalysisReview: React.FC<LateAnalysisReviewProps> = ({ data }) => {
+const LateAnalysisReview: React.FC<Data> = ({ data }) => {
   const [view, setView] = useState<boolean>(true); // true = daily, false = monthly
   const [chartData, setChartData] = useState<any>({
     labels: [],
     datasets: [],
   });
+  console.log("🚀 ~ chartData:", chartData);
   const [monthlyStats, setMonthlyStats] = useState<{
     chartValues: number[];
     cumulativeValues: number[];
@@ -46,33 +50,38 @@ const LateAnalysisReview: React.FC<LateAnalysisReviewProps> = ({ data }) => {
   const processData = (groupBy: "daily" | "monthly") => {
     const groupedData: Record<string, { daysLate: number; docs: number }> = {};
     let totalLateDocs = 0;
+    console.log(
+      "4564",
+      data.filter((x) => x.originalDueDate !== "" && x.daysLateReview !== "")[0]
+    );
+    data
+      .filter((x) => x.originalDueDate !== "" && x.daysLateReview !== "")
+      .forEach((row: MergedData) => {
+        let dateKey: string | null = null;
+        const rawDate = row.originalDueDate;
+        const daysLate = parseFloat(String(row.daysLateReview).split(" ")[0]);
 
-    data.forEach((row) => {
-      let dateKey: string | null = null;
-      const rawDate = row["Original Due Date"];
-      const daysLate = parseFloat(String(row["Days Late"]));
-
-      if (typeof rawDate === "number") {
-        dateKey = excelDateToJSDate(rawDate);
-      } else if (typeof rawDate === "string") {
-        dateKey = rawDate;
-      }
-
-      if (dateKey && !isNaN(daysLate)) {
-        if (groupBy === "monthly") {
-          const [month, year] = dateKey.split("/");
-          dateKey = `${month}/${year}`;
+        if (typeof rawDate === "number") {
+          dateKey = excelDateToJSDate(rawDate);
+        } else if (typeof rawDate === "string") {
+          dateKey = rawDate;
         }
 
-        if (!groupedData[dateKey]) {
-          groupedData[dateKey] = { daysLate: 0, docs: 0 };
-        }
-        groupedData[dateKey].daysLate += daysLate;
-        groupedData[dateKey].docs += 1;
+        if (dateKey && !isNaN(daysLate)) {
+          if (groupBy === "monthly") {
+            const [day, month, year] = dateKey.split("/"); // Adjust to handle DD/MM/YYYY format
+            dateKey = `${month}/${year.slice(-2)}`; // Format as MM/YY
+          }
 
-        if (daysLate > 0) totalLateDocs += 1; // Count late documents
-      }
-    });
+          if (!groupedData[dateKey]) {
+            groupedData[dateKey] = { daysLate: 0, docs: 0 };
+          }
+          groupedData[dateKey].daysLate += daysLate;
+          groupedData[dateKey].docs += 1;
+
+          if (daysLate > 0) totalLateDocs += 1; // Count late documents
+        }
+      });
 
     setTotalLateDocuments(totalLateDocs); // Update total late documents
     return groupedData;
@@ -84,26 +93,17 @@ const LateAnalysisReview: React.FC<LateAnalysisReviewProps> = ({ data }) => {
     const chartLabels = Object.keys(groupedData).sort((a, b) => {
       const parseDate = (date: string) => {
         const parts = date.split("/").map(Number);
-        return parts.length === 3
-          ? new Date(parts[2] + 2000, parts[1] - 1, parts[0])
-          : new Date(parts[1], parts[0] - 1); // Monthly format (MM/YYYY)
+        if (view) {
+          // If the view is by day (DD/MM/YYYY), parse as day
+          return new Date(parts[2], parts[1] - 1, parts[0]); // DD/MM/YYYY
+        } else {
+          // If the view is by month (MM/YYYY), parse as month
+          return new Date(parts[1], parts[0] - 1); // MM/YYYY
+        }
       };
 
       return parseDate(a).getTime() - parseDate(b).getTime();
     });
-
-    // const formattedLabels = chartLabels.map((label) => {
-    //   const parts = label.split("/");
-
-    //   if (parts.length === 3) {
-    //     const day = parts[0];
-    //     const month = parts[1];
-    //     const year = parts[2];
-    //     return `${day}/${month}/${year.slice(-2)}`;
-    //   }
-
-    //   return label;
-    // });
 
     const chartValues = chartLabels.map((label) => {
       const { daysLate, docs } = groupedData[label];

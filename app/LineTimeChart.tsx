@@ -1,9 +1,13 @@
+"use client";
+
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import React, { useState, useEffect, useMemo } from "react";
 import { Chart } from "react-google-charts";
+import { MergedData } from "./types";
 
-const LineTimeChart: React.FC<any> = ({ data, loading, setLoading }) => {
+const LineTimeChart: React.FC<any> = ({ data }) => {
+  console.log("🚀 ~ data:", data);
   const [mergedData, setMergedData] = useState<any[]>([]);
 
   const parseDate = useMemo(() => {
@@ -45,77 +49,59 @@ const LineTimeChart: React.FC<any> = ({ data, loading, setLoading }) => {
   }, []);
 
   useEffect(() => {
-    const delay = setTimeout(() => {
-      // Process new data immediately when data changes
-      setLoading(true);
-      const [documentData, workflowData] = data;
+    const timer = setTimeout(() => {
+      // Generate rows for the Timeline chart
 
-      const filteredDocumentData = documentData.filter(
-        (doc: any) => doc["Submission Status"] !== "Canceled"
-      );
+      const timelineRows = data
+        .filter((item: MergedData) =>
+          console.log("🚀 ~ timer ~ item.date_in:", item.date_in)
+        )
+        .map((item: MergedData) => {
+          console.log("🚀 ~ .map ~ item:", item);
+          const {
+            title: title,
+            planned_submission_date: plannedSubmission,
+            date_in: dateIn,
+            date_completed: dateCompleted,
+            submission_status: submissionStatus,
+            review_status: reviewStatus,
+          } = item;
 
-      const filteredWorkflowData = workflowData.filter(
-        (wf: any) => wf["Workflow Status"] !== "Terminated"
-      );
-      const merged = filteredDocumentData
-        .map((doc: any) => {
-          const workflow = filteredWorkflowData.find(
-            (wf: any) => wf["Document No."] === doc["Document No"]
-          );
+          console.log("🚀 ~ .map ~ dateIn:", dateIn);
+          const submissionEndDate = parseDate(dateIn);
+          const submissionStartDate =
+            parseDate(plannedSubmission) || submissionEndDate;
+          const reviewStartDate = submissionEndDate
+            ? new Date(submissionEndDate.getTime() + 24 * 60 * 60 * 1000)
+            : null;
+          const reviewEndDate = parseDate(dateCompleted);
 
-          if (!workflow || !workflow["Date In"]) {
-            return null;
-          }
+          return [
+            [
+              title,
+              `Submission: ${formatDate(submissionStartDate!)} - ${formatDate(
+                submissionEndDate!
+              )} (${submissionStatus})`,
+              submissionStartDate,
+              submissionEndDate,
+            ],
+            [
+              title,
+              `Review: ${formatDate(reviewStartDate!)} - ${formatDate(
+                reviewEndDate!
+              )} (${reviewStatus || "Approved"})`,
+              reviewStartDate,
+              reviewEndDate,
+            ],
+          ];
+        });
+      console.log("🚀 ~ timer ~ timelineRows:", timelineRows);
 
-          const plannedSubmissionDate = parseDate(
-            doc["Planned Submission Date"]
-          );
-          const workflowDateIn = parseDate(workflow["Date In"]);
+      setMergedData(timelineRows.flat());
+    }, 500);
 
-          let submissionStartDate =
-            plannedSubmissionDate &&
-            workflowDateIn &&
-            workflowDateIn < plannedSubmissionDate
-              ? workflowDateIn
-              : plannedSubmissionDate;
-
-          if (!submissionStartDate) {
-            return null;
-          }
-
-          const submissionEndDate = workflowDateIn || new Date();
-
-          if (submissionStartDate > submissionEndDate) {
-            submissionStartDate = submissionEndDate;
-          }
-
-          const reviewStartDate = new Date(submissionEndDate);
-          reviewStartDate.setDate(reviewStartDate.getDate() + 1);
-
-          const workflowDateCompleted = parseDate(workflow["Date Completed"]);
-          const reviewEndDate = workflowDateCompleted || new Date();
-
-          if (reviewStartDate > reviewEndDate) {
-            reviewStartDate.setTime(reviewEndDate.getTime());
-          }
-
-          return {
-            "Document Title": doc["Title"],
-            submissionStartDate,
-            submissionEndDate,
-            reviewStartDate,
-            reviewEndDate,
-            "Submission Status": doc["Submission Status"],
-            "Review Status": doc["Review Status"] || "Approved",
-          };
-        })
-        .filter((item: any) => item !== null);
-
-      setMergedData(merged);
-      setLoading(false);
-    }, 1000);
-    return () => clearTimeout(delay); // Clear timeout if dependencies change
-  }, [data, parseDate, setLoading]);
+    return () => clearTimeout(timer);
+  }, [data, parseDate]);
 
   const formatDate = (date: Date): string => {
     const day = String(date.getDate()).padStart(2, "0");
@@ -184,14 +170,6 @@ const LineTimeChart: React.FC<any> = ({ data, loading, setLoading }) => {
     },
     colors: ["#A7C7E7", "#C4E5D1"],
   };
-
-  if (loading) {
-    return (
-      <div className="w-screen h-screen grid place-content-center">
-        Loading Time Line data...
-      </div>
-    );
-  }
 
   if (mergedData.length === 0) {
     return (

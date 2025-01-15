@@ -1,10 +1,17 @@
+"use client";
+
 import React, { useEffect, useRef, useState } from "react";
 import * as echarts from "echarts";
 import { nightColors } from "../colors";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
+import { Data, MergedData } from "../types";
 
-const WorkflowStepStatusChart: React.FC<any> = ({ data }) => {
+const WorkflowStepStatusChart: React.FC<Data> = ({ data }) => {
+  console.log(
+    "🚀 ~ data0001:",
+    data.filter((wf: MergedData) => wf.stepStatus !== "Terminated")
+  );
   const [chartData, setChartData] = useState<
     { label: string; value: number }[]
   >([]);
@@ -15,11 +22,9 @@ const WorkflowStepStatusChart: React.FC<any> = ({ data }) => {
     const statusCounts: { [key: string]: number } = {};
 
     data
-      .filter(
-        (wf: { [x: string]: string }) => wf["Step Status"] !== "Terminated"
-      )
-      .forEach((wf: { [x: string]: any }) => {
-        const status = wf["Step Status"];
+      .filter((wf: MergedData) => wf.stepStatus !== "Terminated")
+      .forEach((wf: MergedData) => {
+        const status = wf.stepStatus;
         if (status) {
           statusCounts[status] = (statusCounts[status] || 0) + 1;
         }

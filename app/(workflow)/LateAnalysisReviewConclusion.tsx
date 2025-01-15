@@ -1,10 +1,11 @@
 import React from "react";
+import { Data, MergedData } from "../types";
 
 const LateAnalysisReviewConclusion: React.FC<{
   chartValues: number[];
   cumulativeValues: number[];
   totalDocuments: number; // Add the total documents count as a prop
-  data: any[];
+  data: MergedData[];
 }> = ({
   chartValues = [],
   cumulativeValues = [],
@@ -88,8 +89,8 @@ const LateAnalysisReviewConclusion: React.FC<{
           ➡️ Total docs for review:{" "}
           {
             data.filter(
-              (x) =>
-                x["Step Status"] === "Overdue" || x["Step Status"] === "Current"
+              (x: MergedData) =>
+                x.stepStatus === "Overdue" || x.stepStatus === "Current"
             ).length
           }
         </li>

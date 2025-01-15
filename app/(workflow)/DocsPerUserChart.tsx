@@ -1,3 +1,4 @@
+"use client";
 import React, { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
 import {
@@ -12,10 +13,15 @@ import {
 import { lightColors, sankeyColorList } from "../colors";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
+import { Data, MergedData } from "../types";
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
-const DocsPerUserChart: React.FC<{ data: any[] }> = ({ data }) => {
+const DocsPerUserChart: React.FC<Data> = ({ data }) => {
+  console.log(
+    "🚀  huhu ",
+    data.length !== 0 && data.filter((x: MergedData) => x.reviewStatus !== "")
+  );
   const [chartData, setChartData] = useState({
     labels: [] as string[],
     datasets: [
@@ -53,9 +59,9 @@ const DocsPerUserChart: React.FC<{ data: any[] }> = ({ data }) => {
     } = {};
     const overdueAssignees: Set<string> = new Set(); // Track unique assignees for overdue
 
-    data.forEach((row) => {
-      const user = row["Assigned To"];
-      const status = row["Step Status"];
+    data.forEach((row: MergedData) => {
+      const user: string = row.assignedTo ?? "";
+      const status = row.stepStatus;
       if (!userDocCount[user]) {
         userDocCount[user] = { overdue: 0, current: 0 };
       }
@@ -78,10 +84,6 @@ const DocsPerUserChart: React.FC<{ data: any[] }> = ({ data }) => {
       ([, count]) => count.overdue
     );
     overdueValues.sort((a, b) => b - a);
-    // console.log(
-    //   "🚀 ~ useEffect ~ overdueValues:",
-    //   overdueValues.sort((a, b) => b - a)
-    // );
 
     const currentValues = filteredUserDocCount.map(
       ([, count]) => count.current

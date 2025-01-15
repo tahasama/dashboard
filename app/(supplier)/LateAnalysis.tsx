@@ -1,30 +1,13 @@
+"use client";
 import React, { useState, useEffect, useRef } from "react";
 import LateAnalysisConclusion from "./LateAnalysisConclusion";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import * as echarts from "echarts";
+import { Data, MergedData } from "../types";
 
-// Define the data structure for the input `data` prop
-interface DataRow {
-  "Planned Submission Date": string | number;
-  "Submission Status": string;
-  "Days Late": string | number;
-}
-
-// Define the props type
-interface LateAnalysisProps {
-  data: DataRow[];
-}
-
-interface LateAnalysisProps {
-  data: {
-    "Planned Submission Date": string | number;
-    "Submission Status": string;
-    "Days Late": string | number;
-  }[];
-}
-
-const LateAnalysis: React.FC<LateAnalysisProps> = ({ data }) => {
+const LateAnalysis: React.FC<Data> = ({ data }) => {
+  console.log("🚀 ~ data55:", data);
   const [view, setView] = useState<boolean>(true);
   const [chartData, setChartData] = useState<any>({
     labels: [],
@@ -48,10 +31,10 @@ const LateAnalysis: React.FC<LateAnalysisProps> = ({ data }) => {
     const groupedData: Record<string, { daysLate: number; docs: number }> = {};
     let totalLateDocs = 0;
 
-    data.forEach((row) => {
+    data.forEach((row: MergedData) => {
       let dateKey: string | null = null;
-      const rawDate = row["Planned Submission Date"];
-      const daysLate = parseFloat(String(row["Days Late"]));
+      const rawDate = row.plannedSubmissionDate;
+      const daysLate = parseFloat(String(row.daysLateSubmission));
 
       if (typeof rawDate === "number") {
         dateKey = excelDateToJSDate(rawDate);
@@ -86,7 +69,7 @@ const LateAnalysis: React.FC<LateAnalysisProps> = ({ data }) => {
       const parseDate = (date: string) => {
         const parts = date.split("/").map(Number);
         return parts.length === 3
-          ? new Date(parts[2] + 2000, parts[1] - 1, parts[0])
+          ? new Date(parts[2], parts[1] - 1, parts[0])
           : new Date(parts[1], parts[0] - 1); // Monthly format (MM/YYYY)
       };
 
@@ -97,6 +80,7 @@ const LateAnalysis: React.FC<LateAnalysisProps> = ({ data }) => {
       const { daysLate, docs } = groupedData[label];
       return daysLate / docs;
     });
+    console.log("🚀 ~ chartValues ~ chartValues:", chartValues);
 
     const cumulativeValues = chartLabels.map((_, index) => {
       const cumulativeDaysLate = chartLabels

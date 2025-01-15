@@ -1,10 +1,11 @@
+"use client";
 import React, { useEffect, useRef, useState } from "react";
 import * as echarts from "echarts";
-import { dataProps } from "../types";
+import { Data, MergedData } from "../types";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 
-const HeatX: React.FC<dataProps> = ({ data }) => {
+const HeatX: React.FC<Data> = ({ data }) => {
   const chartRef = useRef<HTMLDivElement>(null);
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
   const [heatmapData, setHeatmapData] = useState<number[][]>([]); // [[day, count]]
@@ -14,9 +15,9 @@ const HeatX: React.FC<dataProps> = ({ data }) => {
     const submissionCounts: { [key: string]: number } = {};
 
     data
-      .filter((row) => row["Submission Status"] !== "Canceled")
-      .forEach((row: any) => {
-        const plannedSubmissionDate = row["Planned Submission Date"];
+      .filter((row: MergedData) => row.submissionStatus !== "Canceled")
+      .forEach((row: MergedData) => {
+        const plannedSubmissionDate = row.plannedSubmissionDate;
 
         if (plannedSubmissionDate) {
           let formattedDate: Date | null = null;

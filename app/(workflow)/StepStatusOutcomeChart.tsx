@@ -1,10 +1,12 @@
+"use client";
+
 import React, { useEffect, useRef, useState } from "react";
 import * as echarts from "echarts";
-import { dataProps } from "../types";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
+import { Data, MergedData } from "../types";
 
-const StatusOutcomeHeatMap: React.FC<dataProps> = ({ data }) => {
+const StatusOutcomeHeatMap: React.FC<Data> = ({ data }) => {
   const chartRef = useRef<HTMLDivElement>(null);
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
   const [heatmapData, setHeatmapData] = useState<number[][]>([]); // [[day, count]]
@@ -14,9 +16,9 @@ const StatusOutcomeHeatMap: React.FC<dataProps> = ({ data }) => {
     const workflowCounts: { [key: string]: number } = {};
 
     data
-      .filter((row) => row["Step Status"] !== "Terminated")
-      .forEach((row: any) => {
-        const plannedworkflowDate = row["Original Due Date"];
+      .filter((row: MergedData) => row.stepStatus !== "Terminated")
+      .forEach((row: MergedData) => {
+        const plannedworkflowDate = row.originalDueDate;
 
         if (plannedworkflowDate) {
           let formattedDate: Date | null = null;
@@ -69,7 +71,8 @@ const StatusOutcomeHeatMap: React.FC<dataProps> = ({ data }) => {
     ).filter((year) => year > 1970);
 
     if (years.length > 0) {
-      setSelectedYear(years[0]);
+      // Select the latest year by default
+      setSelectedYear(Math.max(...years));
     }
 
     const formattedData = Object.keys(workflowCounts).map((isoDate) => {
@@ -259,19 +262,21 @@ const StatusOutcomeHeatMap: React.FC<dataProps> = ({ data }) => {
                 new Date(timestamp).getFullYear()
               )
             )
-          ).map((year) => (
-            <button
-              key={year}
-              onClick={() => setSelectedYear(year)}
-              className={`px-3 py-1 rounded text-sm font-semibold ${
-                selectedYear === year
-                  ? "bg-blue-500 text-white"
-                  : "text-blue-500 hover:bg-blue-100"
-              }`}
-            >
-              {year}
-            </button>
-          ))}
+          )
+            .reverse()
+            .map((year) => (
+              <button
+                key={year}
+                onClick={() => setSelectedYear(year)}
+                className={`px-3 py-1 rounded text-sm font-semibold ${
+                  selectedYear === year
+                    ? "bg-blue-500 text-white"
+                    : "text-blue-500 hover:bg-blue-100"
+                }`}
+              >
+                {year}
+              </button>
+            ))}
         </div>
       </div>
     </div>
