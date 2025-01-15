@@ -18,10 +18,6 @@ import { Data, MergedData } from "../types";
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 const DocsPerUserChart: React.FC<Data> = ({ data }) => {
-  console.log(
-    "🚀  huhu ",
-    data.length !== 0 && data.filter((x: MergedData) => x.reviewStatus !== "")
-  );
   const [chartData, setChartData] = useState({
     labels: [] as string[],
     datasets: [

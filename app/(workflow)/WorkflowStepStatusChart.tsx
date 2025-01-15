@@ -8,10 +8,6 @@ import { AlertCircle } from "lucide-react";
 import { Data, MergedData } from "../types";
 
 const WorkflowStepStatusChart: React.FC<Data> = ({ data }) => {
-  console.log(
-    "🚀 ~ data0001:",
-    data.filter((wf: MergedData) => wf.stepStatus !== "Terminated")
-  );
   const [chartData, setChartData] = useState<
     { label: string; value: number }[]
   >([]);

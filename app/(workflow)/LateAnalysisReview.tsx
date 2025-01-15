@@ -32,7 +32,6 @@ const LateAnalysisReview: React.FC<Data> = ({ data }) => {
     labels: [],
     datasets: [],
   });
-  console.log("🚀 ~ chartData:", chartData);
   const [monthlyStats, setMonthlyStats] = useState<{
     chartValues: number[];
     cumulativeValues: number[];
@@ -50,10 +49,7 @@ const LateAnalysisReview: React.FC<Data> = ({ data }) => {
   const processData = (groupBy: "daily" | "monthly") => {
     const groupedData: Record<string, { daysLate: number; docs: number }> = {};
     let totalLateDocs = 0;
-    console.log(
-      "4564",
-      data.filter((x) => x.originalDueDate !== "" && x.daysLateReview !== "")[0]
-    );
+
     data
       .filter((x) => x.originalDueDate !== "" && x.daysLateReview !== "")
       .forEach((row: MergedData) => {

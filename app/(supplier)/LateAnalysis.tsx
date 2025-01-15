@@ -7,7 +7,6 @@ import * as echarts from "echarts";
 import { Data, MergedData } from "../types";
 
 const LateAnalysis: React.FC<Data> = ({ data }) => {
-  console.log("🚀 ~ data55:", data);
   const [view, setView] = useState<boolean>(true);
   const [chartData, setChartData] = useState<any>({
     labels: [],
@@ -80,7 +79,6 @@ const LateAnalysis: React.FC<Data> = ({ data }) => {
       const { daysLate, docs } = groupedData[label];
       return daysLate / docs;
     });
-    console.log("🚀 ~ chartValues ~ chartValues:", chartValues);
 
     const cumulativeValues = chartLabels.map((_, index) => {
       const cumulativeDaysLate = chartLabels
