@@ -35,7 +35,7 @@ const LateAnalysisReviewConclusion: React.FC<{
       ? {
           color: "bg-teal-100 ring-teal-400/90",
           message:
-            "🟢 Turnaround Time Met: Most submissions adhered to the 7-day review policy. Performance is satisfactory.",
+            "🟢 Turnaround Time Met: Most workflows adhered to the 7-day review policy. Performance is satisfactory.",
         }
       : {
           color: "bg-red-100 ring-red-400/90",

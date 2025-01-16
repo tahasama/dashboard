@@ -256,7 +256,7 @@ const LateAnalysisReview: React.FC<Data> = ({ data }) => {
     <div className="w-full h-full flex">
       <div className="w-full h-full flex flex-col mt-0.5">
         <div className="flex justify-between mr-10 ml-4">
-          <h2>Late Submission Analysis By {view ? "Day" : "Month"}</h2>
+          <h2>Late Workflows Analysis By {view ? "Day" : "Month"}</h2>
           <button
             onClick={() => setView(!view)}
             className="bg-orange-200 p-1 rounded ring-orange-500 ring-1 min-w-32 text-sm"

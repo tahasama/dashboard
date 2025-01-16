@@ -24,10 +24,10 @@ const FiltersAndCharts = ({ originalData }: { originalData: MergedData[] }) => {
   const [filteredData, setFilteredData] = useState<any[]>(originalData);
   const [loading, setLoading] = useState(false);
 
-  const [createdByFilter, setCreatedByFilter] = useState<string>("all");
-  const [subProjectFilter, setSubProjectFilter] = useState<string>("all");
-  const [disciplineFilter, setDisciplineFilter] = useState<string>("all");
-  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [createdByFilter, setCreatedByFilter] = useState<string>("");
+  const [subProjectFilter, setSubProjectFilter] = useState<string>("");
+  const [disciplineFilter, setDisciplineFilter] = useState<string>("");
+  const [statusFilter, setStatusFilter] = useState<string>("");
 
   const clearFilters = () => {
     setLoading(true);
@@ -83,19 +83,19 @@ const FiltersAndCharts = ({ originalData }: { originalData: MergedData[] }) => {
         <ResizablePanelGroup direction="horizontal" className="">
           <ResizablePanel defaultSize={24}>
             <ResizablePanelGroup direction="vertical">
-              <ResizablePanel>
+              <ResizablePanel defaultSize={33}>
                 <Suspense fallback={"Loading..."}>
                   <ReviewStatus data={filteredData} />
                 </Suspense>
               </ResizablePanel>
               <ResizableHandle withHandle />
-              <ResizablePanel>
+              <ResizablePanel defaultSize={34}>
                 <Suspense fallback={"Loading..."}>
                   <SubmissionStatus data={filteredData} />
                 </Suspense>
               </ResizablePanel>
               <ResizableHandle withHandle />
-              <ResizablePanel>
+              <ResizablePanel defaultSize={33}>
                 <Suspense fallback={"Loading..."}>
                   <StatusChart data={filteredData} />
                 </Suspense>
@@ -103,7 +103,7 @@ const FiltersAndCharts = ({ originalData }: { originalData: MergedData[] }) => {
             </ResizablePanelGroup>
           </ResizablePanel>
           <ResizableHandle withHandle />
-          <ResizablePanel>
+          <ResizablePanel defaultSize={76}>
             <ResizablePanelGroup direction="vertical">
               <ResizablePanel defaultSize={72}>
                 <Suspense fallback={"Loading..."}>
@@ -111,7 +111,7 @@ const FiltersAndCharts = ({ originalData }: { originalData: MergedData[] }) => {
                 </Suspense>
               </ResizablePanel>
               <ResizableHandle withHandle />
-              <ResizablePanel>
+              <ResizablePanel defaultSize={28}>
                 <Suspense fallback={"Loading..."}>
                   <HeatX data={filteredData} />
                 </Suspense>

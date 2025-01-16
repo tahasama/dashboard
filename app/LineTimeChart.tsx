@@ -240,8 +240,8 @@ const LineTimeChart: React.FC<{ data: MergedData[] }> = ({ data }) => {
         showRowLabels: true,
         rowLabelStyle: {
           fontName: "Arial",
-          fontSize: 14,
-          color: "#333",
+          fontSize: 11.5,
+          color: "#222",
         },
         barLabelStyle: { fontName: "Arial", fontSize: 10 },
         barHeight: 25,

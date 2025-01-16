@@ -44,7 +44,7 @@ const WorkflowStepStatusChart: React.FC<Data> = ({ data }) => {
 
     const option = {
       title: {
-        text: "General Status Chart",
+        text: "Reviews Status Chart",
         left: "center",
         top: "top",
         textStyle: {
@@ -55,7 +55,7 @@ const WorkflowStepStatusChart: React.FC<Data> = ({ data }) => {
       tooltip: {
         trigger: "item",
         formatter: (params: any) => {
-          return `${params.name}: ${params.value} submissions`;
+          return `${params.name}: ${params.value} workflow`;
         },
         position: "top",
       },

@@ -39,11 +39,13 @@ const Filters = ({
   const getUniqueValues = (data: any, column: string) => {
     const camelCaseColumn = toCamelCase(column);
     const uniqueValues = new Set<string>();
-    data.forEach((fileData: any) => {
-      if (fileData[camelCaseColumn]) {
-        uniqueValues.add(fileData[camelCaseColumn]);
-      }
-    });
+    data
+      .filter((x: MergedData) => x.reviewStatus !== "Terminated")
+      .forEach((fileData: any) => {
+        if (fileData[camelCaseColumn]) {
+          uniqueValues.add(fileData[camelCaseColumn]);
+        }
+      });
     return Array.from(uniqueValues);
   };
 
