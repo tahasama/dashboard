@@ -267,7 +267,7 @@ const LineTimeChart: React.FC<{ data: MergedData[] }> = ({ data }) => {
   }
 
   return (
-    <div className="snap-start h-[calc(100vh-90px)] my-4 mx-10">
+    <div className="snap-start h-[calc(100vh-90px)] my-5 mx-10">
       <h1 className="mb-2">
         Document&apos;s Time Line: {rows.length / 2} results.
       </h1>

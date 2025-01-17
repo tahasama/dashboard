@@ -2,138 +2,106 @@ import React from "react";
 import { Data, MergedData } from "../types";
 
 const LateAnalysisConclusion: React.FC<{
-  chartValues: number[];
-  cumulativeValues: number[];
-  data: MergedData[]; // Ensure data is passed into the component
-}> = ({ chartValues = [], cumulativeValues = [], data = [] }) => {
+  chartValuesRealReceivedDocs: number[]; // Cumulative real submissions count
+  chartValuesdocs: number[]; // Cumulative planned submissions count
+  data: MergedData[]; // Additional data for document insights
+}> = ({
+  chartValuesRealReceivedDocs = [],
+  chartValuesdocs = [],
+  data = [],
+}) => {
+  // Total Planned and Real submissions based on the last value in the cumulative arrays
+  const totalPlanned = chartValuesdocs.length
+    ? chartValuesdocs[chartValuesdocs.length - 1]
+    : 0;
+  const totalReal = chartValuesRealReceivedDocs.length
+    ? chartValuesRealReceivedDocs[chartValuesRealReceivedDocs.length - 1]
+    : 0;
+
+  // Calculate the differences for each time point between real and planned
+  const differences = chartValuesRealReceivedDocs.map(
+    (real, index) => real - chartValuesdocs[index]
+  );
+
+  // Calculate stats for the differences
   const calculateStats = (arr: number[]) => {
     if (!arr.length) return { min: 0, max: 0, average: 0 };
-
     const min = Math.min(...arr);
     const max = Math.max(...arr);
     const average = arr.reduce((sum, value) => sum + value, 0) / arr.length;
-
     return { min, max, average };
   };
 
   const {
-    min: minDaysLate,
-    max: maxDaysLate,
-    average: avgDaysLate,
-  } = calculateStats(chartValues);
-  const { average: avgCumulative } = calculateStats(cumulativeValues);
+    min: minDifference,
+    max: maxDifference,
+    average: avgDifference,
+  }: any = calculateStats(differences);
 
-  // Calculate the total number of late documents based on Days Late > 0
-  const totalLateDocs = data.filter(
-    (row: MergedData) =>
-      (row.daysLateSubmission ?? 0) > 0 &&
-      row.submissionStatus === "Submission Required"
-  ).length;
-
-  // Determine volume category based on totalLateDocs
-  const volumeCategory =
-    totalLateDocs === 0
-      ? "none"
-      : totalLateDocs <= 10
-      ? "low"
-      : totalLateDocs <= 20
-      ? "moderate"
-      : "high";
-
-  // Insights for Turnaround Time (7-day policy)
-  const turnaroundInsight =
-    avgDaysLate <= 7
-      ? {
-          color: "bg-teal-100 ring-teal-400/90",
-          message:
-            "🟢 Turnaround Time Met: Most submissions adhered to the 7-day policy. Performance is satisfactory.",
-        }
-      : {
-          color: "bg-red-100 ring-red-400/90",
-          message: `🔴 Turnaround Time Breached: Average days late (${avgDaysLate.toFixed(
-            0
-          )} days) Too high. Immediate action is needed.`,
-        };
-
-  // Insights for Volume of Late Submissions
-  const volumeInsight =
-    volumeCategory === "none"
+  // Impact Analysis
+  const impactInsight =
+    avgDifference === 0
       ? {
           color: "bg-blue-100 ring-blue-400/90",
           message:
-            "🔵 No Late Submissions: No delays were recorded. Excellent performance!",
+            "🔵 Perfect Alignment: Real submissions matched the planned timeline.",
         }
-      : volumeCategory === "low"
+      : avgDifference > 0
       ? {
           color: "bg-green-100 ring-green-400/90",
-          message: `🟢 Low Volume of Late Submissions: Only ${totalLateDocs} late submissions recorded. Performance is under control.`,
-        }
-      : volumeCategory === "moderate"
-      ? {
-          color: "bg-orange-100 ring-orange-400/90",
-          message: `🟠 Moderate Volume of Late Submissions: ${totalLateDocs} late submissions recorded. Monitor closely to prevent escalation.`,
+          message: `🟢 Ahead of Schedule: On average, real submissions exceeded the plan by ${avgDifference.toFixed(
+            2
+          )} documents per time point.`,
         }
       : {
           color: "bg-red-100 ring-red-400/90",
-          message: `🔴 High Volume of Late Submissions: Total of ${totalLateDocs}. Immediate corrective measures required.`,
+          message: `🔴 Behind Schedule: On average, real submissions lagged behind the plan by ${Math.abs(
+            avgDifference.toFixed(2)
+          )} documents per time point.`,
         };
 
-  // Insights for Average Days Late Trends
-  const trendInsight =
-    avgDaysLate > avgCumulative
-      ? {
-          color: "bg-orange-100 ring-orange-400/90",
-          message: `🟠 Worsening Trends: Average delays (${avgDaysLate.toFixed(
-            0
-          )} days) are higher than cumulative averages (${avgCumulative.toFixed(
-            0
-          )} days). This indicates a negative trend.`,
-        }
-      : avgDaysLate < avgCumulative
+  // Progression Summary
+  const progressionInsight =
+    totalReal >= totalPlanned
       ? {
           color: "bg-teal-100 ring-teal-400/90",
-          message: `🟢 Improving Trends: Average delays (${avgDaysLate.toFixed(
-            0
-          )} days) getting lower. Performance is improving.`,
+          message: `🟢 Excellent Progression: Real submissions (${totalReal}) met or exceeded the planned submissions (${totalPlanned}).`,
         }
       : {
-          color: "bg-gray-100 ring-gray-400/90",
-          message: `⚪ Stable Trends: Average delays (${avgDaysLate.toFixed(
-            0
-          )} days) are consistent with cumulative averages (${avgCumulative.toFixed(
-            0
-          )} days). Maintain efforts.`,
+          color: "bg-orange-100 ring-orange-400/90",
+          message: `🟠 Needs Improvement: Real submissions (${totalReal}) did not meet the planned submissions (${totalPlanned}).`,
         };
 
   return (
     <div className="w-3/12 font-thin text-slate-800 text-xs grid content-center">
-      {/* Turnaround Time Insights */}
-      <p className={`p-2 rounded-md mb-2 ${turnaroundInsight.color}`}>
-        {turnaroundInsight.message}
+      {/* Impact Insights */}
+      <p className={`p-2 rounded-md mb-2 ${impactInsight.color}`}>
+        {impactInsight.message}
       </p>
 
-      {/* Volume Insights */}
-      <p className={`p-2 rounded-md mb-2 ${volumeInsight.color}`}>
-        {volumeInsight.message}
-      </p>
-
-      {/* Trend Insights */}
-      <p className={`p-2 rounded-md ${trendInsight.color}`}>
-        {trendInsight.message}
+      {/* Progression Insights */}
+      <p className={`p-2 rounded-md mb-2 ${progressionInsight.color}`}>
+        {progressionInsight.message}
       </p>
 
       <br />
       <ul className="space-y-1">
         <li>
-          ➡️ Total documents:{" "}
-          {data.length !== 0 &&
-            data.filter((x: MergedData) => x.submissionStatus !== "Canceled")
-              .length}
-          .
+          ➡️ Planned Total Submissions: <strong>{totalPlanned}</strong>
         </li>
-        <li> ➡️ Average Days Late: {avgDaysLate.toFixed(0)} days</li>
-        <li> ➡️ Minimum Days Late: {minDaysLate.toFixed(0)} days</li>
-        <li> ➡️ Maximum Days Late: {maxDaysLate.toFixed(0)} days</li>
+        <li>
+          ➡️ Real Total Submissions: <strong>{totalReal}</strong>
+        </li>
+        <li>
+          ➡️ Average Daily Difference:{" "}
+          <strong>{avgDifference.toFixed(2)}</strong> documents
+        </li>
+        <li>
+          ➡️ Maximum Difference: <strong>{maxDifference}</strong> documents
+        </li>
+        <li>
+          ➡️ Minimum Difference: <strong>{minDifference}</strong> documents
+        </li>
       </ul>
     </div>
   );
