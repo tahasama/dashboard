@@ -36,6 +36,7 @@ const Filters = ({
   setStatusFilter: (value: string) => void;
   clearFilters: () => void;
 }) => {
+  console.log("4545645.......");
   const getUniqueValues = (data: any, column: string) => {
     const camelCaseColumn = toCamelCase(column);
     const uniqueValues = new Set<string>();
