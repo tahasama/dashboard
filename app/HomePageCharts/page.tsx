@@ -7,7 +7,7 @@ import { PieH } from "./PieH";
 
 const Charts = () => {
   return (
-    <div className="flex flex-col justify-center w-[75vw] items-center h-full">
+    <div className="flex flex-col justify-center w-[75vw] mt-1.5 items-center h-full">
       <div className="flex gap-4 w-full">
         <AreaH />
         <BarH />

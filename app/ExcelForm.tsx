@@ -13,7 +13,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Loader2 } from "lucide-react";
 import * as XLSX from "xlsx";
 
 import { useState } from "react";
@@ -32,6 +32,8 @@ const ExcelForm = ({}: any) => {
   const [files, setFiles] = useState<File[]>([]);
   const [error, setError] = useState<any>("");
   const [isReadyToGenerate, setIsReadyToGenerate] = useState<boolean>(false);
+  const [isPending, setIsPending] = useState(false);
+
   const router = useRouter();
 
   // const projectNumber = mergedData[0].documentNo?.split("-")[0];
@@ -46,12 +48,14 @@ const ExcelForm = ({}: any) => {
 
   // Handle "Generate" button click
   const handleGenerateClick = async () => {
+    setIsPending(!isPending);
     if (error) {
       return; // Don't close the dialog if there's an error
     }
 
     // Proceed with the generate logic and close dialog if no error
     const result = await handleGenerate();
+    setIsPending(!isPending);
     if (!!error) {
       closeDialog(); // Close dialog only if there's no error
     }
@@ -197,7 +201,7 @@ const ExcelForm = ({}: any) => {
         setError(null);
         router.push(`/report/${projectNumber}`);
       }
-      setIsDialogOpen(!isDialogOpen);
+      // setIsDialogOpen(!isDialogOpen);
     } catch (err: any) {
       setError(`Error processing files: ${err.message}`);
     }
@@ -333,7 +337,19 @@ const ExcelForm = ({}: any) => {
             }`}
             disabled={!isReadyToGenerate || !!error} // Disable if error exists
           >
-            Generate
+            {!isPending ? (
+              "Generate"
+            ) : (
+              <>
+                {/* <Loader2 className="animate-spin" /> */}
+                <div className="flex text-white">
+                  Report in progress{"  "}
+                  <p className="animate-bounce text-[20px]">.</p>{" "}
+                  <p className="animate-bounce text-[20px] delay-100">.</p>{" "}
+                  <p className="animate-bounce text-[20px] delay-200">.</p>
+                </div>
+              </>
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>
