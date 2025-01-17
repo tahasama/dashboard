@@ -333,7 +333,7 @@ const ExcelForm = ({}: any) => {
             className={`w-full ${
               isReadyToGenerate && !error
                 ? "bg-blue-600 text-white hover:bg-blue-500"
-                : "bg-gray-300 text-gray-600 cursor-not-allowed"
+                : "bg-gray-300 text-gray-950 cursor-not-allowed"
             }`}
             disabled={!isReadyToGenerate || !!error} // Disable if error exists
           >
