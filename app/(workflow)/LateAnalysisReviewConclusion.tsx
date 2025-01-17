@@ -2,107 +2,110 @@ import React from "react";
 import { Data, MergedData } from "../types";
 
 const LateAnalysisReviewConclusion: React.FC<{
-  chartValues: number[];
-  cumulativeValues: number[];
-  totalDocuments: number; // Add the total documents count as a prop
-  data: MergedData[];
+  chartValuesRealReceivedDocs: number[]; // Cumulative real received review documents count
+  chartValuesdocs: number[]; // Cumulative planned review submissions count
+  data: MergedData[]; // Additional data for review insights
 }> = ({
-  chartValues = [],
-  cumulativeValues = [],
-  totalDocuments = 0,
+  chartValuesRealReceivedDocs = [],
+  chartValuesdocs = [],
   data = [],
 }) => {
+  // Total Planned and Real review submissions based on the last value in the cumulative arrays
+  const totalPlannedReview = chartValuesdocs.length
+    ? chartValuesdocs[chartValuesdocs.length - 1]
+    : 0;
+  const totalRealReview = chartValuesRealReceivedDocs.length
+    ? chartValuesRealReceivedDocs[chartValuesRealReceivedDocs.length - 1]
+    : 0;
+
+  // Calculate the differences for each time point between real and planned review submissions
+  const reviewDifferences = chartValuesRealReceivedDocs.map(
+    (real, index) => real - chartValuesdocs[index]
+  );
+
+  // Calculate stats for the review differences
   const calculateStats = (arr: number[]) => {
     if (!arr.length) return { min: 0, max: 0, average: 0 };
-
     const min = Math.min(...arr);
     const max = Math.max(...arr);
-    const average = arr.reduce((sum, value) => sum + value, 0) / arr.length;
-
+    const average: any =
+      arr.reduce((sum, value) => sum + value, 0) / arr.length;
     return { min, max, average };
   };
 
   const {
-    min: minDaysLate,
-    max: maxDaysLate,
-    average: avgDaysLate,
-  } = calculateStats(chartValues);
-  const { average: avgCumulative } = calculateStats(cumulativeValues);
+    min: minReviewDifference,
+    max: maxReviewDifference,
+    average: avgReviewDifference,
+  } = calculateStats(reviewDifferences);
 
-  // **Turnaround Time Insight**
-  const turnaroundInsight =
-    avgDaysLate <= 7
+  // Impact Analysis for review process
+  const reviewImpactInsight =
+    avgReviewDifference === 0
       ? {
-          color: "bg-teal-100 ring-teal-400/90",
+          color: "bg-blue-100 ring-blue-400/90",
           message:
-            "🟢 Turnaround Time Met: Most workflows adhered to the 7-day review policy. Performance is satisfactory.",
+            "🔵 Perfect Alignment: Real review submissions matched the planned review timeline.",
+        }
+      : avgReviewDifference > 0
+      ? {
+          color: "bg-green-100 ring-green-400/90",
+          message: `🟢 Ahead of Schedule: On average, real review submissions exceeded the plan by ${avgReviewDifference.toFixed(
+            2
+          )} documents per time point.`,
         }
       : {
           color: "bg-red-100 ring-red-400/90",
-          message: `🔴 Turnaround Time Breached: Average days late (${avgDaysLate.toFixed(
-            0
-          )} days) is too high. Immediate action is needed.`,
+          message: `🔴 Behind Schedule: On average, real review submissions lagged behind the plan by ${Math.abs(
+            avgReviewDifference.toFixed(2)
+          )} documents per time point.`,
         };
 
-  // **Trend Insight (Improvement, Worsening, Stable)**
-  const trendInsight =
-    avgDaysLate > avgCumulative
-      ? {
-          color: "bg-orange-100 ring-orange-400/90",
-          message: `🟠 Worsening Trends: Average delays (${avgDaysLate.toFixed(
-            0
-          )} days) are getting higher. This suggests a negative trend in review performance.`,
-        }
-      : avgDaysLate < avgCumulative
+  // Progression Summary for review process
+  const reviewProgressionInsight =
+    totalRealReview >= totalPlannedReview
       ? {
           color: "bg-teal-100 ring-teal-400/90",
-          message: `🟢 Improving Trends: Average delays (${avgDaysLate.toFixed(
-            0
-          )} days) are getting lower, indicating progress in review performance.`,
+          message: `🟢 Excellent Progression: Real review submissions (${totalRealReview}) met or exceeded the planned submissions (${totalPlannedReview}).`,
         }
       : {
-          color: "bg-gray-100 ring-gray-400/90",
-          message: `⚪ Stable Trends: Average delays (${avgDaysLate.toFixed(
-            0
-          )} days) are consistent with cumulative averages (${avgCumulative.toFixed(
-            0
-          )} days).`,
+          color: "bg-orange-100 ring-orange-400/90",
+          message: `🟠 Needs Improvement: Real review submissions (${totalRealReview}) did not meet the planned submissions (${totalPlannedReview}).`,
         };
 
-  // Insights based on document count or days late per document
-
   return (
-    <div className="w-3/12 font-thin text-xs leading-relaxed mb-4 text-slate-800">
-      {/* Turnaround Time Insight */}
-      <p className={`p-2  rounded-md mb-2 ${turnaroundInsight.color}`}>
-        {turnaroundInsight.message}
+    <div className="w-3/12 font-thin text-slate-800 text-xs grid content-center">
+      {/* Impact Insights for Review */}
+      <p className={`p-2 rounded-md mb-2 ${reviewImpactInsight.color}`}>
+        {reviewImpactInsight.message}
       </p>
 
-      {/* Trend Insight */}
-      <p className={`p-2  rounded-md mb-2 ${trendInsight.color}`}>
-        {trendInsight.message}
+      {/* Progression Insights for Review */}
+      <p className={`p-2 rounded-md mb-2 ${reviewProgressionInsight.color}`}>
+        {reviewProgressionInsight.message}
       </p>
 
       <br />
       <ul className="space-y-1">
         <li>
-          ➡️ Total docs for review:{" "}
-          {
-            data.filter(
-              (x: MergedData) =>
-                x.stepStatus === "Overdue" || x.stepStatus === "Current"
-            ).length
-          }
+          ➡️ Planned Total Review Submissions:{" "}
+          <strong>{totalPlannedReview}</strong>
         </li>
         <li>
-          ➡️ Current Delay Rate:{" "}
-          {chartValues.length !== 0 &&
-            chartValues[chartValues.length - 1].toFixed(0)}{" "}
-          days
+          ➡️ Real Total Review Submissions: <strong>{totalRealReview}</strong>
         </li>
-        <li> ➡️ Average days late: {avgDaysLate.toFixed(0)} days</li>
-        <li> ➡️ Minimum days late: {minDaysLate.toFixed(0)} days</li>
-        <li> ➡️ Maximum days late: {maxDaysLate.toFixed(0)} days</li>
+        <li>
+          ➡️ Average Daily Difference:{" "}
+          <strong>{avgReviewDifference.toFixed(2)}</strong> documents
+        </li>
+        <li>
+          ➡️ Maximum Difference: <strong>{maxReviewDifference}</strong>{" "}
+          documents
+        </li>
+        <li>
+          ➡️ Minimum Difference: <strong>{minReviewDifference}</strong>{" "}
+          documents
+        </li>
       </ul>
     </div>
   );

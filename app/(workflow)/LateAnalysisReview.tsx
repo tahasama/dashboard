@@ -27,18 +27,15 @@ interface LateAnalysisReviewProps {
 }
 
 const LateAnalysisReview: React.FC<Data> = ({ data }) => {
-  const [view, setView] = useState<boolean>(true); // true = daily, false = monthly
   const [chartData, setChartData] = useState<any>({
     labels: [],
     datasets: [],
   });
-  const [monthlyStats, setMonthlyStats] = useState<{
-    chartValues: number[];
-    cumulativeValues: number[];
-  }>({ chartValues: [], cumulativeValues: [] });
-  const [totalLateDocuments, setTotalLateDocuments] = useState<number>(0); // Track total late documents
 
-  const chartRef = useRef<HTMLDivElement | null>(null); // Reference for the chart container
+  const [chartValuesdocs, setChartValuesdocs] = useState<any>();
+  const [chartValuesRealReceivedDocs, setChartValuesRealReceivedDocs] =
+    useState<any>();
+  const chartRef = useRef<HTMLDivElement | null>(null);
 
   const excelDateToJSDate = (serial: number): string => {
     const utcDays = Math.floor(serial - 25569);
@@ -46,16 +43,22 @@ const LateAnalysisReview: React.FC<Data> = ({ data }) => {
     return date.toLocaleDateString("en-GB");
   };
 
-  const processData = (groupBy: "daily" | "monthly") => {
-    const groupedData: Record<string, { daysLate: number; docs: number }> = {};
-    let totalLateDocs = 0;
+  const processData = () => {
+    const groupedData: Record<
+      string,
+      {
+        docs: number;
+        receivedDocs: number;
+        realReceivedDocs: number;
+      }
+    > = {};
 
     data
-      .filter((x) => x.originalDueDate !== "" && x.daysLateReview !== "")
+      .filter((x: MergedData) => x.reviewStatus !== "Canceled")
       .forEach((row: MergedData) => {
         let dateKey: string | null = null;
-        const rawDate = row.originalDueDate;
-        const daysLate = parseFloat(String(row.daysLateReview).split(" ")[0]);
+        const rawDate = row.dateIn;
+        const rawDateW = row.dateCompleted;
 
         if (typeof rawDate === "number") {
           dateKey = excelDateToJSDate(rawDate);
@@ -63,109 +66,104 @@ const LateAnalysisReview: React.FC<Data> = ({ data }) => {
           dateKey = rawDate;
         }
 
-        if (dateKey && !isNaN(daysLate)) {
-          if (groupBy === "monthly") {
-            const [day, month, year] = dateKey.split("/"); // Adjust to handle DD/MM/YYYY format
-            dateKey = `${month}/${year.slice(-2)}`; // Format as MM/YY
+        if (dateKey) {
+          if (!groupedData[dateKey]) {
+            groupedData[dateKey] = {
+              docs: 0,
+              receivedDocs: 0,
+              realReceivedDocs: 0,
+            };
           }
 
-          if (!groupedData[dateKey]) {
-            groupedData[dateKey] = { daysLate: 0, docs: 0 };
-          }
-          groupedData[dateKey].daysLate += daysLate;
           groupedData[dateKey].docs += 1;
 
-          if (daysLate > 0) totalLateDocs += 1; // Count late documents
+          if (rawDateW) {
+            const receivedDate =
+              typeof rawDateW === "string"
+                ? rawDateW
+                : excelDateToJSDate(rawDateW);
+            if (!groupedData[receivedDate]) {
+              groupedData[receivedDate] = {
+                docs: 0,
+                receivedDocs: 0,
+                realReceivedDocs: 0,
+              };
+            }
+            groupedData[receivedDate].receivedDocs += 1;
+            groupedData[receivedDate].realReceivedDocs += 1;
+          }
         }
       });
 
-    setTotalLateDocuments(totalLateDocs); // Update total late documents
     return groupedData;
   };
 
   const calculateChartValues = (
-    groupedData: Record<string, { daysLate: number; docs: number }>
+    groupedData: Record<
+      string,
+      {
+        docs: number;
+        receivedDocs: number;
+        realReceivedDocs: number;
+      }
+    >
   ) => {
     const chartLabels = Object.keys(groupedData).sort((a, b) => {
       const parseDate = (date: string) => {
         const parts = date.split("/").map(Number);
-        if (view) {
-          // If the view is by day (DD/MM/YYYY), parse as day
-          return new Date(parts[2], parts[1] - 1, parts[0]); // DD/MM/YYYY
-        } else {
-          // If the view is by month (MM/YYYY), parse as month
-          return new Date(parts[1], parts[0] - 1); // MM/YYYY
-        }
+        return new Date(parts[2], parts[1] - 1, parts[0]); // dd/mm/yyyy format
       };
 
       return parseDate(a).getTime() - parseDate(b).getTime();
     });
 
-    const chartValues = chartLabels.map((label) => {
-      const { daysLate, docs } = groupedData[label];
-      return daysLate / docs;
-    });
-
-    const cumulativeValues = chartLabels.map((_, index) => {
-      const cumulativeDaysLate = chartLabels
-        .slice(0, index + 1)
-        .reduce((sum, label) => sum + groupedData[label].daysLate, 0);
-      const cumulativeDocs = chartLabels
+    const chartValuesdocs = chartLabels.map((_, index) => {
+      return chartLabels
         .slice(0, index + 1)
         .reduce((sum, label) => sum + groupedData[label].docs, 0);
-      return cumulativeDaysLate / cumulativeDocs;
     });
+    setChartValuesdocs(chartValuesdocs);
 
-    return { chartLabels, chartValues, cumulativeValues };
+    const chartValuesRealReceivedDocs = chartLabels.map((_, index) => {
+      return chartLabels
+        .slice(0, index + 1)
+        .reduce((sum, label) => sum + groupedData[label].realReceivedDocs, 0);
+    });
+    setChartValuesRealReceivedDocs(chartValuesRealReceivedDocs);
+    return {
+      chartLabels,
+      chartValuesdocs,
+      chartValuesRealReceivedDocs,
+    };
   };
 
   useEffect(() => {
-    const dailyGroupedData = processData("daily");
-    const monthlyGroupedData = processData("monthly");
-
-    const groupedData = view ? dailyGroupedData : monthlyGroupedData;
-    const { chartLabels, chartValues, cumulativeValues } =
+    const groupedData = processData();
+    const { chartLabels, chartValuesdocs, chartValuesRealReceivedDocs } =
       calculateChartValues(groupedData);
 
-    const formattedLabels = chartLabels.map((label) => {
-      const parts = label.split("/");
-
-      if (parts.length === 3) {
-        const day = parts[0];
-        const month = parts[1];
-        const year = parts[2];
-        return `${day}/${month}/${year.slice(-2)}`;
-      }
-
-      return label;
-    });
-
     setChartData({
-      labels: formattedLabels,
+      labels: chartLabels,
       datasets: [
         {
-          name: "Cumulative Average Days Late (Line)",
+          name: "Planned Reviews (Line)", // Line for Planned Reviews
           type: "line",
-          data: cumulativeValues,
+          data: chartValuesdocs,
           smooth: true,
-          lineStyle: { width: 4, color: "rgba(76, 76, 173, 0.5)" }, // A deep purple to contrast with the bar
-          areaStyle: { color: "rgba(76, 76, 173, 0.3)" }, // Soft purple area fill to match the line
+          lineStyle: { width: 4, color: "red" },
+          areaStyle: { color: "rgba(255, 0, 0, 0.2)" },
         },
         {
-          name: "Average Days Late (Bar)",
-          type: "bar",
-          data: chartValues,
-          itemStyle: { color: "#22a7f0" },
+          name: "Actual Reviews (Line)", // Line for Actual Reviews
+          type: "line",
+          data: chartValuesRealReceivedDocs,
+          smooth: true,
+          lineStyle: { width: 4, color: "green" },
+          areaStyle: { color: "rgba(0, 255, 0, 0.2)" },
         },
       ],
     });
-
-    const monthlyStats = calculateChartValues(monthlyGroupedData);
-    setMonthlyStats({
-      chartValues: monthlyStats.chartValues,
-      cumulativeValues: monthlyStats.cumulativeValues,
-    });
-  }, [view, data]);
+  }, [data]);
 
   useEffect(() => {
     if (chartRef.current) {
@@ -175,52 +173,85 @@ const LateAnalysisReview: React.FC<Data> = ({ data }) => {
       });
 
       const chartOptions = {
+        title: {
+          left: "center",
+          top: "10%",
+        },
+        legend: {
+          show: true,
+          top: 10,
+        },
         tooltip: {
           trigger: "axis",
           axisPointer: {
-            type: "cross", // Use a cross-pointer to indicate where both line and bar points intersect
+            type: "cross",
+          },
+          textStyle: {
+            fontSize: 11,
           },
           formatter: function (params: any) {
             let tooltipContent = "";
             params.forEach((item: any) => {
-              // Conditionally format tooltips based on chart type
               if (item.seriesType === "line") {
                 tooltipContent += `${item.seriesName}: ${item.data.toFixed(
-                  2
+                  0
                 )}<br>`;
               } else if (item.seriesType === "bar") {
-                tooltipContent += `${item.seriesName}: ${item.data.toFixed(0)}`;
+                tooltipContent += `${item.seriesName}: ${
+                  item.data ? item.data.toFixed(0) : 0
+                }<br>`;
               }
             });
             return tooltipContent;
           },
         },
-        legend: {
-          data: [
-            "Cumulative Average Days Late (Line)",
-            "Average Days Late (Bar)",
-          ],
-          top: 20,
-        },
         xAxis: {
-          // show: false,
           type: "category",
           data: chartData.labels,
           axisLabel: {
             rotate: 45,
             fontSize: 9,
+            formatter: function (value: any) {
+              // Day view: format as dd/mm/yy
+              const parts = value.split("/");
+              return `${parts[0]}/${parts[1]}/${parts[2].slice(-2)}`;
+            },
           },
         },
-        yAxis: {
-          type: "value",
-          name: "Days Late",
-          axisLabel: {
-            formatter: (value: number) => value.toFixed(0),
-            fontSize: 10,
+        yAxis: [
+          {
+            type: "value",
+            name: "Document Count",
+            nameTextStyle: {
+              fontSize: 9, // Font size for the axis name
+            },
+            axisLabel: {
+              formatter: (value: any) => value.toFixed(0),
+              fontSize: 10,
+            },
+            min: 0,
           },
-          min: 0,
-        },
-        series: chartData.datasets,
+        ],
+        series: [
+          {
+            name: "Planned Reviews (Line)",
+            type: "line",
+            data: chartData.datasets[0]?.data || [],
+            smooth: 0.6,
+            lineStyle: { width: 4, color: "rgba(102, 153, 204, 1)" },
+            areaStyle: { color: "rgba(102, 153, 204, 0.2)" },
+            symbol: "none",
+          },
+          {
+            name: "Actual Reviews (Line)",
+            type: "line",
+            data: chartData.datasets[1]?.data || [],
+            smooth: 0.6,
+            lineStyle: { width: 4, color: "rgba(102, 153, 102, 1)" },
+            areaStyle: { color: "rgba(102, 153, 102, 0.2)" },
+            symbol: "none",
+          },
+        ],
       };
 
       chartInstance.setOption(chartOptions);
@@ -233,7 +264,6 @@ const LateAnalysisReview: React.FC<Data> = ({ data }) => {
       observer.observe(chartRef.current);
 
       return () => {
-        observer.disconnect();
         chartInstance.dispose();
       };
     }
@@ -254,26 +284,20 @@ const LateAnalysisReview: React.FC<Data> = ({ data }) => {
 
   return (
     <div className="w-full h-full flex">
-      <div className="w-full h-full flex flex-col mt-0.5">
+      <div className="w-9/12 h-full flex flex-col mt-0.5">
         <div className="flex justify-between mr-10 ml-4">
-          <h2>Late Workflows Analysis By {view ? "Day" : "Month"}</h2>
-          <button
-            onClick={() => setView(!view)}
-            className="bg-orange-200 p-1 rounded ring-orange-500 ring-1 min-w-32 text-sm"
-          >
-            Switch to {!view ? "Day" : "Month"}
-          </button>
+          <h2>Late Reviews Analysis </h2>
         </div>
         <div
           ref={chartRef}
           // style={{ width: "100%", height: "100%" }}
-          className="w-full h-full scale-110 mt-2"
+          className="w-full h-full scale-110 mt-2 pl-2.5"
         />
       </div>
       <LateAnalysisReviewConclusion
-        {...monthlyStats}
-        totalDocuments={totalLateDocuments}
         data={data}
+        chartValuesRealReceivedDocs={chartValuesRealReceivedDocs}
+        chartValuesdocs={chartValuesdocs}
       />
     </div>
   );
