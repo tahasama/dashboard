@@ -1,6 +1,6 @@
 import React from "react";
 import ExcelForm from "./ExcelForm";
-import Charts from "./(HomePageCharts)/page";
+import Charts from "./HomePageCharts/page";
 
 export default function Home() {
   return (
