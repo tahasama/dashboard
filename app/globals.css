@@ -21,6 +21,22 @@ body {
   aspect-ratio: 16 / 9; /* Maintain a 16:9 ratio for height/width */
 }
 
+.react-calendar-heatmap .react-calendar-heatmap-week .color-empty {
+  rx: 1px; /* Rounded corners */
+  fill: #dcdbdb; /* Light gray fill for empty cells */
+}
+
+
+
+.react-calendar-heatmap-weekday-labels .react-calendar-heatmap-weekday-label {
+  font-size: 8px;
+  fill: #0a0a0a;
+}
+
+.react-calendar-heatmap-month-labels .react-calendar-heatmap-month-label {
+  font-size: 8px;
+  fill: #0a0a0a;
+}
 /* .apexcharts-xaxis-label {
   white-space: nowrap;
   overflow: hidden;

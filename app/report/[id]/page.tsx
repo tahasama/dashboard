@@ -2,10 +2,8 @@ import { Button } from "@/components/ui/button";
 
 import Link from "next/link";
 import React from "react";
-import FiltersAndCharts from "./FiltersAndCharts";
 import { getProject } from "@/app/action/actions";
-
-const LazyLineTimeChart = React.lazy(() => import("../../LineTimeChart"));
+import FiltersAndCharts from "./FiltersAndCharts";
 
 const Report = async ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = await params;
@@ -25,7 +23,6 @@ const Report = async ({ params }: { params: Promise<{ id: string }> }) => {
 
   const { data } = project;
 
-  //   const data: string | any[] = [];
   return (
     <div className="relative -mt-2">
       {/* <Filters /> */}

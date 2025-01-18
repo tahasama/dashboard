@@ -39,7 +39,7 @@ const StatusOutcomeHeatMap: React.FC<Data> = ({ data }) => {
     const plannedReviewCounts: { [key: string]: number } = {};
 
     data
-      .filter((x) => x.dateIn !== "" && x.dateIn !== "")
+      .filter((x) => x.dateIn !== "" || x.dateIn !== "")
       .forEach((row: MergedData) => {
         const plannedDate = parseDate(row.dateIn);
         const actualDate = parseDate(row.dateCompleted);

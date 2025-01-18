@@ -14,6 +14,12 @@ interface Data {
 }
 
 const HeatX: React.FC<Data> = ({ data }) => {
+  console.log(
+    "🚀 ~ data:",
+    data.filter(
+      (x: MergedData) => x.plannedSubmissionDate !== "" || x.dateIn !== ""
+    )
+  );
   const chartRef = useRef<HTMLDivElement>(null);
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
   const [actualSubmissionData, setActualSubmissionData] = useState<number[][]>(
@@ -50,7 +56,7 @@ const HeatX: React.FC<Data> = ({ data }) => {
     const plannedSubmissionCounts: { [key: string]: number } = {};
 
     data
-      .filter((x) => x.dateIn !== "" && x.plannedSubmissionDate !== "")
+      .filter((x) => x.dateIn !== "" || x.plannedSubmissionDate !== "")
       .forEach((row: MergedData) => {
         const plannedDate = parseDate(row.plannedSubmissionDate);
         const actualDate = parseDate(row.dateIn);
