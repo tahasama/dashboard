@@ -10,6 +10,7 @@ import LateAnalysisReview from "@/app/(workflow)/LateAnalysisReview";
 import StatusOutcomeHeatMap from "@/app/(workflow)/StepStatusOutcomeChart";
 import WorkflowStepStatusChart from "@/app/(workflow)/WorkflowStepStatusChart";
 import Filters from "@/app/Filters";
+import { useFilters } from "@/app/FiltersProvider";
 import LineTimeChart from "@/app/LineTimeChart";
 import { Data, MergedData } from "@/app/types";
 import {
@@ -24,18 +25,13 @@ const FiltersAndCharts = ({ originalData }: { originalData: MergedData[] }) => {
   const [filteredData, setFilteredData] = useState<any[]>(originalData);
   const [loading, setLoading] = useState(false);
 
-  const [createdByFilter, setCreatedByFilter] = useState<string>("");
-  const [subProjectFilter, setSubProjectFilter] = useState<string>("");
-  const [disciplineFilter, setDisciplineFilter] = useState<string>("");
-  const [statusFilter, setStatusFilter] = useState<string>("");
-
-  const clearFilters = () => {
-    setLoading(true);
-    setCreatedByFilter("all");
-    setSubProjectFilter("all");
-    setDisciplineFilter("all");
-    setStatusFilter("all");
-  };
+  const {
+    createdByFilter,
+    subProjectFilter,
+    disciplineFilter,
+    statusFilter,
+    clearFilters,
+  } = useFilters();
 
   const filtered = useMemo(() => {
     return filterData(
@@ -54,30 +50,20 @@ const FiltersAndCharts = ({ originalData }: { originalData: MergedData[] }) => {
   ]);
 
   const applyFilters = () => {
-    filtered;
     setFilteredData(filtered);
     setLoading(false);
   };
 
   useEffect(() => {
+    setLoading(true);
     applyFilters();
   }, [createdByFilter, subProjectFilter, disciplineFilter, statusFilter]);
 
   return (
     <div>
       {/* Filters */}
-      <Filters
-        originalData={originalData}
-        createdByFilter={createdByFilter}
-        subProjectFilter={subProjectFilter}
-        disciplineFilter={disciplineFilter}
-        statusFilter={statusFilter}
-        setCreatedByFilter={setCreatedByFilter}
-        setSubProjectFilter={setSubProjectFilter}
-        setDisciplineFilter={setDisciplineFilter}
-        setStatusFilter={setStatusFilter}
-        clearFilters={clearFilters}
-      />
+      <Filters clearFilters={clearFilters} originalData={originalData} />
+
       {/* Supplier Documents Charts */}
       <div className="bg-slate- p-2 mx-1 rounded-md -mt-1 flex h-[calc(100vh-60px)] w- shadow-md">
         <ResizablePanelGroup direction="horizontal" className="">
@@ -159,7 +145,7 @@ const FiltersAndCharts = ({ originalData }: { originalData: MergedData[] }) => {
       </div>
 
       {/* Line Time Chart */}
-      <Suspense
+      {/* <Suspense
         fallback={
           <div className="w-screen h-screen grid place-content-center">
             Loading LineTimeChart...
@@ -167,7 +153,7 @@ const FiltersAndCharts = ({ originalData }: { originalData: MergedData[] }) => {
         }
       >
         <LineTimeChart data={filteredData} />
-      </Suspense>
+      </Suspense> */}
     </div>
   );
 };

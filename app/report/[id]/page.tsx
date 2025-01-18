@@ -4,6 +4,7 @@ import Link from "next/link";
 import React from "react";
 import { getProject } from "@/app/action/actions";
 import FiltersAndCharts from "./FiltersAndCharts";
+import { FiltersProvider } from "@/app/FiltersProvider";
 
 const Report = async ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = await params;
@@ -26,7 +27,9 @@ const Report = async ({ params }: { params: Promise<{ id: string }> }) => {
   return (
     <div className="relative -mt-2">
       {/* <Filters /> */}
-      <FiltersAndCharts originalData={data} />
+      <FiltersProvider>
+        <FiltersAndCharts originalData={data} />
+      </FiltersProvider>
     </div>
   );
 };

@@ -12,58 +12,45 @@ import {
 import { toCamelCase } from "@/lib/utils";
 import { MergedData } from "./types";
 import { useMemo } from "react";
+import { FiltersContextType, useFilters } from "./FiltersProvider";
 
-const Filters = ({
-  originalData,
-  createdByFilter,
-  subProjectFilter,
-  disciplineFilter,
-  statusFilter,
-  setCreatedByFilter,
-  setSubProjectFilter,
-  setDisciplineFilter,
-  setStatusFilter,
-  clearFilters,
-}: {
-  originalData: MergedData[];
-  createdByFilter: string;
-  subProjectFilter: string;
-  disciplineFilter: string;
-  statusFilter: string;
-  setCreatedByFilter: (value: string) => void;
-  setSubProjectFilter: (value: string) => void;
-  setDisciplineFilter: (value: string) => void;
-  setStatusFilter: (value: string) => void;
-  clearFilters: () => void;
-}) => {
-  console.log("4545645.......");
+const Filters = ({ clearFilters, originalData }: any) => {
+  // console.log("🚀 ~ Filters ~ originalData:", originalData);
+  const {
+    createdByFilter,
+    subProjectFilter,
+    disciplineFilter,
+    statusFilter,
+    setCreatedByFilter,
+    setSubProjectFilter,
+    setDisciplineFilter,
+    setStatusFilter,
+  } = useFilters();
+
   const getUniqueValues = (data: any, column: string) => {
-    const camelCaseColumn = toCamelCase(column);
     const uniqueValues = new Set<string>();
     data
       .filter((x: MergedData) => x.reviewStatus !== "Terminated")
       .forEach((fileData: any) => {
-        if (fileData[camelCaseColumn]) {
-          uniqueValues.add(fileData[camelCaseColumn]);
-        }
+        if (fileData[column]) uniqueValues.add(fileData[column]);
       });
     return Array.from(uniqueValues);
   };
 
   const uniqueSubProjects = useMemo(
-    () => getUniqueValues(originalData, "Select List 3"),
+    () => getUniqueValues(originalData, "selectList3"),
     [originalData]
   );
   const uniqueCreatedBy = useMemo(
-    () => getUniqueValues(originalData, "Select List 5"),
+    () => getUniqueValues(originalData, "selectList5"),
     [originalData]
   );
   const uniqueDisciplines = useMemo(
-    () => getUniqueValues(originalData, "Select List 1"),
+    () => getUniqueValues(originalData, "selectList1"),
     [originalData]
   );
   const uniqueStatuses = useMemo(
-    () => getUniqueValues(originalData, "Review Status"),
+    () => getUniqueValues(originalData, "reviewStatus"),
     [originalData]
   );
 
@@ -119,7 +106,7 @@ const Filters = ({
 
       <Select value={statusFilter} onValueChange={setStatusFilter}>
         <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder="Select a Discipline" />
+          <SelectValue placeholder="Select a Status" />
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>

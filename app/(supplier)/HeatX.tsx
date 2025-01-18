@@ -14,12 +14,6 @@ interface Data {
 }
 
 const HeatX: React.FC<Data> = ({ data }) => {
-  console.log(
-    "🚀 ~ data:",
-    data.filter(
-      (x: MergedData) => x.plannedSubmissionDate !== "" || x.dateIn !== ""
-    )
-  );
   const chartRef = useRef<HTMLDivElement>(null);
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
   const [actualSubmissionData, setActualSubmissionData] = useState<number[][]>(
