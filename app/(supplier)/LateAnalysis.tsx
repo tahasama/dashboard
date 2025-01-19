@@ -1,12 +1,12 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, memo } from "react";
 import LateAnalysisConclusion from "./LateAnalysisConclusion";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import * as echarts from "echarts";
 import { Data, MergedData } from "../types";
 
-const LateAnalysis: React.FC<Data> = ({ data }) => {
+const LateAnalysis: React.FC<Data> = memo(({ data }) => {
   const [chartData, setChartData] = useState<any>({
     labels: [],
     datasets: [],
@@ -277,6 +277,6 @@ const LateAnalysis: React.FC<Data> = ({ data }) => {
       />
     </div>
   );
-};
+});
 
 export default LateAnalysis;

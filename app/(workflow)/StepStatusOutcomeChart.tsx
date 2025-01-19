@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { memo, useEffect, useRef, useState } from "react";
 import * as echarts from "echarts";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { Data, MergedData } from "../types";
 
-const StatusOutcomeHeatMap: React.FC<Data> = ({ data }) => {
+const StatusOutcomeHeatMap: React.FC<Data> = memo(({ data }) => {
   const chartRef = useRef<HTMLDivElement>(null);
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
   const [actualReviewData, setActualReviewData] = useState<number[][]>([]);
@@ -253,5 +253,5 @@ const StatusOutcomeHeatMap: React.FC<Data> = ({ data }) => {
       </div>
     </div>
   );
-};
+});
 export default StatusOutcomeHeatMap;

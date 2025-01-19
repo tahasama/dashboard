@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -17,7 +17,7 @@ import { Data, MergedData } from "../types";
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
-const DocsPerUserChart: React.FC<Data> = ({ data }) => {
+const DocsPerUserChart: React.FC<Data> = memo(({ data }) => {
   const [chartData, setChartData] = useState({
     labels: [] as string[],
     datasets: [
@@ -259,6 +259,6 @@ const DocsPerUserChart: React.FC<Data> = ({ data }) => {
       </div>
     </div>
   );
-};
+});
 
 export default DocsPerUserChart;

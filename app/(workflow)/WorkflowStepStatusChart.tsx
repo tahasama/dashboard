@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { memo, useEffect, useRef, useState } from "react";
 import * as echarts from "echarts";
 import { nightColors } from "../colors";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { Data, MergedData } from "../types";
 
-const WorkflowStepStatusChart: React.FC<Data> = ({ data }) => {
+const WorkflowStepStatusChart: React.FC<Data> = memo(({ data }) => {
   const [chartData, setChartData] = useState<
     { label: string; value: number }[]
   >([]);
@@ -126,6 +126,6 @@ const WorkflowStepStatusChart: React.FC<Data> = ({ data }) => {
   }
 
   return <div ref={chartRef} style={{ width: "100%", height: "100%" }} />;
-};
+});
 
 export default WorkflowStepStatusChart;

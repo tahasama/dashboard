@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { memo, useEffect, useRef, useState } from "react";
 import * as echarts from "echarts";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
@@ -13,7 +13,7 @@ interface Data {
   data: MergedData[];
 }
 
-const HeatX: React.FC<Data> = ({ data }) => {
+const HeatX: React.FC<Data> = memo(({ data }) => {
   const chartRef = useRef<HTMLDivElement>(null);
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
   const [actualSubmissionData, setActualSubmissionData] = useState<number[][]>(
@@ -266,6 +266,6 @@ const HeatX: React.FC<Data> = ({ data }) => {
       </div>
     </div>
   );
-};
+});
 
 export default HeatX;

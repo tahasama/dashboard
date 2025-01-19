@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, memo } from "react";
 import LateAnalysisReviewConclusion from "./LateAnalysisReviewConclusion";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
@@ -26,7 +26,7 @@ interface LateAnalysisReviewProps {
   }[];
 }
 
-const LateAnalysisReview: React.FC<Data> = ({ data }) => {
+const LateAnalysisReview: React.FC<Data> = memo(({ data }) => {
   const [chartData, setChartData] = useState<any>({
     labels: [],
     datasets: [],
@@ -297,6 +297,6 @@ const LateAnalysisReview: React.FC<Data> = ({ data }) => {
       />
     </div>
   );
-};
+});
 
 export default LateAnalysisReview;

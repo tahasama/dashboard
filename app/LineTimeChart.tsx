@@ -1,5 +1,5 @@
 "use client";
-import React, { useMemo, useState, useEffect, useCallback } from "react";
+import React, { useMemo, useState, useEffect, useCallback, memo } from "react";
 import { FixedSizeList as List } from "react-window";
 import Chart from "react-google-charts";
 import { debounce } from "lodash";
@@ -16,7 +16,7 @@ interface MergedData {
   stepStatus: string;
 }
 
-const LineTimeChart: React.FC<{ data: MergedData[] }> = ({ data }) => {
+const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(({ data }) => {
   const [rows, setRows] = useState<any[][]>([]);
   const [isInitialLoad, setIsInitialLoad] = useState(true); // Flag for initial load
 
@@ -290,5 +290,5 @@ const LineTimeChart: React.FC<{ data: MergedData[] }> = ({ data }) => {
       </List>
     </div>
   );
-};
+});
 export default LineTimeChart;

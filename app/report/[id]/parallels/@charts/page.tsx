@@ -9,7 +9,7 @@ import DocsPerUserChart from "@/app/(workflow)/DocsPerUserChart";
 import LateAnalysisReview from "@/app/(workflow)/LateAnalysisReview";
 import StatusOutcomeHeatMap from "@/app/(workflow)/StepStatusOutcomeChart";
 import WorkflowStepStatusChart from "@/app/(workflow)/WorkflowStepStatusChart";
-import Filters from "@/app/Filters";
+import Filters from "@/app/report/[id]/parallels/@filters/page";
 import { useFilters } from "@/app/FiltersProvider";
 import LineTimeChart from "@/app/LineTimeChart";
 import { Data, MergedData } from "@/app/types";
@@ -21,8 +21,7 @@ import {
 import { filterData } from "@/lib/utils";
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 
-const FiltersAndCharts = ({ originalData }: { originalData: MergedData[] }) => {
-  const [filteredData, setFilteredData] = useState<any[]>(originalData);
+const FiltersAndCharts = () => {
   const [loading, setLoading] = useState(false);
 
   const {
@@ -31,6 +30,7 @@ const FiltersAndCharts = ({ originalData }: { originalData: MergedData[] }) => {
     disciplineFilter,
     statusFilter,
     clearFilters,
+    originalData,
   } = useFilters();
 
   const filtered = useMemo(() => {
@@ -49,41 +49,29 @@ const FiltersAndCharts = ({ originalData }: { originalData: MergedData[] }) => {
     originalData,
   ]);
 
-  const applyFilters = () => {
-    setFilteredData(filtered);
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    setLoading(true);
-    applyFilters();
-  }, [createdByFilter, subProjectFilter, disciplineFilter, statusFilter]);
-
   return (
     <div>
       {/* Filters */}
-      <Filters clearFilters={clearFilters} originalData={originalData} />
-
-      {/* Supplier Documents Charts */}
+      {/* <Filters clearFilters={clearFilters} originalData={originalData} /> */}
       <div className="bg-slate- p-2 mx-1 rounded-md -mt-1 flex h-[calc(100vh-60px)] w- shadow-md">
         <ResizablePanelGroup direction="horizontal" className="">
           <ResizablePanel defaultSize={24}>
             <ResizablePanelGroup direction="vertical">
               <ResizablePanel defaultSize={33}>
                 <Suspense fallback={"Loading..."}>
-                  <ReviewStatus data={filteredData} />
+                  <ReviewStatus data={filtered} />
                 </Suspense>
               </ResizablePanel>
               <ResizableHandle withHandle />
               <ResizablePanel defaultSize={34}>
                 <Suspense fallback={"Loading..."}>
-                  <SubmissionStatus data={filteredData} />
+                  <SubmissionStatus data={filtered} />
                 </Suspense>
               </ResizablePanel>
               <ResizableHandle withHandle />
               <ResizablePanel defaultSize={33}>
                 <Suspense fallback={"Loading..."}>
-                  <StatusChart data={filteredData} />
+                  <StatusChart data={filtered} />
                 </Suspense>
               </ResizablePanel>
             </ResizablePanelGroup>
@@ -93,13 +81,13 @@ const FiltersAndCharts = ({ originalData }: { originalData: MergedData[] }) => {
             <ResizablePanelGroup direction="vertical">
               <ResizablePanel defaultSize={72}>
                 <Suspense fallback={"Loading..."}>
-                  <LateAnalysis data={filteredData} />
+                  <LateAnalysis data={filtered} />
                 </Suspense>
               </ResizablePanel>
               <ResizableHandle withHandle />
               <ResizablePanel defaultSize={28}>
                 <Suspense fallback={"Loading..."}>
-                  <HeatX data={filteredData} />
+                  <HeatX data={filtered} />
                 </Suspense>
               </ResizablePanel>
             </ResizablePanelGroup>
@@ -114,13 +102,13 @@ const FiltersAndCharts = ({ originalData }: { originalData: MergedData[] }) => {
             <ResizablePanelGroup direction="vertical">
               <ResizablePanel defaultSize={60}>
                 <Suspense fallback={"Loading..."}>
-                  <DocsPerUserChart data={filteredData} />
+                  <DocsPerUserChart data={filtered} />
                 </Suspense>
               </ResizablePanel>
               <ResizableHandle withHandle />
               <ResizablePanel>
                 <Suspense fallback={"Loading..."}>
-                  <WorkflowStepStatusChart data={filteredData} />
+                  <WorkflowStepStatusChart data={filtered} />
                 </Suspense>
               </ResizablePanel>
             </ResizablePanelGroup>
@@ -130,30 +118,29 @@ const FiltersAndCharts = ({ originalData }: { originalData: MergedData[] }) => {
             <ResizablePanelGroup direction="vertical">
               <ResizablePanel defaultSize={72}>
                 <Suspense fallback={"Loading..."}>
-                  <LateAnalysisReview data={filteredData} />
+                  <LateAnalysisReview data={filtered} />
                 </Suspense>
               </ResizablePanel>
               <ResizableHandle withHandle />
               <ResizablePanel>
                 <Suspense fallback={"Loading..."}>
-                  <StatusOutcomeHeatMap data={filteredData} />
+                  <StatusOutcomeHeatMap data={filtered} />
                 </Suspense>
               </ResizablePanel>
             </ResizablePanelGroup>
           </ResizablePanel>
         </ResizablePanelGroup>
       </div>
-
       {/* Line Time Chart */}
-      {/* <Suspense
+      <Suspense
         fallback={
           <div className="w-screen h-screen grid place-content-center">
             Loading LineTimeChart...
           </div>
         }
       >
-        <LineTimeChart data={filteredData} />
-      </Suspense> */}
+        <LineTimeChart data={filtered} />
+      </Suspense>
     </div>
   );
 };

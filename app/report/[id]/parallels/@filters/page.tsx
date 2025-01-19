@@ -10,12 +10,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toCamelCase } from "@/lib/utils";
-import { MergedData } from "./types";
-import { useMemo } from "react";
-import { FiltersContextType, useFilters } from "./FiltersProvider";
+import { MergedData } from "../../../../types";
+import { useEffect, useMemo } from "react";
+import { useFilters } from "../../../../FiltersProvider";
 
-const Filters = ({ clearFilters, originalData }: any) => {
-  // console.log("🚀 ~ Filters ~ originalData:", originalData);
+const Filters = () => {
   const {
     createdByFilter,
     subProjectFilter,
@@ -25,17 +24,19 @@ const Filters = ({ clearFilters, originalData }: any) => {
     setSubProjectFilter,
     setDisciplineFilter,
     setStatusFilter,
+    clearFilters,
+    originalData,
   } = useFilters();
 
-  const getUniqueValues = (data: any, column: string) => {
-    const uniqueValues = new Set<string>();
-    data
-      .filter((x: MergedData) => x.reviewStatus !== "Terminated")
-      .forEach((fileData: any) => {
-        if (fileData[column]) uniqueValues.add(fileData[column]);
-      });
-    return Array.from(uniqueValues);
-  };
+  const getUniqueValues = (data: MergedData[], column: string) =>
+    Array.from(
+      new Set(
+        data
+          .filter((x) => x.reviewStatus !== "Terminated")
+          .map((item: any) => item[column])
+          .filter(Boolean)
+      )
+    );
 
   const uniqueSubProjects = useMemo(
     () => getUniqueValues(originalData, "selectList3"),
@@ -53,6 +54,13 @@ const Filters = ({ clearFilters, originalData }: any) => {
     () => getUniqueValues(originalData, "reviewStatus"),
     [originalData]
   );
+
+  useEffect(() => {
+    uniqueSubProjects;
+    uniqueCreatedBy;
+    uniqueDisciplines;
+    uniqueStatuses;
+  }, [originalData]);
 
   return (
     <div className="flex gap-2 my-2 sticky top-0 bg-white z-50 p-2.5 shadow-md">

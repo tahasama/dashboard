@@ -12,23 +12,22 @@ export const filterData = (
   discipline: string,
   status: string
 ) => {
-  return data.filter((row: MergedData) => {
-    // Check if each row matches the selected filter values
-    const matchesCreatedBy = createdBy ? row.selectList5 === createdBy : true;
-    const matchesSubProject = subProject
-      ? row.selectList3 === subProject
-      : true;
-    const matchesDiscipline = discipline
-      ? row.selectList1 === discipline
-      : true;
-    const matchesStatus = status ? row.reviewStatus === status : true;
+  const filterConditions = {
+    createdBy: createdBy === "all" ? null : createdBy,
+    subProject: subProject === "all" ? null : subProject,
+    discipline: discipline === "all" ? null : discipline,
+    status: status === "all" ? null : status,
+  };
 
-    // Only include rows that match all active filter criteria
+  return data.filter((row: MergedData) => {
     return (
-      matchesCreatedBy &&
-      matchesSubProject &&
-      matchesDiscipline &&
-      matchesStatus
+      (!filterConditions.createdBy ||
+        row.selectList5 === filterConditions.createdBy) &&
+      (!filterConditions.subProject ||
+        row.selectList3 === filterConditions.subProject) &&
+      (!filterConditions.discipline ||
+        row.selectList1 === filterConditions.discipline) &&
+      (!filterConditions.status || row.reviewStatus === filterConditions.status)
     );
   });
 };
