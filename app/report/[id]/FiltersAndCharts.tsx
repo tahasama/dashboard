@@ -9,9 +9,7 @@ import DocsPerUserChart from "@/app/(workflow)/DocsPerUserChart";
 import LateAnalysisReview from "@/app/(workflow)/LateAnalysisReview";
 import StatusOutcomeHeatMap from "@/app/(workflow)/StepStatusOutcomeChart";
 import WorkflowStepStatusChart from "@/app/(workflow)/WorkflowStepStatusChart";
-import Filters from "@/app/report/[id]/parallels/@filters/page";
 import { useFilters } from "@/app/FiltersProvider";
-import LineTimeChart from "@/app/LineTimeChart";
 import { Data, MergedData } from "@/app/types";
 import {
   ResizablePanelGroup,
@@ -20,34 +18,10 @@ import {
 } from "@/components/ui/resizable";
 import { filterData } from "@/lib/utils";
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
+const LineTimeChart = lazy(() => import("../../LineTimeChart"));
 
 const FiltersAndCharts = () => {
-  const [loading, setLoading] = useState(false);
-
-  const {
-    createdByFilter,
-    subProjectFilter,
-    disciplineFilter,
-    statusFilter,
-    clearFilters,
-    originalData,
-  } = useFilters();
-
-  const filtered = useMemo(() => {
-    return filterData(
-      originalData,
-      createdByFilter === "all" ? "" : createdByFilter,
-      subProjectFilter === "all" ? "" : subProjectFilter,
-      disciplineFilter === "all" ? "" : disciplineFilter,
-      statusFilter === "all" ? "" : statusFilter
-    );
-  }, [
-    createdByFilter,
-    subProjectFilter,
-    disciplineFilter,
-    statusFilter,
-    originalData,
-  ]);
+  const { filtered } = useFilters();
 
   return (
     <div>

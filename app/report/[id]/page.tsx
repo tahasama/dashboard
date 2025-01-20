@@ -4,8 +4,8 @@ import Link from "next/link";
 import React from "react";
 import { getProject } from "@/app/action/actions";
 import { FiltersProvider } from "@/app/FiltersProvider";
-import FiltersAndCharts from "./parallels/@charts/page";
-import Testing from "./parallels/page";
+import FiltersAndCharts from "./FiltersAndCharts";
+import Filters from "./Filters";
 
 const Report = async ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = await params;
@@ -30,7 +30,8 @@ const Report = async ({ params }: { params: Promise<{ id: string }> }) => {
       {/* <Filters /> */}
 
       <FiltersProvider originalData={data}>
-        <Testing />
+        <Filters />
+        <FiltersAndCharts />{" "}
       </FiltersProvider>
     </div>
   );

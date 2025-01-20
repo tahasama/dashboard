@@ -10,9 +10,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toCamelCase } from "@/lib/utils";
-import { MergedData } from "../../../../types";
+import { MergedData } from "../../types";
 import { useEffect, useMemo } from "react";
-import { useFilters } from "../../../../FiltersProvider";
+import { useFilters } from "../../FiltersProvider";
 
 const Filters = () => {
   const {

@@ -1,26 +1,33 @@
 "use client";
+import { filterData } from "@/lib/utils";
 // FiltersContext.tsx
 import { createContext, useContext, useState, useMemo } from "react";
-import { MergedData } from "./types";
 
-interface FiltersContextType {
+type FiltersContextType = {
   createdByFilter: string;
   subProjectFilter: string;
   disciplineFilter: string;
   statusFilter: string;
-  originalData: MergedData[]; // Add originalData to the context type
   setCreatedByFilter: React.Dispatch<React.SetStateAction<string>>;
   setSubProjectFilter: React.Dispatch<React.SetStateAction<string>>;
   setDisciplineFilter: React.Dispatch<React.SetStateAction<string>>;
   setStatusFilter: React.Dispatch<React.SetStateAction<string>>;
   clearFilters: () => void;
-}
+  filtered: any[]; // Assuming your filtered data is an array
+  originalData: any[]; // Add originalData here to match its expected type
+};
 
 export const FiltersContext = createContext<FiltersContextType | undefined>(
-  undefined // Set default context value to undefined
+  undefined
 );
 
-export const FiltersProvider = ({ children, originalData }: any) => {
+export const FiltersProvider = ({
+  children,
+  originalData,
+}: {
+  children: React.ReactNode;
+  originalData: any[];
+}) => {
   const [createdByFilter, setCreatedByFilter] = useState<string>("");
   const [subProjectFilter, setSubProjectFilter] = useState<string>("");
   const [disciplineFilter, setDisciplineFilter] = useState<string>("");
@@ -33,6 +40,22 @@ export const FiltersProvider = ({ children, originalData }: any) => {
     setStatusFilter("");
   };
 
+  const filtered = useMemo(() => {
+    return filterData(
+      originalData,
+      createdByFilter === "all" ? "" : createdByFilter,
+      subProjectFilter === "all" ? "" : subProjectFilter,
+      disciplineFilter === "all" ? "" : disciplineFilter,
+      statusFilter === "all" ? "" : statusFilter
+    );
+  }, [
+    createdByFilter,
+    subProjectFilter,
+    disciplineFilter,
+    statusFilter,
+    originalData,
+  ]);
+
   const filters = useMemo(
     () => ({
       createdByFilter,
@@ -44,13 +67,15 @@ export const FiltersProvider = ({ children, originalData }: any) => {
       setDisciplineFilter,
       setStatusFilter,
       clearFilters,
-      originalData, // Add originalData here
+      filtered,
+      originalData, // Include originalData here
     }),
     [
       createdByFilter,
       subProjectFilter,
       disciplineFilter,
       statusFilter,
+      filtered,
       originalData,
     ]
   );
