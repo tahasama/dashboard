@@ -35,7 +35,7 @@ const DocsPerUserChart: React.FC<Data> = memo(({ data }) => {
         borderColor: "#388e3c",
         borderWidth: 1,
         data: [] as number[],
-        barThickness: 20, // Controls bar height
+        barThickness: 16, // Controls bar height
       },
     ],
   });
@@ -107,7 +107,7 @@ const DocsPerUserChart: React.FC<Data> = memo(({ data }) => {
           : overdueValues.length === 3
           ? 260
           : overdueValues.length * 57
-        : 120
+        : 124
     ); // 50px per Y label
 
     // Calculate total overdues and determine criticality
@@ -182,7 +182,11 @@ const DocsPerUserChart: React.FC<Data> = memo(({ data }) => {
     },
     plugins: {
       legend: {
-        display: false,
+        display: true,
+        align: "center", // Strictly use allowed values
+        position: "top",
+        labels: { font: { size: 11 } },
+        title: { padding: 40 },
       },
       title: {
         display: true,
@@ -219,7 +223,7 @@ const DocsPerUserChart: React.FC<Data> = memo(({ data }) => {
           // Draw the label inside or above the bar
           const labelText = `${label.split("-")[0]} (${value})`;
           const textX = 100; // Adjust position slightly for horizontal alignment
-          const textY = y + 4; // Center vertically relative to the bar
+          const textY = y + 1; // Center vertically relative to the bar
 
           ctx.fillText(labelText, textX, textY);
         }
@@ -253,7 +257,7 @@ const DocsPerUserChart: React.FC<Data> = memo(({ data }) => {
 
       <div
         style={{ width: "100%", height: `${chartHeight}px` }}
-        className="-ml-2"
+        className="-ml-2 -mt-2"
       >
         <Bar data={chartData} options={options} plugins={[customLabelPlugin]} />
       </div>

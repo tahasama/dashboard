@@ -126,14 +126,14 @@ const StatusOutcomeHeatMap: React.FC<Data> = memo(({ data }) => {
           calculable: true,
           show: false,
           pieces: [
-            { min: 0, max: 0, color: "#99e699" },
-            { min: 1, max: 5, color: "#66cc66" },
-            { min: 6, max: 15, color: "#33b233" },
-            { min: 16, max: 30, color: "#009900" },
-            { min: 31, max: 60, color: "#006600" },
-            { min: 61, max: 120, color: "#004d00" },
-            { min: 121, max: 180, color: "#003300" },
-            { min: 181, color: "#002200" },
+            { min: 0, max: 0, color: "#b3e0ff" }, // Very low (light pastel blue)
+            { min: 1, max: 5, color: "#66c2ff" }, // Low (soft blue)
+            { min: 6, max: 15, color: "#3385ff" }, // Medium-low (slightly darker blue)
+            { min: 16, max: 30, color: "#0073e6" }, // Medium (standard blue)
+            { min: 31, max: 60, color: "#0047b3" }, // Medium-high (dark blue)
+            { min: 61, max: 120, color: "#003366" }, // High (deep blue)
+            { min: 121, max: 180, color: "#001a33" }, // Very high (almost black blue)
+            { min: 181, color: "#000000" }, // Deepest (black blue)
           ],
         },
         {
@@ -142,14 +142,14 @@ const StatusOutcomeHeatMap: React.FC<Data> = memo(({ data }) => {
           calculable: true,
           show: false,
           pieces: [
-            { min: 0, max: 0, color: "#ff9999" }, // Very low (light-medium red)
-            { min: 1, max: 5, color: "#ff6666" }, // Medium red
-            { min: 6, max: 15, color: "#ff3333" }, // Medium-dark red
-            { min: 16, max: 30, color: "#ff0000" }, // Dark red
-            { min: 31, max: 60, color: "#cc0000" }, // Very dark red
-            { min: 61, max: 120, color: "#990000" }, // Deep red
-            { min: 121, max: 180, color: "#660000" }, // Deeper red
-            { min: 181, color: "#330000" }, // Deepest red for high values
+            { min: 0, max: 0, color: "#99e699" },
+            { min: 1, max: 5, color: "#66cc66" },
+            { min: 6, max: 15, color: "#33b233" },
+            { min: 16, max: 30, color: "#009900" },
+            { min: 31, max: 60, color: "#006600" },
+            { min: 61, max: 120, color: "#004d00" },
+            { min: 121, max: 180, color: "#003300" },
+            { min: 181, color: "#002200" },
           ],
         },
       ],
