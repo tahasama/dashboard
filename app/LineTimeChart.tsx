@@ -86,7 +86,7 @@ const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
 
   const [rows, setRows] = useState<any[][]>([]);
   const [currentPage, setCurrentPage] = useState(0); // Track current page
-  const rowsPerPage = 140; // Number of rows per page
+  const rowsPerPage = 250; // Number of rows per page
 
   const paginatedRows = useMemo(() => {
     const startIndex = currentPage * rowsPerPage;
@@ -172,27 +172,29 @@ const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
     updateRows();
   }, [updateRows]);
 
-  const handleNextPage = () => setCurrentPage((prev) => prev + 1);
+  const handleNextPage = () => {
+    const totalPages = Math.ceil(data.length / rowsPerPage);
+    if (currentPage < totalPages - 1) {
+      setCurrentPage((prev) => prev + 1);
+    }
+  };
   const handlePreviousPage = () =>
     setCurrentPage((prev) => Math.max(prev - 1, 0));
 
-  const options = useMemo(
-    () => ({
-      timeline: {
-        groupByRowLabel: true,
-        showRowLabels: true,
-        rowLabelStyle: {
-          fontName: "Arial",
-          fontSize: 11,
-          color: "#333",
-        },
-        barLabelStyle: { fontName: "Arial", fontSize: 10 },
-        barHeight: 25,
+  const options = {
+    timeline: {
+      groupByRowLabel: true,
+      showRowLabels: true,
+      rowLabelStyle: {
+        fontName: "Arial",
+        fontSize: 11,
+        color: "#333",
       },
-      colors: ["#63A8E6", "#84C3A3"],
-    }),
-    []
-  );
+      barLabelStyle: { fontName: "Arial", fontSize: 10 },
+      barHeight: 25,
+    },
+    colors: ["#63A8E6", "#84C3A3"],
+  };
 
   if (!rows.length) {
     return (
@@ -209,15 +211,69 @@ const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
 
   return (
     <div className="snap-start h-[calc(100vh-90px)] my-4 mx-10">
-      <h1 className="mb-2">
-        Document&apos;s Time Line:{" "}
-        {
-          data.filter((x: MergedData) => x.submissionStatus !== "Canceled")
-            .length
-        }{" "}
-        results.
-      </h1>
-      <List height={480} itemCount={1} itemSize={100} width={"100%"}>
+      <div className="flex justify-between items-center mb-2 top-1.5 relative">
+        <h1 className="w-1/3">
+          Document&apos;s Time Line:{" "}
+          {
+            data.filter((x: MergedData) => x.submissionStatus !== "Canceled")
+              .length
+          }{" "}
+          results.
+        </h1>
+        <div className="w-1/3">
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  onClick={handlePreviousPage}
+                  className={`${
+                    currentPage === 0
+                      ? "cursor-default opacity-50"
+                      : "cursor-pointer"
+                  }`}
+                />
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationLink
+                  onClick={() => setCurrentPage(0)}
+                  className={`${
+                    data.length / rowsPerPage <= 2
+                      ? "cursor-none"
+                      : "cursor-pointer"
+                  }`}
+                >
+                  1
+                </PaginationLink>
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationEllipsis />
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationLink
+                  onClick={() =>
+                    setCurrentPage(Math.ceil(data.length / rowsPerPage) - 1)
+                  }
+                  className="cursor-pointer"
+                >
+                  {Math.ceil(data.length / rowsPerPage)}
+                </PaginationLink>
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationNext
+                  onClick={handleNextPage}
+                  className={`${
+                    currentPage === Math.ceil(data.length / rowsPerPage) - 1
+                      ? "cursor-default opacity-50"
+                      : "cursor-pointer"
+                  }`}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+        <h1 className=" w-1/3"></h1>
+      </div>
+      <List height={485} itemCount={1} itemSize={100} width={"100%"}>
         {() => (
           <Chart
             chartType="Timeline"
@@ -234,36 +290,6 @@ const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
           />
         )}
       </List>
-
-      <div className="flex justify-between mt-4">
-        <Pagination>
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious onClick={handlePreviousPage} />
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink onClick={() => setCurrentPage(0)}>
-                1
-              </PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationEllipsis />
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink
-                onClick={() =>
-                  setCurrentPage(Math.ceil(data.length / rowsPerPage) - 1)
-                }
-              >
-                {Math.ceil(data.length / rowsPerPage)}
-              </PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationNext onClick={handleNextPage} />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
-      </div>
     </div>
   );
 });

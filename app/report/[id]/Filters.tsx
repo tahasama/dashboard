@@ -13,6 +13,7 @@ import { toCamelCase } from "@/lib/utils";
 import { MergedData } from "../../types";
 import { useEffect, useMemo } from "react";
 import { useFilters } from "../../FiltersProvider";
+import { Input } from "@/components/ui/input";
 
 const Filters = () => {
   const {
@@ -20,12 +21,14 @@ const Filters = () => {
     subProjectFilter,
     disciplineFilter,
     statusFilter,
+    searchText,
     setCreatedByFilter,
     setSubProjectFilter,
     setDisciplineFilter,
     setStatusFilter,
+    setSearchText, // This is the setter for searchText
     clearFilters,
-    originalData,
+    filtered, // Get the filtered data here
   } = useFilters();
 
   const getUniqueValues = (data: MergedData[], column: string) =>
@@ -39,20 +42,20 @@ const Filters = () => {
     );
 
   const uniqueSubProjects = useMemo(
-    () => getUniqueValues(originalData, "selectList3"),
-    [originalData]
+    () => getUniqueValues(filtered, "selectList3"),
+    [filtered]
   );
   const uniqueCreatedBy = useMemo(
-    () => getUniqueValues(originalData, "selectList5"),
-    [originalData]
+    () => getUniqueValues(filtered, "selectList5"),
+    [filtered]
   );
   const uniqueDisciplines = useMemo(
-    () => getUniqueValues(originalData, "selectList1"),
-    [originalData]
+    () => getUniqueValues(filtered, "selectList1"),
+    [filtered]
   );
   const uniqueStatuses = useMemo(
-    () => getUniqueValues(originalData, "reviewStatus"),
-    [originalData]
+    () => getUniqueValues(filtered, "reviewStatus"),
+    [filtered]
   );
 
   useEffect(() => {
@@ -60,10 +63,13 @@ const Filters = () => {
     uniqueCreatedBy;
     uniqueDisciplines;
     uniqueStatuses;
-  }, [originalData]);
+  }, [filtered]);
 
   return (
     <div className="flex gap-2 my-2 sticky top-0 bg-white z-50 p-2.5 shadow-md">
+      {/* Input for search */}
+
+      {/* Filters */}
       <Select value={subProjectFilter} onValueChange={setSubProjectFilter}>
         <SelectTrigger className="w-[180px]">
           <SelectValue placeholder="Select a Subproject" />
@@ -127,6 +133,14 @@ const Filters = () => {
           </SelectGroup>
         </SelectContent>
       </Select>
+
+      <Input
+        type="text"
+        value={searchText}
+        onChange={(e) => setSearchText(e.target.value)}
+        placeholder="Search by Title or Document No."
+        className="p-2 border rounded text-sm"
+      />
 
       <Button
         variant="outline"
