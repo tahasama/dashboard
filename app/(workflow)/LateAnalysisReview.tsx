@@ -54,7 +54,7 @@ const LateAnalysisReview: React.FC<Data> = memo(({ data }) => {
     > = {};
 
     data
-      .filter((x: MergedData) => x.reviewStatus !== "Canceled")
+      .filter((x: MergedData) => x.reviewStatus !== "Terminated")
       .forEach((row: MergedData) => {
         let dateKey: string | null = null;
         const rawDate = row.dateIn;

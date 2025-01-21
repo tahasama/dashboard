@@ -35,7 +35,7 @@ const DocsPerUserChart: React.FC<Data> = memo(({ data }) => {
         borderColor: "#388e3c",
         borderWidth: 1,
         data: [] as number[],
-        barThickness: 16, // Controls bar height
+        barThickness: 20, // Controls bar height
       },
     ],
   });
@@ -49,42 +49,60 @@ const DocsPerUserChart: React.FC<Data> = memo(({ data }) => {
   });
 
   useEffect(() => {
-    // Process the data for overdue and current document counts
     const userDocCount: {
       [key: string]: { overdue: number; current: number };
     } = {};
-    const overdueAssignees: Set<string> = new Set(); // Track unique assignees for overdue
 
+    const userDocTracker: { [key: string]: Set<string> } = {}; // Track documents per user to prevent duplicates
+
+    // Step 1: Aggregate document counts for each user without duplication
     data.forEach((row: MergedData) => {
-      const user: string = row.assignedTo ?? "";
+      const user = row.assignedTo ?? ""; // Fallback to an empty string if `assignedTo` is missing
       const status = row.stepStatus;
+      const documentNo = row.documentNo; // Unique identifier for each document
+
       if (!userDocCount[user]) {
         userDocCount[user] = { overdue: 0, current: 0 };
       }
-      if (status === "Overdue") {
-        userDocCount[user].overdue += 1;
-        overdueAssignees.add(user); // Add unique assignees
+
+      // Initialize user document tracker for this user if not present
+      if (!userDocTracker[user]) {
+        userDocTracker[user] = new Set();
       }
-      if (status === "Current") {
-        userDocCount[user].current += 1;
-        overdueAssignees.add(user); // Add unique assignees
+
+      // Skip duplicate document counting for the user
+      if (!userDocTracker[user].has(documentNo)) {
+        if (status === "Overdue") {
+          userDocCount[user].overdue += 1;
+        } else if (status === "Current") {
+          userDocCount[user].current += 1;
+        }
+
+        // Mark the document as counted for this user
+        userDocTracker[user].add(documentNo);
       }
     });
 
+    // Step 2: Remove users with no "Overdue" or "Current" counts
     const filteredUserDocCount = Object.entries(userDocCount).filter(
       ([, count]) => count.overdue > 0 || count.current > 0
     );
 
+    // Step 3: Prepare labels and data for the chart
     const labels = filteredUserDocCount.map(([user]) => user);
     const overdueValues = filteredUserDocCount.map(
       ([, count]) => count.overdue
     );
-    overdueValues.sort((a, b) => b - a);
-
     const currentValues = filteredUserDocCount.map(
       ([, count]) => count.current
     );
 
+    // Debugging: Verify aggregated data
+    console.log("Filtered User Document Counts:", filteredUserDocCount);
+    console.log("Overdue Values:", overdueValues);
+    console.log("Current Values:", currentValues);
+
+    // Step 4: Update chart data
     setChartData((prev) => ({
       ...prev,
       labels,
@@ -92,7 +110,6 @@ const DocsPerUserChart: React.FC<Data> = memo(({ data }) => {
         {
           ...prev.datasets[0],
           data: overdueValues,
-          // data: overdueValues.sort((a, b) => b - a),
         },
         {
           ...prev.datasets[1],
@@ -100,46 +117,18 @@ const DocsPerUserChart: React.FC<Data> = memo(({ data }) => {
         },
       ],
     }));
+
+    // Step 5: Dynamically adjust chart height
     setChartHeight(
-      overdueValues.length !== 1
-        ? overdueValues.length === 2
-          ? 200
-          : overdueValues.length === 3
-          ? 260
-          : overdueValues.length * 57
-        : 124
-    ); // 50px per Y label
+      labels.length > 3 ? labels.length * 50 : 200 // Adjust height based on labels
+    );
 
-    // Calculate total overdues and determine criticality
+    // Step 6: Debugging total calculations
     const totalOverdue = overdueValues.reduce((sum, val) => sum + val, 0);
+    const totalCurrent = currentValues.reduce((sum, val) => sum + val, 0);
 
-    // **Additional Insights for Too Many Late Docs or High Days Late**
-    const totalDocuments = overdueValues.reduce((sum, val) => sum + val, 0); // Calculate the total number of overdue documents
-    const avgDaysLate = 30; // Replace with actual logic to calculate average days late (example value)
-
-    const isTooManyLateDocs = totalDocuments > 30; // Threshold for number of late documents
-    // const isTooHighDaysLatePerDoc = avgDaysLate > 7; // Threshold for average days late per document
-
-    if (isTooManyLateDocs) {
-      setAdditionalInsights({
-        color: "bg-red-100 ring-red-400/90",
-        message: `⚠️ Warning: Too many documents are late (${totalDocuments}). This suggests potential bottlenecks in the review process.`,
-      });
-    }
-    // else if (isTooHighDaysLatePerDoc) {
-    //   setAdditionalInsights({
-    //     color: "bg-orange-100 ring-orange-400/90",
-    //     message:
-    //       "⚠️ Warning: Average days late per document is too high. Review processes may be taking longer than acceptable.",
-    //   });
-    // }
-    else {
-      setAdditionalInsights({
-        color: "bg-teal-100 ring-teal-400/90",
-        message:
-          "Recent workflows demonstrate efficient review processes, indicating steady progress and manageable reviewer workloads.",
-      });
-    }
+    console.log("Total Overdue Documents:", totalOverdue);
+    console.log("Total Current Documents:", totalCurrent);
   }, [data]);
 
   // Chart options (do not remove any existing options and styling)
@@ -182,11 +171,7 @@ const DocsPerUserChart: React.FC<Data> = memo(({ data }) => {
     },
     plugins: {
       legend: {
-        display: true,
-        align: "center", // Strictly use allowed values
-        position: "top",
-        labels: { font: { size: 11 } },
-        title: { padding: 40 },
+        display: false,
       },
       title: {
         display: true,
@@ -223,7 +208,7 @@ const DocsPerUserChart: React.FC<Data> = memo(({ data }) => {
           // Draw the label inside or above the bar
           const labelText = `${label.split("-")[0]} (${value})`;
           const textX = 100; // Adjust position slightly for horizontal alignment
-          const textY = y + 1; // Center vertically relative to the bar
+          const textY = y + 4; // Center vertically relative to the bar
 
           ctx.fillText(labelText, textX, textY);
         }
@@ -257,7 +242,7 @@ const DocsPerUserChart: React.FC<Data> = memo(({ data }) => {
 
       <div
         style={{ width: "100%", height: `${chartHeight}px` }}
-        className="-ml-2 -mt-2"
+        className="-ml-2"
       >
         <Bar data={chartData} options={options} plugins={[customLabelPlugin]} />
       </div>

@@ -5,7 +5,15 @@ import * as echarts from "echarts";
 import { nightColors } from "../colors";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
-import { Data, MergedData } from "../types";
+
+interface MergedData {
+  documentNo: string; // Add documentNo here
+  stepStatus: string;
+}
+
+interface Data {
+  data: MergedData[];
+}
 
 const WorkflowStepStatusChart: React.FC<Data> = memo(({ data }) => {
   const [chartData, setChartData] = useState<
@@ -17,15 +25,28 @@ const WorkflowStepStatusChart: React.FC<Data> = memo(({ data }) => {
     // Combine data from all files and generate chart data
     const statusCounts: { [key: string]: number } = {};
 
-    data
-      .filter((wf: MergedData) => wf.stepStatus !== "Terminated")
-      .forEach((wf: MergedData) => {
-        const status = wf.stepStatus;
-        if (status) {
-          statusCounts[status] = (statusCounts[status] || 0) + 1;
-        }
-      });
+    // Add logic to track documentNo and count statuses only once per document
+    const documentStatusMap: { [key: string]: Set<string> } = {}; // Set to track unique statuses per document
 
+    data.forEach((wf: MergedData) => {
+      const { documentNo, stepStatus } = wf;
+
+      if (!documentStatusMap[documentNo]) {
+        documentStatusMap[documentNo] = new Set();
+      }
+
+      // Only count the status if it's not already counted for this document
+      if (
+        stepStatus &&
+        stepStatus !== "Terminated" &&
+        !documentStatusMap[documentNo].has(stepStatus)
+      ) {
+        documentStatusMap[documentNo].add(stepStatus);
+        statusCounts[stepStatus] = (statusCounts[stepStatus] || 0) + 1;
+      }
+    });
+
+    // Prepare the formatted data
     const formattedData = Object.keys(statusCounts).map((key) => ({
       label: key,
       value: statusCounts[key],
@@ -118,7 +139,7 @@ const WorkflowStepStatusChart: React.FC<Data> = memo(({ data }) => {
         <Alert variant="destructive" className="gap-0 mt-4 w-fit">
           <AlertCircle className="h-5 w-5 text-red-500 -mt-1.5" />
           <AlertDescription className="text-xs text-red-600 mt-1">
-            No reviews to found.
+            No reviews found.
           </AlertDescription>
         </Alert>
       </span>

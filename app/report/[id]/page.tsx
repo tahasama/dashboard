@@ -6,6 +6,7 @@ import { getProject } from "@/app/action/actions";
 import { FiltersProvider } from "@/app/FiltersProvider";
 import FiltersAndCharts from "./FiltersAndCharts";
 import Filters from "./Filters";
+import { MergedData } from "@/app/types";
 
 const Report = async ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = await params;
@@ -28,7 +29,6 @@ const Report = async ({ params }: { params: Promise<{ id: string }> }) => {
   return (
     <div className="relative -mt-2">
       {/* <Filters /> */}
-
       <FiltersProvider originalData={data}>
         <Filters />
         <FiltersAndCharts />{" "}

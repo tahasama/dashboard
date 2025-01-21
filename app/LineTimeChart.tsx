@@ -15,16 +15,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-
-interface MergedData {
-  title: string;
-  plannedSubmissionDate: string;
-  dateIn: string;
-  dateCompleted: string;
-  submissionStatus: string;
-  reviewStatus: string;
-  stepStatus: string;
-}
+import { MergedData } from "./types";
 
 const parseDate = (dateString: any): Date | null => {
   const excelBaseDate = new Date(1899, 11, 30).getTime();
@@ -81,19 +72,36 @@ const formatDate = (date: Date): string => {
 };
 
 const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
-  const xxx = useFilters();
-  const data = xxx.filtered;
+  const { filtered } = useFilters();
+
+  // Filter and deduplicate by documentNo
+  const uniqueData = useMemo(
+    () => [
+      ...new Set(
+        filtered
+          .filter(
+            (x: MergedData) =>
+              x.submissionStatus !== "Canceled" &&
+              x.reviewStatus !== "Terminated"
+          )
+          .map((x: MergedData) => x.documentNo) // Extract unique documentNo
+      ),
+    ],
+    [filtered]
+  );
 
   const [rows, setRows] = useState<any[][]>([]);
-  const [currentPage, setCurrentPage] = useState(0); // Track current page
-  const rowsPerPage = 250; // Number of rows per page
+  const [currentPage, setCurrentPage] = useState(0);
+  const rowsPerPage = 250;
 
   const paginatedRows = useMemo(() => {
     const startIndex = currentPage * rowsPerPage;
     const endIndex = startIndex + rowsPerPage;
 
-    return data.slice(startIndex, endIndex).map((item) => {
-      // Transform data into row format
+    return uniqueData.slice(startIndex, endIndex).map((docNo) => {
+      const item = filtered.find((x) => x.documentNo === docNo);
+      if (!item) return null;
+
       const {
         title,
         plannedSubmissionDate,
@@ -161,7 +169,7 @@ const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
 
       return rowSet;
     });
-  }, [data, currentPage]);
+  }, [uniqueData, currentPage, filtered]);
 
   const updateRows = useCallback(() => {
     const flatRows: any[] = paginatedRows.flat().filter(Boolean);
@@ -173,13 +181,15 @@ const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
   }, [updateRows]);
 
   const handleNextPage = () => {
-    const totalPages = Math.ceil(data.length / rowsPerPage);
+    const totalPages = Math.ceil(uniqueData.length / rowsPerPage);
     if (currentPage < totalPages - 1) {
       setCurrentPage((prev) => prev + 1);
     }
   };
-  const handlePreviousPage = () =>
+
+  const handlePreviousPage = () => {
     setCurrentPage((prev) => Math.max(prev - 1, 0));
+  };
 
   const options = {
     timeline: {
@@ -202,7 +212,7 @@ const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
         <Alert variant="destructive" className="gap-0 mt-4 w-fit">
           <AlertCircle className="h-5 w-5 text-red-500 -mt-1.5" />
           <AlertDescription className="text-xs text-red-600 mt-1">
-            No matching data found for the Time Line.
+            No matching data found for the Timeline.
           </AlertDescription>
         </Alert>
       </span>
@@ -212,14 +222,7 @@ const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
   return (
     <div className="snap-start h-[calc(100vh-90px)] my-4 mx-10">
       <div className="flex justify-between items-center mb-2 top-1.5 relative">
-        <h1 className="w-1/3">
-          Document&apos;s Time Line:{" "}
-          {
-            data.filter((x: MergedData) => x.submissionStatus !== "Canceled")
-              .length
-          }{" "}
-          results.
-        </h1>
+        <h1 className="w-1/3">Document&apos;s Timeline:</h1>
         <div className="w-1/3">
           <Pagination>
             <PaginationContent>
@@ -234,14 +237,7 @@ const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
                 />
               </PaginationItem>
               <PaginationItem>
-                <PaginationLink
-                  onClick={() => setCurrentPage(0)}
-                  className={`${
-                    data.length / rowsPerPage <= 2
-                      ? "cursor-none"
-                      : "cursor-pointer"
-                  }`}
-                >
+                <PaginationLink onClick={() => setCurrentPage(0)}>
                   1
                 </PaginationLink>
               </PaginationItem>
@@ -251,18 +247,20 @@ const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
               <PaginationItem>
                 <PaginationLink
                   onClick={() =>
-                    setCurrentPage(Math.ceil(data.length / rowsPerPage) - 1)
+                    setCurrentPage(
+                      Math.ceil(uniqueData.length / rowsPerPage) - 1
+                    )
                   }
-                  className="cursor-pointer"
                 >
-                  {Math.ceil(data.length / rowsPerPage)}
+                  {Math.ceil(uniqueData.length / rowsPerPage)}
                 </PaginationLink>
               </PaginationItem>
               <PaginationItem>
                 <PaginationNext
                   onClick={handleNextPage}
                   className={`${
-                    currentPage === Math.ceil(data.length / rowsPerPage) - 1
+                    currentPage ===
+                    Math.ceil(uniqueData.length / rowsPerPage) - 1
                       ? "cursor-default opacity-50"
                       : "cursor-pointer"
                   }`}
@@ -271,9 +269,9 @@ const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
             </PaginationContent>
           </Pagination>
         </div>
-        <h1 className=" w-1/3"></h1>
+        <div className="w-1/3"></div>
       </div>
-      <List height={485} itemCount={1} itemSize={100} width={"100%"}>
+      <List height={485} itemCount={1} itemSize={100} width="100%">
         {() => (
           <Chart
             chartType="Timeline"

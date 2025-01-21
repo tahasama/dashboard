@@ -209,39 +209,71 @@ const ExcelForm = ({}: any) => {
 
   // Helper function to merge the data from both files
   const mergeFileData = (file1Data: any[], file2Data: any[]) => {
-    return file1Data.map((file1Record) => {
-      // Find matching file2 record
-      const matchingFile2Record = file2Data.find(
-        (file2Record) =>
-          file2Record["Document No."] === file1Record["Document No"]
-      );
+    // Combine records from file1 and file2
+    const mergedData = [
+      ...file1Data.map((file1Record) => {
+        // Find matching file2 record
+        const matchingFile2Record = file2Data.find(
+          (file2Record) =>
+            file2Record["Document No."] === file1Record["Document No"]
+        );
 
-      // Debugging output
+        // Default file2 record to avoid errors
+        const file2Record = matchingFile2Record || {};
 
-      // Default file2 record to avoid errors
-      const file2Record = matchingFile2Record || {};
+        return {
+          documentNo: file1Record["Document No"],
+          title: file1Record["Title"] || file2Record["Document Title"],
+          assignedTo: file2Record["Assigned To"] || "",
+          stepStatus: file2Record["Step Status"] || "",
+          originalDueDate: file2Record["Original Due Date"] || "",
+          daysLateSubmission: file1Record["Days Late"] || 0,
+          daysLateReview: file2Record["Days Late"] || 0,
+          submissionStatus: file1Record["Submission Status"] || "",
+          reviewStatus: file1Record["Review Status"] || "",
+          createdBy: file1Record["Created By"] || "",
+          plannedSubmissionDate: file1Record["Planned Submission Date"] || "",
+          dateIn: file2Record["Date In"] || "",
+          dateCompleted: file2Record["Date Completed"] || "",
+          selectList1: file1Record["Select List 1"] || "",
+          selectList3: file1Record["Select List 3"] || "",
+          selectList5: file1Record["Select List 5"] || "",
+          status: file1Record["Status"] || "",
+          workflowStatus: file2Record["Workflow Status"] || "",
+        };
+      }),
+      // Handle records in file2 but not in file1
+      ...file2Data
+        .filter(
+          (file2Record) =>
+            !file1Data.some(
+              (file1Record) =>
+                file1Record["Document No."] === file2Record["Document No."]
+            )
+        )
+        .map((file2Record) => ({
+          documentNo: file2Record["Document No."],
+          title: file2Record["Document Title"] || "",
+          assignedTo: file2Record["Assigned To"] || "",
+          stepStatus: file2Record["Step Status"] || "",
+          originalDueDate: "",
+          daysLateSubmission: 0, // No submission data in file2
+          daysLateReview: 0,
+          submissionStatus: "", // No submission data in file2
+          reviewStatus: "",
+          createdBy: "", // No createdBy data in file2
+          plannedSubmissionDate: "", // No planned submission date in file2
+          dateIn: "",
+          dateCompleted: "",
+          selectList1: "", // No select list data in file2
+          selectList3: "", // No select list data in file2
+          selectList5: "", // No select list data in file2
+          status: "",
+          workflowStatus: "",
+        })),
+    ];
 
-      return {
-        documentNo: file1Record["Document No"],
-        title: file1Record["Title"] || file2Record["Document Title"],
-        assignedTo: file2Record["Assigned To"] || "",
-        stepStatus: file2Record["Step Status"] || "",
-        originalDueDate: file2Record["Original Due Date"] || "",
-        daysLateSubmission: file1Record["Days Late"] || 0,
-        daysLateReview: file2Record["Days Late"] || 0,
-        submissionStatus: file1Record["Submission Status"] || "",
-        reviewStatus: file1Record["Review Status"] || "",
-        createdBy: file1Record["Created By"] || "",
-        plannedSubmissionDate: file1Record["Planned Submission Date"] || "",
-        dateIn: file2Record["Date In"] || "",
-        dateCompleted: file2Record["Date Completed"] || "",
-        selectList1: file1Record["Select List 1"] || "",
-        selectList3: file1Record["Select List 3"] || "",
-        selectList5: file1Record["Select List 5"] || "",
-        status: file1Record["Status"] || "",
-        workflowStatus: file2Record["Workflow Status"] || "",
-      };
-    });
+    return mergedData;
   };
 
   const labels: { [key: number]: string } = {
