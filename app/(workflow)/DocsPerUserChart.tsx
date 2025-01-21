@@ -97,11 +97,6 @@ const DocsPerUserChart: React.FC<Data> = memo(({ data }) => {
       ([, count]) => count.current
     );
 
-    // Debugging: Verify aggregated data
-    console.log("Filtered User Document Counts:", filteredUserDocCount);
-    console.log("Overdue Values:", overdueValues);
-    console.log("Current Values:", currentValues);
-
     // Step 4: Update chart data
     setChartData((prev) => ({
       ...prev,
@@ -126,9 +121,31 @@ const DocsPerUserChart: React.FC<Data> = memo(({ data }) => {
     // Step 6: Debugging total calculations
     const totalOverdue = overdueValues.reduce((sum, val) => sum + val, 0);
     const totalCurrent = currentValues.reduce((sum, val) => sum + val, 0);
+    const totalDocuments = overdueValues.reduce((sum, val) => sum + val, 0); // Calculate the total number of overdue documents
 
-    console.log("Total Overdue Documents:", totalOverdue);
-    console.log("Total Current Documents:", totalCurrent);
+    const isTooManyLateDocs = totalDocuments > 30; // Threshold for number of late documents
+    // const isTooHighDaysLatePerDoc = avgDaysLate > 7; // Threshold for average days late per document
+
+    if (isTooManyLateDocs) {
+      setAdditionalInsights({
+        color: "bg-red-100 ring-red-400/90",
+        message: `⚠️ Warning: Too many documents are late (${totalDocuments}). This suggests potential bottlenecks in the review process.`,
+      });
+    }
+    // else if (isTooHighDaysLatePerDoc) {
+    //   setAdditionalInsights({
+    //     color: "bg-orange-100 ring-orange-400/90",
+    //     message:
+    //       "⚠️ Warning: Average days late per document is too high. Review processes may be taking longer than acceptable.",
+    //   });
+    // }
+    else {
+      setAdditionalInsights({
+        color: "bg-teal-100 ring-teal-400/90",
+        message:
+          "Recent workflows demonstrate efficient review processes, indicating steady progress and manageable reviewer workloads.",
+      });
+    }
   }, [data]);
 
   // Chart options (do not remove any existing options and styling)

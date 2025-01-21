@@ -3,14 +3,16 @@ import { Data, MergedData } from "../types";
 
 const LateAnalysisReviewConclusion: React.FC<{
   chartValuesRealReceivedDocs: number[]; // Cumulative real received review documents count
-  chartValuesdocs: number[]; // Cumulative planned review submissions count
+  chartValuesdocs: number[]; // Cumulative planned review reviews count
   data: MergedData[]; // Additional data for review insights
 }> = ({
   chartValuesRealReceivedDocs = [],
   chartValuesdocs = [],
   data = [],
 }) => {
-  // Total Planned and Real review submissions based on the last value in the cumulative arrays
+  const formatNumber = (num: number) => num.toLocaleString();
+
+  // Total Planned and Real review reviews based on the last value in the cumulative arrays
   const totalPlannedReview = chartValuesdocs.length
     ? chartValuesdocs[chartValuesdocs.length - 1]
     : 0;
@@ -18,20 +20,28 @@ const LateAnalysisReviewConclusion: React.FC<{
     ? chartValuesRealReceivedDocs[chartValuesRealReceivedDocs.length - 1]
     : 0;
 
-  // Calculate the differences for each time point between real and planned review submissions
-  const reviewDifferences = chartValuesRealReceivedDocs.map(
-    (real, index) => real - chartValuesdocs[index]
+  // Correct calculation for differences (real review reviews vs planned review reviews for each time point)
+  const reviewDifferences = chartValuesRealReceivedDocs.map((real, index) =>
+    chartValuesdocs[index] ? real - chartValuesdocs[index] : 0
   );
 
   // Calculate stats for the review differences
-  const calculateStats = (arr: number[]) => {
-    if (!arr.length) return { min: 0, max: 0, average: 0 };
+  const calculateStats = (
+    arr: number[]
+  ): { min: number; max: number; average: number } => {
+    if (arr.length === 0) return { min: 0, max: 0, average: 0 };
+
     const min = Math.min(...arr);
     const max = Math.max(...arr);
-    const average: any =
-      arr.reduce((sum, value) => sum + value, 0) / arr.length;
+    const average = arr.reduce((sum, value) => sum + value, 0) / arr.length;
+
     return { min, max, average };
   };
+
+  const differences = chartValuesRealReceivedDocs.map((real, index) =>
+    chartValuesdocs[index] ? real - chartValuesdocs[index] : 0
+  );
+  const { min, max, average } = calculateStats(differences);
 
   const {
     min: minReviewDifference,
@@ -39,26 +49,26 @@ const LateAnalysisReviewConclusion: React.FC<{
     average: avgReviewDifference,
   } = calculateStats(reviewDifferences);
 
-  // Impact Analysis for review process
+  // Impact Insight for review process
   const reviewImpactInsight =
     avgReviewDifference === 0
       ? {
           color: "bg-blue-100 ring-blue-400/90",
           message:
-            "🔵 Perfect Alignment: Real review submissions matched the planned review timeline.",
+            "🔵 Perfect Alignment: Real reviews matched the planned review timeline.",
         }
       : avgReviewDifference > 0
       ? {
           color: "bg-green-100 ring-green-400/90",
-          message: `🟢 Ahead of Schedule: On average, real review submissions exceeded the plan by ${avgReviewDifference.toFixed(
-            2
-          )} documents per time point.`,
+          message: `🟢 Ahead of Schedule: On average, real reviews exceeded the plan by ${avgReviewDifference.toFixed(
+            0
+          )} reviews per time point.`,
         }
       : {
           color: "bg-red-100 ring-red-400/90",
-          message: `🔴 Behind Schedule: On average, real review submissions lagged behind the plan by ${Math.abs(
-            avgReviewDifference.toFixed(2)
-          )} documents per time point.`,
+          message: `🔴 Behind Schedule: On average, real reviews lagged behind the plan by ${Math.abs(
+            avgReviewDifference
+          ).toFixed(0)} reviews per time point.`,
         };
 
   // Progression Summary for review process
@@ -66,11 +76,19 @@ const LateAnalysisReviewConclusion: React.FC<{
     totalRealReview >= totalPlannedReview
       ? {
           color: "bg-teal-100 ring-teal-400/90",
-          message: `🟢 Excellent Progression: Real review submissions (${totalRealReview}) met or exceeded the planned submissions (${totalPlannedReview}).`,
+          message: `🟢 Excellent Progression: Real reviews (${totalRealReview}) met or exceeded the planned reviews (${totalPlannedReview}).`,
         }
       : {
           color: "bg-orange-100 ring-orange-400/90",
-          message: `🟠 Needs Improvement: Real review submissions (${totalRealReview}) did not meet the planned submissions (${totalPlannedReview}).`,
+          message: `🟠 Needs Improvement: Real reviews did not meet the planned reviews${
+            totalPlannedReview - totalRealReview !== 0
+              ? ` by ${Math.abs(
+                  totalPlannedReview - totalRealReview
+                )} document${
+                  Math.abs(totalPlannedReview - totalRealReview) > 1 ? "s" : ""
+                }`
+              : ""
+          }.`,
         };
 
   return (
@@ -88,23 +106,25 @@ const LateAnalysisReviewConclusion: React.FC<{
       <br />
       <ul className="space-y-1">
         <li>
-          ➡️ Planned Total Review Submissions:{" "}
-          <strong>{totalPlannedReview}</strong>
+          ➡️ Planned Total Reviews:{" "}
+          <strong>{formatNumber(totalPlannedReview)}</strong>
         </li>
         <li>
-          ➡️ Real Total Review Submissions: <strong>{totalRealReview}</strong>
+          ➡️ Real Total Reviews:{" "}
+          <strong>{formatNumber(totalRealReview)}</strong>
         </li>
         <li>
           ➡️ Average Daily Difference:{" "}
-          <strong>{avgReviewDifference.toFixed(2)}</strong> documents
+          <strong>{Math.abs(avgReviewDifference).toFixed(0)}</strong> documents{" "}
+          {max >= 0 ? "ahead" : "behind"}
         </li>
         <li>
-          ➡️ Maximum Difference: <strong>{maxReviewDifference}</strong>{" "}
-          documents
+          ➡️ Max Difference: <strong>{Math.abs(minReviewDifference)}</strong>{" "}
+          reviews
         </li>
         <li>
-          ➡️ Minimum Difference: <strong>{minReviewDifference}</strong>{" "}
-          documents
+          ➡️ Min Difference: <strong>{Math.abs(maxReviewDifference)}</strong>{" "}
+          reviews
         </li>
       </ul>
     </div>

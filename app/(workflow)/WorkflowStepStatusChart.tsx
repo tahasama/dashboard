@@ -5,48 +5,34 @@ import * as echarts from "echarts";
 import { nightColors } from "../colors";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
-
-interface MergedData {
-  documentNo: string; // Add documentNo here
-  stepStatus: string;
-}
-
-interface Data {
-  data: MergedData[];
-}
+import { Data, MergedData } from "../types";
 
 const WorkflowStepStatusChart: React.FC<Data> = memo(({ data }) => {
   const [chartData, setChartData] = useState<
     { label: string; value: number }[]
   >([]);
+
   const chartRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // Combine data from all files and generate chart data
     const statusCounts: { [key: string]: number } = {};
 
-    // Add logic to track documentNo and count statuses only once per document
-    const documentStatusMap: { [key: string]: Set<string> } = {}; // Set to track unique statuses per document
+    data
+      .filter(
+        (row: MergedData) =>
+          row.submissionStatus !== "Canceled" &&
+          row.submissionStatus !== "Cancelled" &&
+          row.stepStatus !== "Terminated" &&
+          row.workflowStatus !== "Terminated"
+      )
+      .forEach((row: MergedData) => {
+        const status = row.stepStatus; // Adjust to match your column name
+        if (status) {
+          statusCounts[status] = (statusCounts[status] || 0) + 1;
+        }
+      });
 
-    data.forEach((wf: MergedData) => {
-      const { documentNo, stepStatus } = wf;
-
-      if (!documentStatusMap[documentNo]) {
-        documentStatusMap[documentNo] = new Set();
-      }
-
-      // Only count the status if it's not already counted for this document
-      if (
-        stepStatus &&
-        stepStatus !== "Terminated" &&
-        !documentStatusMap[documentNo].has(stepStatus)
-      ) {
-        documentStatusMap[documentNo].add(stepStatus);
-        statusCounts[stepStatus] = (statusCounts[stepStatus] || 0) + 1;
-      }
-    });
-
-    // Prepare the formatted data
     const formattedData = Object.keys(statusCounts).map((key) => ({
       label: key,
       value: statusCounts[key],
@@ -65,7 +51,7 @@ const WorkflowStepStatusChart: React.FC<Data> = memo(({ data }) => {
 
     const option = {
       title: {
-        text: "Reviews Status Chart",
+        text: "General Status Chart",
         left: "center",
         top: "top",
         textStyle: {
@@ -76,15 +62,17 @@ const WorkflowStepStatusChart: React.FC<Data> = memo(({ data }) => {
       tooltip: {
         trigger: "item",
         formatter: (params: any) => {
-          return `${params.name}: ${params.value} workflow`;
+          return `${params.name}: ${params.value} submissions`;
         },
         position: "top",
       },
       series: [
         {
           type: "pie",
-          radius: ["40%", "70%"], // Inner and outer radius for the doughnut chart
-          center: ["50%", "55%"], // Position of the pie chart
+          // radius: ["40%", "70%"], // Inner and outer radius for the doughnut chart
+          radius: ["40%", "65%"], // Inner and outer radius for the doughnut chart
+
+          center: ["50%", "60%"], // Position of the pie chart
           data: chartData.map((item, index) => ({
             value: item.value,
             name: item.label,
@@ -133,13 +121,13 @@ const WorkflowStepStatusChart: React.FC<Data> = memo(({ data }) => {
     };
   }, [chartData]);
 
-  if (data.length === 0) {
+  if (chartData.length === 0) {
     return (
       <span className="grid place-content-center h-full">
         <Alert variant="destructive" className="gap-0 mt-4 w-fit">
           <AlertCircle className="h-5 w-5 text-red-500 -mt-1.5" />
           <AlertDescription className="text-xs text-red-600 mt-1">
-            No reviews found.
+            No documents to found.
           </AlertDescription>
         </Alert>
       </span>

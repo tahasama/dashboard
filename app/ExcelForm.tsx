@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import {
   DialogHeader,
@@ -61,7 +61,19 @@ const ExcelForm = ({}: any) => {
     }
   };
 
-  const expectedHeaders = [[], []];
+  const expectedHeaders = [
+    ["File", "Package Number", "Document No"],
+    ["Workflow No.", "Workflow Name", "Document No."],
+  ];
+
+  const validateHeaders = (
+    headers: string[],
+    expectedHeaders: string[]
+  ): boolean => {
+    return expectedHeaders.every((expectedHeader) =>
+      headers.includes(expectedHeader)
+    );
+  };
 
   const validateFiles = (currentFiles: File[]) => {
     const allUploaded = expectedHeaders.every(
@@ -70,7 +82,46 @@ const ExcelForm = ({}: any) => {
     setIsReadyToGenerate(allUploaded);
   };
 
-  const handleFileUpload = (
+  useEffect(() => {
+    validateFiles(files); // Update `isReadyToGenerate` when files or headers change
+  }, [files]);
+
+  // Validate headers when indexRows change
+  useEffect(() => {
+    const validateAllHeaders = () => {
+      files.forEach((file, fileIndex) => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const binaryStr = event.target?.result;
+          const workbook = XLSX.read(binaryStr, { type: "binary" });
+          const sheetName = workbook.SheetNames[0];
+          const sheet = workbook.Sheets[sheetName];
+
+          const sheetData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+          const headers: any = sheetData[indexRows[fileIndex]];
+
+          if (!validateHeaders(headers, expectedHeaders[fileIndex])) {
+            setError(
+              `File ${
+                fileIndex + 1
+              } has invalid headers. Expected: ${expectedHeaders[
+                fileIndex
+              ].join(", ")}`
+            );
+          } else {
+            setError(null); // Clear the error if headers are valid
+          }
+        };
+        reader.readAsArrayBuffer(file);
+      });
+    };
+
+    if (files.length > 0 && indexRows.length > 0) {
+      validateAllHeaders();
+    }
+  }, [indexRows, files]); // Ensure useEffect is triggered for any change in files or indexRows
+
+  const handleFileUpload = async (
     e: React.ChangeEvent<HTMLInputElement>,
     fileIndex: number
   ) => {
@@ -78,9 +129,8 @@ const ExcelForm = ({}: any) => {
     const file = e.target.files?.[0];
     if (file) {
       const newFiles = [...files];
-      newFiles[fileIndex] = file;
-      setFiles(newFiles);
-      validateFiles(newFiles);
+      newFiles[fileIndex] = file; // Ensure the file is added to the correct index
+      setFiles(newFiles); // Update the files state
     }
   };
 
@@ -89,8 +139,8 @@ const ExcelForm = ({}: any) => {
     fileIndex: number
   ) => {
     const newIndexRows = [...indexRows];
-    newIndexRows[fileIndex] = Number(e.target.value);
-    setIndexRows(newIndexRows);
+    newIndexRows[fileIndex] = parseInt(e.target.value, 10);
+    setIndexRows(newIndexRows); // This will trigger the useEffect to re-check the headers
   };
 
   // Function to filter and retain only necessary columns
@@ -191,15 +241,13 @@ const ExcelForm = ({}: any) => {
 
       if (projectNumber) {
         const existingProjectResponse = await getProject(projectNumber);
-
-        if (!!existingProjectResponse.project) {
-          await updateProjectData(projectNumber, mergedData);
-        } else {
-          await createNewProject(projectNumber, mergedData);
-        }
-
-        setError(null);
-        router.push(`/report/${projectNumber}`);
+        // if (!!existingProjectResponse.project) {
+        //   await updateProjectData(projectNumber, mergedData);
+        // } else {
+        //   await createNewProject(projectNumber, mergedData);
+        // }
+        // setError(null);
+        // router.push(`/report/${projectNumber}`);
       }
       // setIsDialogOpen(!isDialogOpen);
     } catch (err: any) {
@@ -211,66 +259,88 @@ const ExcelForm = ({}: any) => {
   const mergeFileData = (file1Data: any[], file2Data: any[]) => {
     // Combine records from file1 and file2
     const mergedData = [
-      ...file1Data.map((file1Record) => {
-        // Find matching file2 record
-        const matchingFile2Record = file2Data.find(
-          (file2Record) =>
-            file2Record["Document No."] === file1Record["Document No"]
-        );
-
-        // Default file2 record to avoid errors
-        const file2Record = matchingFile2Record || {};
-
-        return {
-          documentNo: file1Record["Document No"],
-          title: file1Record["Title"] || file2Record["Document Title"],
-          assignedTo: file2Record["Assigned To"] || "",
-          stepStatus: file2Record["Step Status"] || "",
-          originalDueDate: file2Record["Original Due Date"] || "",
-          daysLateSubmission: file1Record["Days Late"] || 0,
-          daysLateReview: file2Record["Days Late"] || 0,
-          submissionStatus: file1Record["Submission Status"] || "",
-          reviewStatus: file1Record["Review Status"] || "",
-          createdBy: file1Record["Created By"] || "",
-          plannedSubmissionDate: file1Record["Planned Submission Date"] || "",
-          dateIn: file2Record["Date In"] || "",
-          dateCompleted: file2Record["Date Completed"] || "",
-          selectList1: file1Record["Select List 1"] || "",
-          selectList3: file1Record["Select List 3"] || "",
-          selectList5: file1Record["Select List 5"] || "",
-          status: file1Record["Status"] || "",
-          workflowStatus: file2Record["Workflow Status"] || "",
-        };
-      }),
-      // Handle records in file2 but not in file1
-      ...file2Data
+      ...file1Data
         .filter(
-          (file2Record) =>
-            !file1Data.some(
-              (file1Record) =>
-                file1Record["Document No."] === file2Record["Document No."]
-            )
-        )
-        .map((file2Record) => ({
-          documentNo: file2Record["Document No."],
-          title: file2Record["Document Title"] || "",
-          assignedTo: file2Record["Assigned To"] || "",
-          stepStatus: file2Record["Step Status"] || "",
-          originalDueDate: "",
-          daysLateSubmission: 0, // No submission data in file2
-          daysLateReview: 0,
-          submissionStatus: "", // No submission data in file2
-          reviewStatus: "",
-          createdBy: "", // No createdBy data in file2
-          plannedSubmissionDate: "", // No planned submission date in file2
-          dateIn: "",
-          dateCompleted: "",
-          selectList1: "", // No select list data in file2
-          selectList3: "", // No select list data in file2
-          selectList5: "", // No select list data in file2
-          status: "",
-          workflowStatus: "",
-        })),
+          (file1Record) => file1Record["Submission Status"] !== "Canceled"
+        ) // Filter for non-canceled records
+        .map((file1Record) => {
+          // Find matching file2 record
+          const matchingFile2Record = file2Data.find(
+            (file2Record) =>
+              file2Record["Document No."] === file1Record["Document No"]
+          );
+
+          // Default file2 record to avoid errors
+          const file2Record = matchingFile2Record || {};
+
+          return {
+            documentNo: file1Record["Document No"],
+            title: file1Record["Title"] || file2Record["Document Title"],
+            assignedTo: file2Record["Assigned To"] || "",
+            stepStatus: file2Record["Step Status"] || "",
+            originalDueDate: file2Record["Original Due Date"] || "",
+            daysLateSubmission: file1Record["Days Late"] || 0,
+            daysLateReview: file2Record["Days Late"] || 0,
+            submissionStatus: file1Record["Submission Status"] || "",
+            reviewStatus: file1Record["Review Status"] || "",
+            createdBy: file1Record["Created By"] || "",
+            plannedSubmissionDate: file1Record["Planned Submission Date"] || "",
+            dateIn: file2Record["Date In"] || "",
+            dateCompleted: file2Record["Date Completed"] || "",
+            selectList1: file1Record["Select List 1"] || "",
+            selectList3: file1Record["Select List 3"] || "",
+            selectList5: file1Record["Select List 5"] || "",
+            status: file1Record["Status"] || "",
+            workflowStatus: file2Record["Workflow Status"] || "",
+          };
+        }),
+      // Handle records in file2 but not in file1
+      ...(() => {
+        const unmatchedFile2Records = file2Data.filter((file2Record) => {
+          // Break the codification into parts
+          const file2Parts = file2Record["Document No."].split("-");
+
+          // Compare each file1 document against file2 document
+          return !file1Data.some((file1Record) => {
+            const file1Parts = file1Record["Document No"].split("-");
+            // Check if file1 and file2 are the same with one missing element
+            const uniqueParts = [...new Set([...file1Parts, ...file2Parts])];
+            return uniqueParts.length === file1Parts.length; // Matching if unique parts remain the same
+          });
+        });
+
+        // Log the count and details of added records
+        console.log(
+          `Number of records added from file2 but not in file1: ${unmatchedFile2Records.length}`
+        );
+        console.log("Records added:", unmatchedFile2Records);
+
+        // Map the unmatched records into the merged data structure, excluding "Canceled"
+        return unmatchedFile2Records
+          .filter(
+            (file2Record) => file2Record["Submission Status"] !== "Canceled"
+          ) // Exclude canceled records
+          .map((file2Record) => ({
+            documentNo: file2Record["Document No."],
+            title: file2Record["Document Title"] || "",
+            assignedTo: file2Record["Assigned To"] || "",
+            stepStatus: file2Record["Step Status"] || "",
+            originalDueDate: "",
+            daysLateSubmission: 0, // No submission data in file2
+            daysLateReview: 0,
+            submissionStatus: "", // No submission data in file2
+            reviewStatus: "",
+            createdBy: "", // No createdBy data in file2
+            plannedSubmissionDate: "", // No planned submission date in file2
+            dateIn: file2Record["Date In"] || "", // to add
+            dateCompleted: file2Record["Date Completed"] || "", // to add
+            selectList1: "", // No select list data in file2
+            selectList3: "", // No select list data in file2
+            selectList5: "", // No select list data in file2
+            status: "",
+            workflowStatus: "",
+          }));
+      })(),
     ];
 
     return mergedData;

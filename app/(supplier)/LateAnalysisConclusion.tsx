@@ -2,15 +2,16 @@ import React from "react";
 import { Data, MergedData } from "../types";
 
 const LateAnalysisConclusion: React.FC<{
-  chartValuesRealReceivedDocs: number[]; // Cumulative real submissions count
-  chartValuesdocs: number[]; // Cumulative planned submissions count
-  data: MergedData[]; // Additional data for document insights
+  chartValuesRealReceivedDocs: number[];
+  chartValuesdocs: number[];
+  data: MergedData[];
 }> = ({
   chartValuesRealReceivedDocs = [],
   chartValuesdocs = [],
   data = [],
 }) => {
-  // Total Planned and Real submissions based on the last value in the cumulative arrays
+  const formatNumber = (num: number) => num.toLocaleString();
+
   const totalPlanned = chartValuesdocs.length
     ? chartValuesdocs[chartValuesdocs.length - 1]
     : 0;
@@ -18,68 +19,74 @@ const LateAnalysisConclusion: React.FC<{
     ? chartValuesRealReceivedDocs[chartValuesRealReceivedDocs.length - 1]
     : 0;
 
-  // Calculate the differences for each time point between real and planned
-  const differences = chartValuesRealReceivedDocs.map(
-    (real, index) => real - chartValuesdocs[index]
+  // Correct calculation for differences (real submissions vs planned submissions for each time point)
+  const differences = chartValuesRealReceivedDocs.map((real, index) =>
+    chartValuesdocs[index] ? real - chartValuesdocs[index] : 0
   );
 
-  // Calculate stats for the differences
-  const calculateStats = (arr: number[]) => {
-    if (!arr.length) return { min: 0, max: 0, average: 0 };
+  // Calculate stats for differences
+  const calculateStats = (
+    arr: number[]
+  ): { min: number; max: number; average: number } => {
+    if (arr.length === 0) return { min: 0, max: 0, average: 0 };
+
     const min = Math.min(...arr);
     const max = Math.max(...arr);
     const average = arr.reduce((sum, value) => sum + value, 0) / arr.length;
+
     return { min, max, average };
   };
 
-  const {
-    min: minDifference,
-    max: maxDifference,
-    average: avgDifference,
-  }: any = calculateStats(differences);
+  const { min, max, average } = calculateStats(differences);
 
-  // Impact Analysis
+  // Impact Insight
   const impactInsight =
-    avgDifference === 0
+    average > -20 && average < 0
       ? {
           color: "bg-blue-100 ring-blue-400/90",
           message:
             "🔵 Perfect Alignment: Real submissions matched the planned timeline.",
         }
-      : avgDifference > 0
+      : average > 0
       ? {
           color: "bg-green-100 ring-green-400/90",
-          message: `🟢 Ahead of Schedule: On average, real submissions exceeded the plan by ${avgDifference.toFixed(
+          message: `🟢 Ahead of Schedule: On average, real submissions exceeded the plan by ${average.toFixed(
             2
           )} documents per time point.`,
         }
       : {
           color: "bg-red-100 ring-red-400/90",
           message: `🔴 Behind Schedule: On average, real submissions lagged behind the plan by ${Math.abs(
-            avgDifference.toFixed(2)
-          )} documents per time point.`,
+            average
+          ).toFixed(0)} documents per time point.`,
         };
 
-  // Progression Summary
+  // Progression Insight
   const progressionInsight =
     totalReal >= totalPlanned
       ? {
           color: "bg-teal-100 ring-teal-400/90",
-          message: `🟢 Excellent Progression: Real submissions (${totalReal}) met or exceeded the planned submissions (${totalPlanned}).`,
+          message: `🟢 Excellent Progression: Real submissions met or exceeded the planned submissions${
+            totalPlanned - totalReal !== 0
+              ? ` by ${Math.abs(totalPlanned - totalReal)} document${
+                  Math.abs(totalPlanned - totalReal) > 1 ? "s" : ""
+                }`
+              : ""
+          }`,
         }
       : {
           color: "bg-orange-100 ring-orange-400/90",
-          message: `🟠 Needs Improvement: Real submissions (${totalReal}) did not meet the planned submissions (${totalPlanned}).`,
+          message: `🟠 Needs Improvement: Real submissions did not meet the planned submissions by ${
+            totalPlanned - totalReal
+          } document.`,
         };
 
   return (
     <div className="w-3/12 font-thin text-slate-800 text-xs grid content-center">
-      {/* Impact Insights */}
       <p className={`p-2 rounded-md mb-2 ${impactInsight.color}`}>
         {impactInsight.message}
       </p>
 
-      {/* Progression Insights */}
       <p className={`p-2 rounded-md mb-2 ${progressionInsight.color}`}>
         {progressionInsight.message}
       </p>
@@ -87,20 +94,24 @@ const LateAnalysisConclusion: React.FC<{
       <br />
       <ul className="space-y-1">
         <li>
-          ➡️ Planned Total Submissions: <strong>{totalPlanned}</strong>
+          ➡️ Planned Total Submissions:{" "}
+          <strong>{formatNumber(totalPlanned)}</strong>
         </li>
         <li>
-          ➡️ Real Total Submissions: <strong>{totalReal}</strong>
+          ➡️ Real Total Submissions: <strong>{formatNumber(totalReal)}</strong>
         </li>
         <li>
           ➡️ Average Daily Difference:{" "}
-          <strong>{avgDifference.toFixed(2)}</strong> documents
+          <strong>{Math.abs(average).toFixed(0)}</strong> documents{" "}
+          {average >= 0 ? "ahead" : "behind"}
         </li>
         <li>
-          ➡️ Maximum Difference: <strong>{maxDifference}</strong> documents
+          ➡️ Max Difference: <strong>{Math.abs(min)}</strong> documents{" "}
+          {min >= 0 ? "ahead" : "behind"}
         </li>
         <li>
-          ➡️ Minimum Difference: <strong>{minDifference}</strong> documents
+          ➡️ Min Difference: <strong>{Math.abs(max)}</strong> documents{" "}
+          {max >= 0 ? "ahead" : "behind"}
         </li>
       </ul>
     </div>

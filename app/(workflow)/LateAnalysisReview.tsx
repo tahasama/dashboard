@@ -1,6 +1,13 @@
 "use client";
 
-import React, { useState, useEffect, useRef, memo } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  memo,
+  useCallback,
+  useMemo,
+} from "react";
 import LateAnalysisReviewConclusion from "./LateAnalysisReviewConclusion";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
@@ -12,18 +19,6 @@ import { Data, MergedData } from "../types";
 interface DataRow {
   "Original Due Date": string | number;
   "Days Late": string | number;
-}
-
-// Define the props type
-interface LateAnalysisReviewProps {
-  data: DataRow[];
-}
-
-interface LateAnalysisReviewProps {
-  data: {
-    "Original Due Date": string | number;
-    "Days Late": string | number;
-  }[];
 }
 
 const LateAnalysisReview: React.FC<Data> = memo(({ data }) => {
@@ -53,12 +48,34 @@ const LateAnalysisReview: React.FC<Data> = memo(({ data }) => {
       }
     > = {};
 
+    // Array to collect documents with null or undefined dates
+    const nullDateDocs: {
+      docNumber: string;
+      dateIn: any;
+      dateCompleted: any;
+    }[] = [];
+
     data
-      .filter((x: MergedData) => x.reviewStatus !== "Terminated")
+      .filter(
+        (row: MergedData) =>
+          row.reviewStatus !== "Canceled" &&
+          row.reviewStatus !== "Cancelled" &&
+          row.stepStatus !== "Terminated" &&
+          row.workflowStatus !== "Terminated"
+      )
       .forEach((row: MergedData) => {
         let dateKey: string | null = null;
         const rawDate = row.dateIn;
         const rawDateW = row.dateCompleted;
+
+        // Check for null or undefined dates
+        if (!rawDate || !rawDateW) {
+          nullDateDocs.push({
+            docNumber: row.documentNo,
+            dateIn: rawDate,
+            dateCompleted: rawDateW,
+          });
+        }
 
         if (typeof rawDate === "number") {
           dateKey = excelDateToJSDate(rawDate);
@@ -94,6 +111,8 @@ const LateAnalysisReview: React.FC<Data> = memo(({ data }) => {
           }
         }
       });
+
+    console.log("Documents with null or undefined dates:", nullDateDocs);
 
     return groupedData;
   };

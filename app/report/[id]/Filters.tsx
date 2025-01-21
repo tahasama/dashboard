@@ -29,6 +29,7 @@ const Filters = () => {
     setSearchText, // This is the setter for searchText
     clearFilters,
     filtered, // Get the filtered data here
+    originalData,
   } = useFilters();
 
   const getUniqueValues = (data: MergedData[], column: string) =>
@@ -42,20 +43,20 @@ const Filters = () => {
     );
 
   const uniqueSubProjects = useMemo(
-    () => getUniqueValues(filtered, "selectList3"),
-    [filtered]
+    () => getUniqueValues(originalData, "selectList3"),
+    []
   );
   const uniqueCreatedBy = useMemo(
-    () => getUniqueValues(filtered, "selectList5"),
-    [filtered]
+    () => getUniqueValues(originalData, "selectList5"),
+    []
   );
   const uniqueDisciplines = useMemo(
-    () => getUniqueValues(filtered, "selectList1"),
-    [filtered]
+    () => getUniqueValues(originalData, "selectList1"),
+    []
   );
   const uniqueStatuses = useMemo(
-    () => getUniqueValues(filtered, "reviewStatus"),
-    [filtered]
+    () => getUniqueValues(originalData, "reviewStatus"),
+    []
   );
 
   useEffect(() => {

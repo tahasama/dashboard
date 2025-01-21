@@ -31,7 +31,7 @@ const Report = async ({ params }: { params: Promise<{ id: string }> }) => {
       {/* <Filters /> */}
       <FiltersProvider originalData={data}>
         <Filters />
-        <FiltersAndCharts />{" "}
+        <FiltersAndCharts />
       </FiltersProvider>
     </div>
   );
