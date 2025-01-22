@@ -110,7 +110,7 @@ const LateAnalysis: React.FC<Data> = memo(({ data }) => {
 
     const chartValuesRealReceivedDocs = chartLabels.map((_, index) => {
       return chartLabels
-        .slice(0, index + 1)
+        .slice(0, index)
         .reduce((sum, label) => sum + groupedData[label].realReceivedDocs, 0);
     });
     setChartValuesRealReceivedDocs(chartValuesRealReceivedDocs);
