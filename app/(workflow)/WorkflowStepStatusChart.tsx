@@ -28,7 +28,6 @@ const WorkflowStepStatusChart: React.FC<Data> = memo(({ data }) => {
       )
       .forEach((row: MergedData) => {
         const status = row.stepStatus; // Adjust to match your column name
-        console.log("Filtered Row:", row);
         if (status) {
           statusCounts[status] = (statusCounts[status] || 0) + 1;
         }

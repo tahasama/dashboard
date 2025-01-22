@@ -24,7 +24,6 @@ export async function getProject(
       };
     }
   } catch (error) {
-    console.error("Database query error:", error);
     return {
       message: "Internal Server Error",
       project: null,
@@ -53,7 +52,6 @@ export async function createNewProject(
       message: "Project created or updated successfully",
     };
   } catch (error) {
-    console.error("Error in POST /projects:", error);
     return {
       message: "Internal Server Error",
     };
@@ -86,7 +84,6 @@ export async function updateProjectData(
       };
     }
   } catch (error) {
-    console.error("Error in PUT /projects:", error);
     return {
       message: "Internal Server Error",
     };

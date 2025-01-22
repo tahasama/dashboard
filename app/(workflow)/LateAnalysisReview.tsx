@@ -118,8 +118,6 @@ const LateAnalysisReview: React.FC<Data> = memo(({ data }) => {
         }
       });
 
-    console.log("Documents with null or undefined dates:", nullDateDocs);
-
     return groupedData;
   };
 

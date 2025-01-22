@@ -7,7 +7,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { error } from "console";
 import { AlertCircle, Loader2 } from "lucide-react";
 
 export default function ProjectForm() {

@@ -309,12 +309,6 @@ const ExcelForm = ({}: any) => {
           });
         });
 
-        // Log the count and details of added records
-        console.log(
-          `Number of records added from file2 but not in file1: ${unmatchedFile2Records.length}`
-        );
-        console.log("Records added:", unmatchedFile2Records);
-
         // Map the unmatched records into the merged data structure, excluding "Canceled"
         return unmatchedFile2Records
           .filter(
@@ -342,7 +336,6 @@ const ExcelForm = ({}: any) => {
           }));
       })(),
     ];
-    console.log("🚀 ~ mergeFileData ~  (),:", mergedData);
 
     return mergedData;
   };
