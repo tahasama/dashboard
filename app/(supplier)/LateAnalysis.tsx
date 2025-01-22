@@ -37,7 +37,11 @@ const LateAnalysis: React.FC<Data> = memo(({ data }) => {
       .filter((x: MergedData) => x.submissionStatus !== "Canceled")
       .forEach((row: MergedData) => {
         let dateKey: string | null = null;
-        const rawDate = row.plannedSubmissionDate;
+        const rawDate =
+          row.plannedSubmissionDate === "" &&
+          row.submissionStatus === "Submitted"
+            ? row.dateIn
+            : row.plannedSubmissionDate;
         const rawDateW = row.dateIn;
 
         if (typeof rawDate === "number") {

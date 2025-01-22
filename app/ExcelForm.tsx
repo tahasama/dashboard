@@ -241,13 +241,13 @@ const ExcelForm = ({}: any) => {
 
       if (projectNumber) {
         const existingProjectResponse = await getProject(projectNumber);
-        // if (!!existingProjectResponse.project) {
-        //   await updateProjectData(projectNumber, mergedData);
-        // } else {
-        //   await createNewProject(projectNumber, mergedData);
-        // }
-        // setError(null);
-        // router.push(`/report/${projectNumber}`);
+        if (!!existingProjectResponse.project) {
+          await updateProjectData(projectNumber, mergedData);
+        } else {
+          await createNewProject(projectNumber, mergedData);
+        }
+        setError(null);
+        router.push(`/report/${projectNumber}`);
       }
       // setIsDialogOpen(!isDialogOpen);
     } catch (err: any) {
@@ -322,23 +322,23 @@ const ExcelForm = ({}: any) => {
           ) // Exclude canceled records
           .map((file2Record) => ({
             documentNo: file2Record["Document No."],
-            title: file2Record["Document Title"] || "",
+            title: file2Record["Document Title"],
             assignedTo: file2Record["Assigned To"] || "",
             stepStatus: file2Record["Step Status"] || "",
-            originalDueDate: "",
-            daysLateSubmission: 0, // No submission data in file2
+            originalDueDate: file2Record["Original Due Date"] || "",
+            daysLateSubmission: 0,
             daysLateReview: 0,
-            submissionStatus: "", // No submission data in file2
+            submissionStatus: "",
             reviewStatus: "",
-            createdBy: "", // No createdBy data in file2
-            plannedSubmissionDate: "", // No planned submission date in file2
-            dateIn: file2Record["Date In"] || "", // to add
-            dateCompleted: file2Record["Date Completed"] || "", // to add
-            selectList1: "", // No select list data in file2
-            selectList3: "", // No select list data in file2
-            selectList5: "", // No select list data in file2
+            createdBy: "",
+            plannedSubmissionDate: "",
+            dateIn: file2Record["Date In"] || "",
+            dateCompleted: file2Record["Date Completed"] || "",
+            selectList1: "",
+            selectList3: "",
+            selectList5: "",
             status: "",
-            workflowStatus: "",
+            workflowStatus: file2Record["Workflow Status"] || "",
           }));
       })(),
     ];

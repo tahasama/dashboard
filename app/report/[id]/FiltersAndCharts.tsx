@@ -22,6 +22,12 @@ const LineTimeChart = lazy(() => import("../../LineTimeChart"));
 
 const FiltersAndCharts = () => {
   const { filtered } = useFilters();
+  console.log(
+    "🚀 ~ FiltersAndCharts ~ filtered:",
+    filtered.filter(
+      (x: MergedData) => x.documentNo === "QB230601-00-DM-PRO-00003"
+    )
+  );
 
   return (
     <div>
