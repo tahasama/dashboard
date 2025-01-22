@@ -65,7 +65,7 @@ const LateAnalysisReview: React.FC<Data> = memo(({ data }) => {
       )
       .forEach((row: MergedData) => {
         let dateKey: string | null = null;
-        const rawDate = row.dateIn;
+        const rawDate = row.originalDueDate;
         const rawDateW = row.dateCompleted;
 
         // Check for null or undefined dates
