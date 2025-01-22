@@ -342,6 +342,7 @@ const ExcelForm = ({}: any) => {
           }));
       })(),
     ];
+    console.log("🚀 ~ mergeFileData ~  (),:", mergedData);
 
     return mergedData;
   };

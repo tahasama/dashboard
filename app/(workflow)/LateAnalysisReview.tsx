@@ -45,6 +45,7 @@ const LateAnalysisReview: React.FC<Data> = memo(({ data }) => {
         docs: number;
         receivedDocs: number;
         realReceivedDocs: number;
+        realReceivedDocNumbers: Set<string>; // Add this to track Document Nos
       }
     > = {};
 
@@ -89,6 +90,7 @@ const LateAnalysisReview: React.FC<Data> = memo(({ data }) => {
               docs: 0,
               receivedDocs: 0,
               realReceivedDocs: 0,
+              realReceivedDocNumbers: new Set(),
             };
           }
 
@@ -104,10 +106,14 @@ const LateAnalysisReview: React.FC<Data> = memo(({ data }) => {
                 docs: 0,
                 receivedDocs: 0,
                 realReceivedDocs: 0,
+                realReceivedDocNumbers: new Set(),
               };
             }
             groupedData[receivedDate].receivedDocs += 1;
             groupedData[receivedDate].realReceivedDocs += 1;
+            groupedData[receivedDate].realReceivedDocNumbers.add(
+              row.documentNo
+            ); // Track the Document No
           }
         }
       });
@@ -136,19 +142,25 @@ const LateAnalysisReview: React.FC<Data> = memo(({ data }) => {
       return parseDate(a).getTime() - parseDate(b).getTime();
     });
 
+    // Shift the planned reviews (docs) two steps forward
     const chartValuesdocs = chartLabels.map((_, index) => {
       return chartLabels
-        .slice(0, index + 1)
-        .reduce((sum, label) => sum + groupedData[label].docs, 0);
+        .slice(0, index + 2) // Include the current index and one extra step
+        .reduce((sum, label) => sum + groupedData[label]?.docs || 0, 0);
     });
-    setChartValuesdocs(chartValuesdocs);
 
     const chartValuesRealReceivedDocs = chartLabels.map((_, index) => {
       return chartLabels
-        .slice(0, index + 1)
-        .reduce((sum, label) => sum + groupedData[label].realReceivedDocs, 0);
+        .slice(0, index + 1) // Regular cumulative logic for realReceivedDocs
+        .reduce(
+          (sum, label) => sum + groupedData[label]?.realReceivedDocs || 0,
+          0
+        );
     });
+
+    setChartValuesdocs(chartValuesdocs);
     setChartValuesRealReceivedDocs(chartValuesRealReceivedDocs);
+
     return {
       chartLabels,
       chartValuesdocs,

@@ -57,18 +57,19 @@ const LateAnalysisReviewConclusion: React.FC<{
           message:
             "🔵 Perfect Alignment: Real reviews matched the planned review timeline.",
         }
-      : avgReviewDifference > 0
+      : avgReviewDifference < -5 // Threshold of -5 days for being late
       ? {
-          color: "bg-green-100 ring-green-400/90",
-          message: `🟢 Ahead of Schedule: On average, real reviews exceeded the plan by ${avgReviewDifference.toFixed(
-            0
-          )} reviews per time point.`,
-        }
-      : {
           color: "bg-red-100 ring-red-400/90",
           message: `🔴 Behind Schedule: On average, real reviews lagged behind the plan by ${Math.abs(
-            avgReviewDifference
-          ).toFixed(0)} reviews per time point.`,
+            avgReviewDifference + 5
+          ).toFixed(
+            0
+          )} reviews per time point (considering the 5-day threshold).`,
+        }
+      : {
+          color: "bg-green-100 ring-green-400/90",
+          message:
+            "🟢 On Track: Reviews are within the 5-day threshold of the planned schedule.",
         };
 
   // Progression Summary for review process
