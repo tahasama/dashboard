@@ -227,19 +227,8 @@ const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
   return (
     <div className="snap-start h-[calc(100vh-90px)] my-4 mx-10">
       <div className="flex justify-between items-center mb-2 top-1.5 relative">
-        <h1 className="w-1/3">
-          Document&apos;s Timeline:{" "}
-          {
-            filtered.filter(
-              (x: MergedData) =>
-                x.submissionStatus !== "Canceled" &&
-                (x.plannedSubmissionDate === "" &&
-                x.submissionStatus === "Submitted"
-                  ? x.dateIn
-                  : x.plannedSubmissionDate)
-            ).length
-          }
-        </h1>
+        <h1 className="w-1/3">Document&apos;s Timeline: {uniqueData.length}</h1>
+
         <div className="w-1/3">
           <Pagination>
             <PaginationContent>
@@ -288,23 +277,39 @@ const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
         </div>
         <div className="w-1/3"></div>
       </div>
-      <List height={485} itemCount={1} itemSize={100} width="100%">
-        {() => (
-          <Chart
-            chartType="Timeline"
-            rows={rows}
-            columns={[
-              { type: "string" },
-              { type: "string" },
-              { type: "date" },
-              { type: "date" },
-            ]}
-            options={options}
-            width="100%"
-            height="470px"
-          />
-        )}
-      </List>
+      <div className="relative">
+        {filtered[0]?.dateCompleted === filtered[0]?.dateIn &&
+          !filtered[0]?.plannedSubmissionDate && (
+            <p className="absolute left-60 top-[0.99px] z-50 w-3/4 bg-sky-200 p-2 text-neutral-700 text-xs">
+              This document was uploaded and reviewed on:{" "}
+              {parseDate(filtered[0]?.dateCompleted)?.toLocaleDateString(
+                "en-GB",
+                {
+                  day: "2-digit",
+                  month: "short",
+                  year: "numeric",
+                }
+              ) || "Invalid Date"}
+            </p>
+          )}
+        <List height={485} itemCount={1} itemSize={100} width="100%">
+          {() => (
+            <Chart
+              chartType="Timeline"
+              rows={rows}
+              columns={[
+                { type: "string" },
+                { type: "string" },
+                { type: "date" },
+                { type: "date" },
+              ]}
+              options={options}
+              width="100%"
+              height="470px"
+            />
+          )}
+        </List>
+      </div>
     </div>
   );
 });
