@@ -235,17 +235,17 @@ const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
 
   return (
     <div className="snap-start h-[calc(100vh-90px)] my-4 mx-2 lg:mx-10">
-      <div className="flex justify-between items-center mb-2 top-1.5 relative">
+      <div className="flex lg:justify-between items-center mb-2 top-1.5 relative">
         <h1 className="w-1/3">Document&apos;s Timeline: {uniqueData.length}</h1>
 
-        <div className="w-1/3 flex justify-center">
+        <div className="lg:w-1/3 flex justify-center">
           <PaginationX
             currentPage={currentPage}
             totalPages={Math.ceil(uniqueData.length / rowsPerPage)}
             onPageChange={handlePageChange}
           />
         </div>
-        <div className="w-1/3"></div>
+        <div className="w-fit lg:w-1/3 hidden lg:block"></div>
       </div>
       <div className="relative">
         {filtered[0]?.dateCompleted === filtered[0]?.dateIn &&
