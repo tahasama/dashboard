@@ -93,7 +93,9 @@ const LateAnalysisReviewConclusion: React.FC<{
         };
 
   return (
-    <div className="w-3/12 font-thin text-black lg:text-slate-800 mb-2  lg:pt-0 lg:mt-0 text-xs grid content-center mr-1">
+    <div className="w-3/12 font-thin text-black lg:text-slate-800 mb-2 pt-44 lg:pt-0 lg:mt-0 text-xs grid content-center scrollbar-thin  scrollbar-thumb-slate-600 scrollbar-track-slate-300 rounded-md scrollbar-corner-transparent overflow-y-scroll">
+      {/* <div className="w-3/12 font-thin text-black lg:text-slate-800 mb-2  lg:pt-0 lg:mt-0 text-xs grid content-center mr-1"> */}
+
       {/* Impact Insights for Review */}
       <p className={`p-2 rounded-md mb-2 ${reviewImpactInsight.color}`}>
         {reviewImpactInsight.message}
