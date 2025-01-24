@@ -129,7 +129,7 @@ const DocsPerUserChart: React.FC<Data> = memo(({ data }) => {
     if (isTooManyLateDocs) {
       setAdditionalInsights({
         color: "bg-red-100 ring-red-400/90",
-        message: `⚠️ Warning: Too many documents are late (${totalDocuments}). This suggests potential bottlenecks in the review process.`,
+        message: `⚠️ Warning: Too many documents are late (${totalDocuments}).`,
       });
     }
     // else if (isTooHighDaysLatePerDoc) {
@@ -142,8 +142,7 @@ const DocsPerUserChart: React.FC<Data> = memo(({ data }) => {
     else {
       setAdditionalInsights({
         color: "bg-teal-100 ring-teal-400/90",
-        message:
-          "Recent workflows demonstrate efficient review processes, indicating steady progress and manageable reviewer workloads.",
+        message: "Recent workflows demonstrate efficient review processes.",
       });
     }
   }, [data]);
@@ -252,7 +251,7 @@ const DocsPerUserChart: React.FC<Data> = memo(({ data }) => {
     <div className="max-h-[400px] scrollbar-thin  scrollbar-thumb-slate-600 scrollbar-track-slate-300 rounded-md scrollbar-corner-transparent overflow-y-scroll">
       {/* Dynamically rendering criticality text with inline styles */}
       <p
-        className={`rounded-md p-2 m-1 font-thin text-xs leading-loose  text-neutral-900 lg:text-slate-800 ${additionalInsights.color}`}
+        className={`rounded-md p-2 m-1 font-thin text-xs lg:leading-loose  text-neutral-900 lg:text-slate-800 ${additionalInsights.color}`}
       >
         {additionalInsights.message}
       </p>
