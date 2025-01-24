@@ -103,6 +103,11 @@ const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
     (page: number) => setCurrentPage(page),
     []
   );
+
+  useEffect(() => {
+    setCurrentPage(0); // Reset to the first page when filters change
+  }, [filtered]);
+
   const paginatedRows = useMemo(() => {
     const startIndex = currentPage * rowsPerPage;
     const endIndex = startIndex + rowsPerPage;
@@ -183,7 +188,7 @@ const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
   const updateRows = useCallback(() => {
     const flatRows: any[] = paginatedRows.flat().filter(Boolean);
     setRows(flatRows);
-  }, [paginatedRows]);
+  }, [paginatedRows, filtered]);
 
   useEffect(() => {
     updateRows();
