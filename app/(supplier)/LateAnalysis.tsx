@@ -264,14 +264,14 @@ const LateAnalysis: React.FC<Data> = memo(({ data }) => {
 
   return (
     <div className="w-full h-full flex">
-      <div className="w-9/12 h-full flex flex-col mt-0.5">
+      <div className="w-9/12 h-full flex flex-col mt-0.5 relative">
         <div className="flex justify-between mr-10 ml-4">
           <h2>Late Submissions Analysis </h2>
         </div>
         <div
           ref={chartRef}
           // style={{ width: "100%", height: "100%" }}
-          className="w-full h-full scale-110 mt-2 pl-2.5"
+          className="w-full h-full lg:scale-[1.1] xl:scale-[1.15] mt-2 -right-4"
         />
       </div>
       <LateAnalysisConclusion

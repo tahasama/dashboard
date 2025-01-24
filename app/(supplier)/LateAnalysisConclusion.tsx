@@ -82,7 +82,7 @@ const LateAnalysisConclusion: React.FC<{
         };
 
   return (
-    <div className="w-3/12 font-thin  text-black lg:text-slate-800 mb-2 pt-40 lg:pt-0 lg:mt-0 text-xs grid content-center scrollbar-thin  scrollbar-thumb-slate-600 scrollbar-track-slate-300 rounded-md scrollbar-corner-transparent overflow-y-scroll">
+    <div className="w-3/12 font-thin text-black lg:text-slate-800 mb-2 lg:pt-0 lg:mt-0 text-xs grid content-center mr-1">
       <p className={`p-2 rounded-md mb-2 ${impactInsight.color}`}>
         {impactInsight.message}
       </p>
