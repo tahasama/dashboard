@@ -29,7 +29,9 @@ export default function RootLayout({
       // className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <div className="hidden md:block">{children}</div>
-        <RotationMessage />
+        <div className="md:hidden block">
+          <RotationMessage />
+        </div>
       </body>
     </html>
   );
