@@ -23,7 +23,7 @@ const LineTimeChart = lazy(() => import("../../LineTimeChart"));
 const FiltersAndCharts = () => {
   const { filtered } = useFilters();
   return (
-    <div>
+    <div className=" w-full">
       {/* Filters */}
       {/* <Filters clearFilters={clearFilters} originalData={originalData} /> */}
       <div className="bg-slate- p-2 mx-1 rounded-md mt-4 flex h-[calc(100vh-60px)] w- shadow-md">
