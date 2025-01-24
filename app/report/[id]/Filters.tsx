@@ -42,7 +42,7 @@ const Filters = () => {
     Array.from(
       new Set(
         data
-          .filter((x) => x.reviewStatus !== "Terminated")
+          // .filter((x) => x.reviewStatus !== "Terminated")
           .map((item: any) => item[column])
           .filter(Boolean)
       )

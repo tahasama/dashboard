@@ -82,7 +82,7 @@ const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
           .filter(
             (x: MergedData) =>
               x.submissionStatus !== "Canceled" &&
-              x.reviewStatus !== "Terminated" &&
+              // x.reviewStatus !== "Terminated" &&
               x.stepStatus !== "Terminated"
           )
           .map((x: MergedData) => x.documentNo) // Extract unique documentNo
