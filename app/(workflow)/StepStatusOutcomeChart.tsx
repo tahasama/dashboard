@@ -244,10 +244,10 @@ const StatusOutcomeHeatMap: React.FC<Data> = memo(({ data }) => {
       />
       <div className="flex flex-col items-center justify-center ml-10 absolute -right-6 m-1 ">
         <Select value={selectedYear} onValueChange={setSelectedYear}>
-          <SelectTrigger className="">
-            <SelectValue placeholder="Years" />
+          <SelectTrigger className="scale-75 lg:scale-100">
+            <SelectValue placeholder="Years" className="" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="">
             <SelectGroup>
               {/* <SelectLabel>Years</SelectLabel> */}
 

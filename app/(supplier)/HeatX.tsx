@@ -259,7 +259,7 @@ const HeatX: React.FC<Data> = memo(({ data }) => {
       />
       <div className="flex flex-col items-center justify-center ml-10 absolute -right-6 m-1 ">
         <Select value={selectedYear} onValueChange={setSelectedYear}>
-          <SelectTrigger className="">
+          <SelectTrigger className="scale-75 lg:scale-100">
             <SelectValue placeholder="Years" />
           </SelectTrigger>
           <SelectContent>
