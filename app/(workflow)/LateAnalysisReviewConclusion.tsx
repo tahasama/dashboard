@@ -116,8 +116,7 @@ const LateAnalysisReviewConclusion: React.FC<{
         </li>
         <li>
           ➡️ Average Daily Difference:{" "}
-          <strong>{Math.abs(avgReviewDifference).toFixed(0)}</strong> documents{" "}
-          {max >= 0 ? "ahead" : "behind"}
+          <strong>{Math.abs(avgReviewDifference).toFixed(0)}</strong>
         </li>
         <li>
           ➡️ Max Difference: <strong>{Math.abs(minReviewDifference)}</strong>{" "}

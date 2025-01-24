@@ -16,6 +16,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { MergedData } from "./types";
+import PaginationX from "./PaginationX";
 
 const parseDate = (dateString: any): Date | null => {
   const excelBaseDate = new Date(1899, 11, 30).getTime();
@@ -96,9 +97,12 @@ const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
   // });
 
   const [rows, setRows] = useState<any[][]>([]);
-  const [currentPage, setCurrentPage] = useState(0);
-  const rowsPerPage = 250;
-
+  const [currentPage, setCurrentPage] = useState<number>(0);
+  const rowsPerPage = 100;
+  const handlePageChange = useCallback(
+    (page: number) => setCurrentPage(page),
+    []
+  );
   const paginatedRows = useMemo(() => {
     const startIndex = currentPage * rowsPerPage;
     const endIndex = startIndex + rowsPerPage;
@@ -229,51 +233,12 @@ const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
       <div className="flex justify-between items-center mb-2 top-1.5 relative">
         <h1 className="w-1/3">Document&apos;s Timeline: {uniqueData.length}</h1>
 
-        <div className="w-1/3">
-          <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious
-                  onClick={handlePreviousPage}
-                  className={`${
-                    currentPage === 0
-                      ? "cursor-default opacity-50"
-                      : "cursor-pointer"
-                  }`}
-                />
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink onClick={() => setCurrentPage(0)}>
-                  1
-                </PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationEllipsis />
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink
-                  onClick={() =>
-                    setCurrentPage(
-                      Math.ceil(uniqueData.length / rowsPerPage) - 1
-                    )
-                  }
-                >
-                  {Math.ceil(uniqueData.length / rowsPerPage)}
-                </PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationNext
-                  onClick={handleNextPage}
-                  className={`${
-                    currentPage ===
-                    Math.ceil(uniqueData.length / rowsPerPage) - 1
-                      ? "cursor-default opacity-50"
-                      : "cursor-pointer"
-                  }`}
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
+        <div className="w-1/3 flex justify-center">
+          <PaginationX
+            currentPage={currentPage}
+            totalPages={Math.ceil(uniqueData.length / rowsPerPage)}
+            onPageChange={handlePageChange}
+          />
         </div>
         <div className="w-1/3"></div>
       </div>
