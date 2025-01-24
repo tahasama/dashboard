@@ -26,7 +26,7 @@ const FiltersAndCharts = () => {
     <div className=" w-full">
       {/* Filters */}
       {/* <Filters clearFilters={clearFilters} originalData={originalData} /> */}
-      <div className="bg-slate- p-2 mx-1 rounded-md mt-4 flex h-[150vh] lg:h-[calc(100vh-60px)] w- shadow-md">
+      <div className="bg-slate- p-2 mx-1 rounded-md mt-4 flex h-[120vh] lg:h-[calc(100vh-60px)] w- shadow-md">
         <ResizablePanelGroup direction="horizontal" className="">
           <ResizablePanel defaultSize={24}>
             <ResizablePanelGroup direction="vertical">
@@ -69,7 +69,7 @@ const FiltersAndCharts = () => {
       </div>
 
       {/* Workflow Charts */}
-      <div className="bg-slate- p-2 mx-1 rounded-md mt-4 flex h-[150vh] lg:h-[calc(100vh-60px)] w- shadow-md">
+      <div className="bg-slate- p-2 mx-1 rounded-md mt-4 flex h-[120vh] lg:h-[calc(100vh-60px)] w- shadow-md">
         <ResizablePanelGroup direction="horizontal">
           <ResizablePanel defaultSize={24}>
             <ResizablePanelGroup direction="vertical">
