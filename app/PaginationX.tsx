@@ -98,7 +98,7 @@ const PaginationX: React.FC<PaginationProps> = memo(
     };
 
     return (
-      <div className="flex items-center justify-between gap-0 w-[30vw] lg:w-[27vw] mb-0.5 text-sm">
+      <div className="flex items-center justify-between gap-0 w-[30vw] xl:w-[27vw] mb-0.5 text-sm">
         <button
           onClick={handlePreviousPage}
           className={`px-3 py-1.5 rounded-lg border ${
