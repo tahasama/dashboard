@@ -26,7 +26,7 @@ const FiltersAndCharts = () => {
     <div>
       {/* Filters */}
       {/* <Filters clearFilters={clearFilters} originalData={originalData} /> */}
-      <div className="bg-slate- p-2 mx-1 rounded-md -mt-1 flex h-[calc(100vh-60px)] w- shadow-md">
+      <div className="bg-slate- p-2 mx-1 rounded-md mt-4 flex h-[calc(100vh-60px)] w- shadow-md">
         <ResizablePanelGroup direction="horizontal" className="">
           <ResizablePanel defaultSize={24}>
             <ResizablePanelGroup direction="vertical">
@@ -52,13 +52,13 @@ const FiltersAndCharts = () => {
           <ResizableHandle withHandle />
           <ResizablePanel defaultSize={76}>
             <ResizablePanelGroup direction="vertical">
-              <ResizablePanel defaultSize={72}>
+              <ResizablePanel defaultSize={71}>
                 <Suspense fallback={"Loading..."}>
                   <LateAnalysis data={filtered} />
                 </Suspense>
               </ResizablePanel>
               <ResizableHandle withHandle />
-              <ResizablePanel defaultSize={28}>
+              <ResizablePanel defaultSize={29}>
                 <Suspense fallback={"Loading..."}>
                   <HeatX data={filtered} />
                 </Suspense>

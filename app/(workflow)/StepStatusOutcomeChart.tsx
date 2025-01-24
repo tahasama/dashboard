@@ -5,10 +5,18 @@ import * as echarts from "echarts";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { Data, MergedData } from "../types";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const StatusOutcomeHeatMap: React.FC<Data> = memo(({ data }) => {
   const chartRef = useRef<HTMLDivElement>(null);
-  const [selectedYear, setSelectedYear] = useState<number | null>(null);
+  const [selectedYear, setSelectedYear] = useState<any>(null);
   const [actualReviewData, setActualReviewData] = useState<number[][]>([]);
   const [plannedReviewData, setPlannedReviewData] = useState<number[][]>([]);
   const [years, setYears] = useState<number[]>([]);
@@ -223,33 +231,34 @@ const StatusOutcomeHeatMap: React.FC<Data> = memo(({ data }) => {
   }
 
   return (
-    <div className="flex justify-between w-full h-full">
+    <div className="flex justify-between w-full  h-full relative -ml-6">
       <div
         ref={chartRef}
         style={{
-          width: "100%",
+          width: "95.5%",
           height: "100%",
           maxHeight: "350px",
           minHeight: "100px",
         }}
+        className=" bg-cyan-00 -ml-4"
       />
-      <div className="flex flex-col items-center justify-center ml-10">
-        <span className="font-medium text-sm mb-2 w-24">Select Year:</span>
-        <div className="flex flex-col space-y-2">
-          {years.map((year) => (
-            <button
-              key={year}
-              onClick={() => setSelectedYear(year)}
-              className={`py-1 px-3 text-xs rounded-md cursor-pointer ${
-                year === selectedYear
-                  ? "bg-blue-500 text-white"
-                  : "bg-slate-100 text-black"
-              }`}
-            >
-              {year}
-            </button>
-          ))}
-        </div>
+      <div className="flex flex-col items-center justify-center ml-10 absolute -right-6 m-1 ">
+        <Select value={selectedYear} onValueChange={setSelectedYear}>
+          <SelectTrigger className="">
+            <SelectValue placeholder="Years" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              {/* <SelectLabel>Years</SelectLabel> */}
+
+              {years.map((value: any) => (
+                <SelectItem key={value} value={value}>
+                  {value}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
       </div>
     </div>
   );

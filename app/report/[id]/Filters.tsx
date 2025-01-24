@@ -14,6 +14,12 @@ import { MergedData } from "../../types";
 import { useEffect, useMemo } from "react";
 import { useFilters } from "../../FiltersProvider";
 import { Input } from "@/components/ui/input";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Menu } from "lucide-react";
 
 const Filters = () => {
   const {
@@ -26,9 +32,9 @@ const Filters = () => {
     setSubProjectFilter,
     setDisciplineFilter,
     setStatusFilter,
-    setSearchText, // This is the setter for searchText
+    setSearchText,
     clearFilters,
-    filtered, // Get the filtered data here
+    filtered,
     originalData,
   } = useFilters();
 
@@ -44,112 +50,200 @@ const Filters = () => {
 
   const uniqueSubProjects = useMemo(
     () => getUniqueValues(originalData, "selectList3"),
-    []
+    [originalData]
   );
   const uniqueCreatedBy = useMemo(
     () => getUniqueValues(originalData, "selectList5"),
-    []
+    [originalData]
   );
   const uniqueDisciplines = useMemo(
     () => getUniqueValues(originalData, "selectList1"),
-    []
+    [originalData]
   );
   const uniqueStatuses = useMemo(
     () => getUniqueValues(originalData, "reviewStatus"),
-    []
+    [originalData]
   );
 
-  useEffect(() => {
-    uniqueSubProjects;
-    uniqueCreatedBy;
-    uniqueDisciplines;
-    uniqueStatuses;
-  }, [filtered]);
-
   return (
-    <div className="flex gap-2 my-2 sticky top-0 bg-white z-50 p-2.5 shadow-md">
-      {/* Input for search */}
+    <div className="sticky top-0 z-50 p-2 shadow-md w-full flex justify-between items-center gap-4">
+      {/* Filters for large screens */}
+      <div className="hidden md:flex gap-4 w-full">
+        {/* Subproject Filter */}
+        <Select value={subProjectFilter} onValueChange={setSubProjectFilter}>
+          <SelectTrigger className="min-w-[120px]">
+            <SelectValue placeholder="Subproject" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectItem value={"all"}>All</SelectItem>
+              {uniqueSubProjects.map((value: any) => (
+                <SelectItem key={value} value={value}>
+                  {value}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
 
-      {/* Filters */}
-      <Select value={subProjectFilter} onValueChange={setSubProjectFilter}>
-        <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder="Select a Subproject" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectGroup>
-            <SelectItem value={"all"}>All </SelectItem>
-            {uniqueSubProjects.map((value: any) => (
-              <SelectItem key={value} value={value}>
-                {value}
-              </SelectItem>
-            ))}
-          </SelectGroup>
-        </SelectContent>
-      </Select>
+        {/* Supplier Filter */}
+        <Select value={createdByFilter} onValueChange={setCreatedByFilter}>
+          <SelectTrigger className="min-w-[120px]">
+            <SelectValue placeholder="Supplier" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectItem value={"all"}>All</SelectItem>
+              {uniqueCreatedBy.map((value: any) => (
+                <SelectItem key={value} value={value}>
+                  {value}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
 
-      <Select value={createdByFilter} onValueChange={setCreatedByFilter}>
-        <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder="Select a Contractor" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectGroup>
-            <SelectItem value={"all"}>All </SelectItem>
-            {uniqueCreatedBy.map((value: any) => (
-              <SelectItem key={value} value={value}>
-                {value}
-              </SelectItem>
-            ))}
-          </SelectGroup>
-        </SelectContent>
-      </Select>
+        {/* Discipline Filter */}
+        <Select value={disciplineFilter} onValueChange={setDisciplineFilter}>
+          <SelectTrigger className="min-w-[120px]">
+            <SelectValue placeholder="Discipline" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectItem value={"all"}>All</SelectItem>
+              {uniqueDisciplines.map((value: any) => (
+                <SelectItem key={value} value={value}>
+                  {value}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
 
-      <Select value={disciplineFilter} onValueChange={setDisciplineFilter}>
-        <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder="Select a Discipline" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectGroup>
-            <SelectItem value={"all"}>All </SelectItem>
-            {uniqueDisciplines.map((value: any) => (
-              <SelectItem key={value} value={value}>
-                {value}
-              </SelectItem>
-            ))}
-          </SelectGroup>
-        </SelectContent>
-      </Select>
+        {/* Status Filter */}
+        <Select value={statusFilter} onValueChange={setStatusFilter}>
+          <SelectTrigger className="min-w-[120px]">
+            <SelectValue placeholder="Status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectItem value={"all"}>All</SelectItem>
+              {uniqueStatuses.map((value: any) => (
+                <SelectItem key={value} value={value}>
+                  {value}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </div>
 
-      <Select value={statusFilter} onValueChange={setStatusFilter}>
-        <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder="Select a Status" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectGroup>
-            <SelectItem value={"all"}>All </SelectItem>
-            {uniqueStatuses.map((value: any) => (
-              <SelectItem key={value} value={value}>
-                {value}
-              </SelectItem>
-            ))}
-          </SelectGroup>
-        </SelectContent>
-      </Select>
+      {/* Filters for small screens */}
+      <div className="block md:hidden">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="icon" className="bg-purple-200">
+              <Menu className="h-5 w-5" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            align="start"
+            className="p-4 w-48 flex flex-col gap-3"
+          >
+            {/* Subproject Filter */}
+            <Select
+              value={subProjectFilter}
+              onValueChange={setSubProjectFilter}
+            >
+              <SelectTrigger className="min-w-[120px]">
+                <SelectValue placeholder="Subproject" />
+              </SelectTrigger>
+              <SelectContent side="right">
+                <SelectGroup>
+                  <SelectItem value={"all"}>All</SelectItem>
+                  {uniqueSubProjects.map((value: any) => (
+                    <SelectItem key={value} value={value}>
+                      {value}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
 
-      <Input
-        type="text"
-        value={searchText}
-        onChange={(e) => setSearchText(e.target.value)}
-        placeholder="Search by Title or Document No."
-        className="p-2 border rounded text-sm"
-      />
+            {/* Supplier Filter */}
+            <Select value={createdByFilter} onValueChange={setCreatedByFilter}>
+              <SelectTrigger className="min-w-[120px]">
+                <SelectValue placeholder="Supplier" />
+              </SelectTrigger>
+              <SelectContent side="right">
+                <SelectGroup>
+                  <SelectItem value={"all"}>All</SelectItem>
+                  {uniqueCreatedBy.map((value: any) => (
+                    <SelectItem key={value} value={value}>
+                      {value}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
 
-      <Button
-        variant="outline"
-        onClick={clearFilters}
-        className="bg-purple-200 hover:bg-purple-100"
-      >
-        Clear Filters
-      </Button>
+            {/* Discipline Filter */}
+            <Select
+              value={disciplineFilter}
+              onValueChange={setDisciplineFilter}
+            >
+              <SelectTrigger className="min-w-[120px]">
+                <SelectValue placeholder="Discipline" />
+              </SelectTrigger>
+              <SelectContent side="right">
+                <SelectGroup>
+                  <SelectItem value={"all"}>All</SelectItem>
+                  {uniqueDisciplines.map((value: any) => (
+                    <SelectItem key={value} value={value}>
+                      {value}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+
+            {/* Status Filter */}
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="min-w-[120px]">
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent side="right">
+                <SelectGroup>
+                  <SelectItem value={"all"}>All</SelectItem>
+                  {uniqueStatuses.map((value: any) => (
+                    <SelectItem key={value} value={value}>
+                      {value}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
+      {/* Search and Clear Filters */}
+      <div className="flex items-center gap-4 w-full md:w-auto">
+        <Input
+          type="text"
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+          placeholder="Search by Title or Document No."
+          className="p-2 border rounded text-sm w-full md:w-96"
+        />
+        <Button
+          variant="outline"
+          onClick={clearFilters}
+          className="bg-purple-200 hover:bg-purple-100"
+        >
+          Clear
+        </Button>
+      </div>
     </div>
   );
 };
