@@ -66,7 +66,7 @@ const Filters = () => {
   );
 
   return (
-    <div className="sticky top-0 z-50 p-2 shadow-md w-full flex justify-between items-center gap-4">
+    <div className="sticky top-0 z-50 p-2 bg-white shadow-md w-full flex justify-between items-center gap-4">
       {/* Filters for large screens */}
       <div className="hidden md:flex gap-4 w-full">
         {/* Subproject Filter */}
@@ -228,13 +228,13 @@ const Filters = () => {
       </div>
 
       {/* Search and Clear Filters */}
-      <div className="flex items-center gap-4 w-full md:w-auto">
+      <div className="flex items-center gap-4 w-full">
         <Input
           type="text"
           value={searchText}
           onChange={(e) => setSearchText(e.target.value)}
           placeholder="Search by Title or Document No."
-          className="p-2 border rounded text-sm w-full md:w-96"
+          className="p-2 border rounded text-sm w-full"
         />
         <Button
           variant="outline"

@@ -175,13 +175,13 @@ const LateAnalysisReview: React.FC<Data> = memo(({ data }) => {
       labels: chartLabels,
       datasets: [
         {
-          name: "Planned Reviews (Line)", // Line for Planned Reviews
+          name: "Planned Reviews", // Line for Planned Reviews
           type: "line",
           data: chartValuesdocs,
           smooth: true,
         },
         {
-          name: "Actual Reviews (Line)", // Line for Actual Reviews
+          name: "Actual Reviews", // Line for Actual Reviews
           type: "line",
           data: chartValuesRealReceivedDocs,
           smooth: true,
@@ -259,7 +259,7 @@ const LateAnalysisReview: React.FC<Data> = memo(({ data }) => {
         ],
         series: [
           {
-            name: "Planned Reviews (Line)",
+            name: "Planned Reviews",
             type: "line",
             data: chartData.datasets[0]?.data || [],
             smooth: 0.6,
@@ -268,7 +268,7 @@ const LateAnalysisReview: React.FC<Data> = memo(({ data }) => {
             symbol: "none",
           },
           {
-            name: "Actual Reviews (Line)",
+            name: "Actual Reviews",
             type: "line",
             data: chartData.datasets[1]?.data || [],
             smooth: 0.6,

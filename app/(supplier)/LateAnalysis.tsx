@@ -130,13 +130,13 @@ const LateAnalysis: React.FC<Data> = memo(({ data }) => {
       labels: chartLabels,
       datasets: [
         {
-          name: "Planned Submissions (Line)", // Line for Planned Submissions
+          name: "Planned Submissions", // Line for Planned Submissions
           type: "line",
           data: chartValuesdocs,
           smooth: true,
         },
         {
-          name: "Actual Submissions (Line)", // Line for Actual Submissions
+          name: "Actual Submissions", // Line for Actual Submissions
           type: "line",
           data: chartValuesRealReceivedDocs,
           smooth: true,
@@ -214,7 +214,7 @@ const LateAnalysis: React.FC<Data> = memo(({ data }) => {
         ],
         series: [
           {
-            name: "Planned Submissions (Line)",
+            name: "Planned Submissions",
             type: "line",
             data: chartData.datasets[0]?.data || [],
             smooth: 0.6,
@@ -223,7 +223,7 @@ const LateAnalysis: React.FC<Data> = memo(({ data }) => {
             symbol: "none",
           },
           {
-            name: "Actual Submissions (Line)",
+            name: "Actual Submissions",
             type: "line",
             data: chartData.datasets[1]?.data || [],
             smooth: 0.6,
