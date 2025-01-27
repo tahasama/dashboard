@@ -1,8 +1,36 @@
 "use server";
 
 import { query } from "@/lib/db";
+import { revalidatePath } from "next/cache";
 
 // Get Project (equivalent to GET request)
+
+export async function getProjects() {
+  try {
+    const result = await query("SELECT * FROM projects");
+
+    // Check if the result is an object and contains a `rows` property
+    if (result && result.rows && Array.isArray(result.rows)) {
+      return {
+        projects: result.rows,
+        message: "",
+      };
+    } else {
+      console.error("🚨 ~ getProjects ~ Invalid result format", result);
+      return {
+        message: "No projects found",
+        projects: [],
+      };
+    }
+  } catch (error) {
+    console.error("Error fetching projects:", error); // Log the error
+    return {
+      message: "Internal Server Error",
+      projects: [],
+    };
+  }
+}
+
 export async function getProject(
   projectNumber: string
 ): Promise<{ project: any; message: string }> {
@@ -47,7 +75,7 @@ export async function createNewProject(
       `,
       [projectNumber, JSON.stringify(mergedData)]
     );
-
+    revalidatePath(`/report/${projectNumber}`);
     return {
       message: "Project created or updated successfully",
     };
@@ -73,7 +101,7 @@ export async function updateProjectData(
       `,
       [projectNumber, JSON.stringify(mergedData)]
     );
-
+    revalidatePath(`/report/${projectNumber}`);
     if (result.rows.length > 0) {
       return {
         message: "Project updated successfully",

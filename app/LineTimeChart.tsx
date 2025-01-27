@@ -17,6 +17,18 @@ import {
 } from "@/components/ui/pagination";
 import { MergedData } from "./types";
 import PaginationX from "./PaginationX";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useDebounce } from "./hooks";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
 
 const parseDate = (dateString: any): Date | null => {
   const excelBaseDate = new Date(1899, 11, 30).getTime();
@@ -92,13 +104,10 @@ const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
     [filtered]
   );
 
-  // const xxx = uniqueData.map((x) => {
-  //   return <p>{x}</p>;
-  // });
-
   const [rows, setRows] = useState<any[][]>([]);
   const [currentPage, setCurrentPage] = useState<number>(0);
-  const rowsPerPage = 100;
+  const [rowsPerPage, setRowsPerPage] = useState<number>(200);
+
   const handlePageChange = useCallback(
     (page: number) => setCurrentPage(page),
     []
@@ -183,7 +192,7 @@ const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
 
       return rowSet;
     });
-  }, [uniqueData, currentPage, filtered]);
+  }, [uniqueData, currentPage, filtered, rowsPerPage]);
 
   const updateRows = useCallback(() => {
     const flatRows: any[] = paginatedRows.flat().filter(Boolean);
@@ -194,16 +203,9 @@ const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
     updateRows();
   }, [updateRows]);
 
-  const handleNextPage = () => {
-    const totalPages = Math.ceil(uniqueData.length / rowsPerPage);
-    if (currentPage < totalPages - 1) {
-      setCurrentPage((prev) => prev + 1);
-    }
-  };
-
-  const handlePreviousPage = () => {
-    setCurrentPage((prev) => Math.max(prev - 1, 0));
-  };
+  const handleSelectChange = useCallback((value: string) => {
+    setRowsPerPage(Number(value));
+  }, []);
 
   const options = {
     timeline: {
@@ -238,14 +240,39 @@ const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
       <div className="flex lg:justify-between items-center mb-2 top-1.5 relative">
         <h1 className="w-1/3">Document&apos;s Timeline: {uniqueData.length}</h1>
 
-        <div className="lg:w-1/3 flex justify-center">
+        <div className="w-1/3 flex justify-center">
           <PaginationX
             currentPage={currentPage}
             totalPages={Math.ceil(uniqueData.length / rowsPerPage)}
             onPageChange={handlePageChange}
           />
         </div>
-        <div className="w-fit lg:w-1/3 hidden lg:block"></div>
+        <div className="w-1/3 flex items-center justify-end gap-2">
+          <Label htmlFor="rowsPerPage" className="text-sm font-medium block">
+            Rows per page
+          </Label>
+
+          <Select
+            value={String(rowsPerPage)}
+            onValueChange={handleSelectChange}
+          >
+            <SelectTrigger className="w-fit px-2 h-8">
+              <SelectValue placeholder="Select rows" />
+            </SelectTrigger>
+            <SelectContent className="">
+              <SelectGroup>
+                <SelectItem value="10">10</SelectItem>
+                <SelectItem value="25">25</SelectItem>
+                <SelectItem value="50">50</SelectItem>
+                <SelectItem value="100">100</SelectItem>
+                <SelectItem value="200">200</SelectItem>
+                <SelectItem value="250">250</SelectItem>
+                <SelectItem value="500">500</SelectItem>
+                <SelectItem value="1000">1000</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
       <div className="relative">
         {filtered[0]?.dateCompleted === filtered[0]?.dateIn &&

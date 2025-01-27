@@ -2,11 +2,18 @@ import { Button } from "@/components/ui/button";
 
 import Link from "next/link";
 import React from "react";
-import { getProject } from "@/app/action/actions";
+import { getProject, getProjects } from "@/app/action/actions";
 import { FiltersProvider } from "@/app/FiltersProvider";
 import FiltersAndCharts from "./FiltersAndCharts";
 import Filters from "./Filters";
 import { MergedData } from "@/app/types";
+
+export async function generateStaticParams() {
+  const projects: any[] = (await getProjects()).projects;
+  return projects.map((project) => ({
+    id: String(project.project_number),
+  }));
+}
 
 const Report = async ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = await params;
