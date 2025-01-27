@@ -85,7 +85,7 @@ const formatDate = (date: Date): string => {
 };
 
 const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
-  const { filtered } = useFilters();
+  const { filtered, clearFilters } = useFilters();
 
   // Filter and deduplicate by documentNo
   const uniqueData = useMemo(
@@ -204,6 +204,7 @@ const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
   }, [updateRows]);
 
   const handleSelectChange = useCallback((value: string) => {
+    setCurrentPage(0);
     setRowsPerPage(Number(value));
   }, []);
 
@@ -268,7 +269,6 @@ const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
                 <SelectItem value="200">200</SelectItem>
                 <SelectItem value="250">250</SelectItem>
                 <SelectItem value="500">500</SelectItem>
-                <SelectItem value="1000">1000</SelectItem>
               </SelectGroup>
             </SelectContent>
           </Select>
