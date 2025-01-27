@@ -118,7 +118,10 @@ const HeatX: React.FC<Data> = memo(({ data }) => {
     if (!chartRef.current || !actualSubmissionData || !plannedSubmissionData)
       return;
 
-    const chartInstance = echarts.init(chartRef.current);
+    const chartInstance = echarts.init(chartRef.current, null, {
+      renderer: "svg",
+      devicePixelRatio: window.devicePixelRatio || 1,
+    });
 
     const option = {
       title: {

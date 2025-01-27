@@ -103,7 +103,10 @@ const StatusOutcomeHeatMap: React.FC<Data> = memo(({ data }) => {
   useEffect(() => {
     if (!chartRef.current || !actualReviewData || !plannedReviewData) return;
 
-    const chartInstance = echarts.init(chartRef.current);
+    const chartInstance = echarts.init(chartRef.current, null, {
+      renderer: "svg",
+      devicePixelRatio: window.devicePixelRatio || 1,
+    });
 
     const option = {
       title: {
