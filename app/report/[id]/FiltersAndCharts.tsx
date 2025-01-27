@@ -22,6 +22,7 @@ const LineTimeChart = lazy(() => import("../../LineTimeChart"));
 
 const FiltersAndCharts = () => {
   const { filtered } = useFilters();
+
   return (
     <div className=" w-full">
       {/* Filters */}

@@ -34,7 +34,10 @@ const LateAnalysis: React.FC<Data> = memo(({ data }) => {
     > = {};
 
     data
-      .filter((x: MergedData) => x.submissionStatus !== "Canceled")
+      .filter(
+        (x: MergedData) => x.submissionStatus !== "Canceled"
+        // x.documentNo === "QB230601-00-JET-QB230601A-CI-F999-00070"
+      )
       .forEach((row: MergedData) => {
         let dateKey: string | null = null;
         const rawDate =
@@ -46,8 +49,10 @@ const LateAnalysis: React.FC<Data> = memo(({ data }) => {
 
         if (typeof rawDate === "number") {
           dateKey = excelDateToJSDate(rawDate);
+          // console.log("🚀 ~ .number ~ row:", rawDate);
         } else if (typeof rawDate === "string") {
           dateKey = rawDate;
+          // console.log("🚀 ~ .string ~ row:", rawDate);
         }
 
         if (dateKey) {
@@ -66,6 +71,7 @@ const LateAnalysis: React.FC<Data> = memo(({ data }) => {
               typeof rawDateW === "string"
                 ? rawDateW
                 : excelDateToJSDate(rawDateW);
+
             if (!groupedData[receivedDate]) {
               groupedData[receivedDate] = {
                 docs: 0,
@@ -75,12 +81,18 @@ const LateAnalysis: React.FC<Data> = memo(({ data }) => {
             }
             groupedData[receivedDate].receivedDocs += 1;
             groupedData[receivedDate].realReceivedDocs += 1;
+            console.log(
+              "🚀 ~ .forEach ~ groupedData[receivedDate]:",
+              groupedData[receivedDate]
+            );
           }
         }
       });
 
     return groupedData;
   };
+  console.log("🚀 ~ chartValuesRealReceivedDocs:", chartValuesRealReceivedDocs);
+  console.log("🚀 ~ chartData.datasets[1]?.data:", chartData.datasets[1]?.data);
 
   const calculateChartValues = (
     groupedData: Record<
@@ -100,7 +112,7 @@ const LateAnalysis: React.FC<Data> = memo(({ data }) => {
 
       return parseDate(a).getTime() - parseDate(b).getTime();
     });
-
+    console.log("🚀 ~ chartLabels:", chartLabels);
     const chartValuesdocs = chartLabels.map((_, index) => {
       return chartLabels
         .slice(0, index + 1)
@@ -110,9 +122,10 @@ const LateAnalysis: React.FC<Data> = memo(({ data }) => {
 
     const chartValuesRealReceivedDocs = chartLabels.map((_, index) => {
       return chartLabels
-        .slice(0, index)
+        .slice(0, index + 1) // Include the current index
         .reduce((sum, label) => sum + groupedData[label].realReceivedDocs, 0);
     });
+
     setChartValuesRealReceivedDocs(chartValuesRealReceivedDocs);
     return {
       chartLabels,

@@ -143,7 +143,7 @@ const LateAnalysisReview: React.FC<Data> = memo(({ data }) => {
     // Shift the planned reviews (docs) two steps forward
     const chartValuesdocs = chartLabels.map((_, index) => {
       return chartLabels
-        .slice(0, index + 2) // Include the current index and one extra step
+        .slice(0, index + 1) //might change to 2 to be correctted!!!!!!!!!!!!!!!!!!!!!
         .reduce((sum, label) => sum + groupedData[label]?.docs || 0, 0);
     });
 
