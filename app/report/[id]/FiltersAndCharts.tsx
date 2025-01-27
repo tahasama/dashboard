@@ -24,11 +24,10 @@ const FiltersAndCharts = () => {
   const { filtered } = useFilters();
 
   return (
-    <div className=" w-full">
+    <div className="w-full">
       {/* Filters */}
-      {/* <Filters clearFilters={clearFilters} originalData={originalData} /> */}
       <div className="bg-slate- p-2 mx-1 rounded-md mt-4 flex h-[120vh] lg:h-[calc(100vh-60px)] w- shadow-md">
-        <ResizablePanelGroup direction="horizontal" className="">
+        <ResizablePanelGroup direction="horizontal">
           <ResizablePanel defaultSize={24}>
             <ResizablePanelGroup direction="vertical">
               <ResizablePanel defaultSize={33}>
@@ -80,7 +79,9 @@ const FiltersAndCharts = () => {
                 </Suspense>
               </ResizablePanel>
               <ResizableHandle withHandle />
-              <ResizablePanel>
+              <ResizablePanel defaultSize={40}>
+                {" "}
+                {/* Explicit defaultSize added */}
                 <Suspense fallback={"Loading..."}>
                   <WorkflowStepStatusChart data={filtered} />
                 </Suspense>
@@ -88,7 +89,9 @@ const FiltersAndCharts = () => {
             </ResizablePanelGroup>
           </ResizablePanel>
           <ResizableHandle withHandle />
-          <ResizablePanel>
+          <ResizablePanel defaultSize={76}>
+            {" "}
+            {/* Explicit defaultSize added */}
             <ResizablePanelGroup direction="vertical">
               <ResizablePanel defaultSize={72}>
                 <Suspense fallback={"Loading..."}>
@@ -96,7 +99,9 @@ const FiltersAndCharts = () => {
                 </Suspense>
               </ResizablePanel>
               <ResizableHandle withHandle />
-              <ResizablePanel>
+              <ResizablePanel defaultSize={28}>
+                {" "}
+                {/* Explicit defaultSize added */}
                 <Suspense fallback={"Loading..."}>
                   <StatusOutcomeHeatMap data={filtered} />
                 </Suspense>
@@ -105,6 +110,7 @@ const FiltersAndCharts = () => {
           </ResizablePanel>
         </ResizablePanelGroup>
       </div>
+
       {/* Line Time Chart */}
       <Suspense
         fallback={

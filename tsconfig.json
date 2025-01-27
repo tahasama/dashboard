@@ -22,6 +22,6 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/api/projects/[projectNumber]/route.tsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/api/projects/[projectNumber]/route.tsx", "app/report/[id]/uniqueValuesWorker.ts"],
   "exclude": ["node_modules"]
 }
