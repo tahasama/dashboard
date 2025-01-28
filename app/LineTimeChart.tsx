@@ -28,10 +28,6 @@ const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
   const { filtered } = useFilters(); // Get filtered data
 
   const [rows, setRows] = useState<any[][]>([]);
-  console.log(
-    "🚀 ~ constLineTimeChart:React.FC<{data:MergedData[]}>=memo ~ rows:",
-    rows
-  );
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = useState<number>(100);
 
@@ -45,7 +41,6 @@ const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
       // Listen for messages from the worker
       workerRef.current.onmessage = (event) => {
         const xxx = event.data;
-
         setRows(xxx.flat().filter((x: MergedData) => x !== null)); // Update rows with the filtered and paginated data
       };
 
@@ -66,13 +61,18 @@ const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
     }
   }, [filtered, currentPage, rowsPerPage]);
 
+  // Reset currentPage to 0 whenever filters change
+  useEffect(() => {
+    setCurrentPage(0);
+  }, [filtered]);
+
   const handlePageChange = useCallback(
     (page: number) => setCurrentPage(page),
     []
   );
 
   const handleSelectChange = useCallback((value: string) => {
-    setCurrentPage(0);
+    setCurrentPage(0); // Reset to first page when rows per page changes
     setRowsPerPage(Number(value));
   }, []);
 
