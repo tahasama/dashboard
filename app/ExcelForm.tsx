@@ -214,6 +214,7 @@ const ExcelForm = ({}: any) => {
         "Select List 3",
         "Select List 5",
         "Status",
+        "Revision",
       ];
       const secondFileColumns = [
         "Document No.",
@@ -225,6 +226,7 @@ const ExcelForm = ({}: any) => {
         "Date In",
         "Date Completed",
         "Workflow Status",
+        "Document Revision",
       ];
 
       const filteredFirstFileData = filterColumns(allData[0], firstFileColumns);
@@ -292,6 +294,9 @@ const ExcelForm = ({}: any) => {
             selectList5: file1Record["Select List 5"] || "",
             status: file1Record["Status"] || "",
             workflowStatus: file2Record["Workflow Status"] || "",
+            revision: Number(
+              file1Record["Revision"] || file2Record["Document Revision"] || 0
+            ),
           };
         }),
       // Handle records in file2 but not in file1
@@ -333,9 +338,14 @@ const ExcelForm = ({}: any) => {
             selectList5: "",
             status: "",
             workflowStatus: file2Record["Workflow Status"] || "",
+            revision: Number(file2Record["Document Revision"] || 0),
           }));
       })(),
     ];
+    console.log(
+      "🚀 ~ mergeFileData ~ mergedData:",
+      mergedData.filter((x) => x.documentNo === "QB230601-00-DM-DMX-00001")
+    );
 
     return mergedData;
   };

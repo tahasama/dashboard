@@ -10,6 +10,7 @@ import LateAnalysisReview from "@/app/(workflow)/LateAnalysisReview";
 import StatusOutcomeHeatMap from "@/app/(workflow)/StepStatusOutcomeChart";
 import WorkflowStepStatusChart from "@/app/(workflow)/WorkflowStepStatusChart";
 import { useFilters } from "@/app/FiltersProvider";
+import { PaginationProvider, usePagination } from "@/app/PaginationProvider";
 import { Data, MergedData } from "@/app/types";
 import {
   ResizablePanelGroup,
@@ -22,6 +23,12 @@ const LineTimeChart = lazy(() => import("../../LineTimeChart"));
 
 const FiltersAndCharts = () => {
   const { filtered } = useFilters();
+
+  const { setCurrentPage } = usePagination();
+
+  useEffect(() => {
+    setCurrentPage(0);
+  }, [filtered, setCurrentPage]);
 
   return (
     <div className="w-full">

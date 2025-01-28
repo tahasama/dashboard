@@ -7,6 +7,7 @@ import { FiltersProvider } from "@/app/FiltersProvider";
 import FiltersAndCharts from "./FiltersAndCharts";
 import Filters from "./Filters";
 import { MergedData } from "@/app/types";
+import { PaginationProvider } from "@/app/PaginationProvider";
 
 export async function generateStaticParams() {
   const projects: any[] = (await getProjects()).projects;
@@ -36,10 +37,12 @@ const Report = async ({ params }: { params: Promise<{ id: string }> }) => {
   return (
     <div className="relative -mt-2">
       {/* <Filters /> */}
-      <FiltersProvider originalData={data}>
-        <Filters />
-        <FiltersAndCharts />
-      </FiltersProvider>
+      <PaginationProvider>
+        <FiltersProvider originalData={data}>
+          <Filters />
+          <FiltersAndCharts />
+        </FiltersProvider>
+      </PaginationProvider>
     </div>
   );
 };

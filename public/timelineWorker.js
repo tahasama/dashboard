@@ -56,24 +56,64 @@ const formatDate = (date) => {
 self.onmessage = function (event) {
   const { filtered, currentPage, rowsPerPage } = event.data;
 
-  const uniqueData = [
-    ...new Set(
-      filtered
-        .filter(
-          (x) =>
-            x.submissionStatus !== "Canceled" &&
-            x.stepStatus !== "Terminated"
-        )
-        .map((x) => x.documentNo)
-    ),
-  ];
+  // Step 1: Group data by `documentNo` and `title`, ensuring unique entries by reviewStep or other criteria
+  const groupedData = filtered
+    .filter(
+      (x) =>
+        x.submissionStatus !== "Canceled" &&
+        x.stepStatus !== "Terminated"
+    )
+    .reduce((acc, doc) => {
+      // Use documentNo and title as the grouping key
+      const uniqueKey = `${doc.documentNo}_${doc.title}`;
+      
+      // Check if this key exists in the accumulator
+      if (!acc[uniqueKey]) {
+        // If not, initialize with an array containing the current document
+        acc[uniqueKey] = [doc];
+      } else {
+        // If it exists, just push the document to the group
+        acc[uniqueKey].push(doc);
+      }
 
+      return acc;
+    }, {});
+
+  // Step 2: Flatten grouped data and keep only the documents with the highest revision value
+  const processedData = Object.values(groupedData).flatMap((docs) => {
+    // Find the maximum revision value in the group
+    const maxRevision = Math.max(...docs.map(doc => doc.revision));
+
+    // Filter out documents that do not have the highest revision
+    const highestRevisionDocs = docs.filter(doc => doc.revision === maxRevision);
+
+    // Sort the documents by `reviewStep` and `originalDueDate` (chronologically)
+    highestRevisionDocs.sort((a, b) => {
+      if (a.reviewStep === b.reviewStep) {
+        // If the review step is the same, sort by the original due date
+        return new Date(a.originalDueDate) - new Date(b.originalDueDate);
+      }
+      return a.reviewStep - b.reviewStep; // Sort by review step
+    });
+
+    // Add step indicator to the title for documents with multiple steps
+    return highestRevisionDocs.map((doc, index) => {
+      const titleWithStep =
+        highestRevisionDocs.length > 1
+          ? `${doc.title} - Step ${index + 1}`
+          : doc.title;
+
+      return { ...doc, title: titleWithStep };
+    });
+  });
+
+
+  // Step 3: Apply pagination using the `processedData`
   const startIndex = currentPage * rowsPerPage;
   const endIndex = startIndex + rowsPerPage;
 
-  const paginatedData = uniqueData.slice(startIndex, endIndex).map((docNo) => {
-    const item = filtered.find((x) => x.documentNo === docNo);
-    if (!item) return null;  // Skip if no item is found
+  const paginatedData = processedData.slice(startIndex, endIndex).map((doc) => {
+    const rowSet = [];
 
     const {
       title,
@@ -82,22 +122,21 @@ self.onmessage = function (event) {
       dateCompleted,
       submissionStatus,
       reviewStatus,
-    } = item;
+      stepStatus
+    } = doc;
 
-    // Parse the dates using your parseDate function
+    // Parse the dates
     const submissionEndDate = parseDate(dateIn);
     const reviewStartDate = submissionEndDate
       ? new Date(submissionEndDate.getTime() + 24 * 60 * 60 * 1000)
       : null;
     const reviewEndDate = parseDate(dateCompleted);
 
-    // Ensure that dates are valid
     let validSubmissionStartDate = parseDate(plannedSubmissionDate) || new Date();
     let validSubmissionEndDate = submissionEndDate || new Date();
     let validReviewStartDate = reviewStartDate || new Date();
     let validReviewEndDate = reviewEndDate || new Date();
 
-    // Fix the dates if submission is in the future
     if (plannedSubmissionDate && validSubmissionStartDate > new Date()) {
       validSubmissionStartDate =
         validSubmissionEndDate =
@@ -106,7 +145,6 @@ self.onmessage = function (event) {
           validSubmissionStartDate;
     }
 
-    // Ensure the start dates are not after the end dates
     if (validSubmissionStartDate > validSubmissionEndDate) {
       validSubmissionStartDate = validSubmissionEndDate;
     }
@@ -114,40 +152,45 @@ self.onmessage = function (event) {
       validReviewStartDate = validReviewEndDate;
     }
 
-    // Create the row set with formatted dates and Date objects
-    const rowSet = [
-      [
-        title,
-        `Submission: ${formatDate(validSubmissionStartDate)} - ${formatDate(validSubmissionEndDate)} ${submissionStatus}`,
-        validSubmissionStartDate, // Date object for the first date
-        validSubmissionEndDate,   // Date object for the second date
-      ],
-    ];
+    // Add submission row
+    rowSet.push([
+      title,
+      `Submission: ${formatDate(validSubmissionStartDate)} - ${formatDate(validSubmissionEndDate)} ${submissionStatus}`,
+      validSubmissionStartDate,
+      validSubmissionEndDate,
+    ]);
 
-    // Add the review row if dates are valid
+    // Add review row if dates are valid
     if (validReviewStartDate && validReviewEndDate) {
       rowSet.push([
         title,
-        `Review: ${formatDate(validReviewStartDate)} - ${formatDate(validReviewEndDate)} ${reviewStatus || "Approved"}`,
-        validReviewStartDate, // Date object for the first review date
-        validReviewEndDate,   // Date object for the second review date
+        `Review: ${formatDate(validReviewStartDate)} - ${formatDate(validReviewEndDate)} ${reviewStatus || stepStatus}`,
+        validReviewStartDate,
+        validReviewEndDate,
       ]);
     }
 
-    return rowSet.length > 0 ? rowSet : null;  // Only return valid rows
+    return rowSet.length > 0 ? rowSet : null;
   });
 
-  // Ensure all rows are valid (no null rows)
+  // Step 4: Filter and normalize rows
   const formattedData = paginatedData.filter((row) => row !== null).map((row) => {
-    // Ensure all rows have 4 columns
     while (row.length < 4) {
       row.push(null);
     }
     return row;
   });
-  // console.log("🚀 ~ formattedData ~ formattedData:", formattedData[10])
 
-  postMessage(formattedData); // Send back the filtered and paginated data
+  // Step 5: Post the result
+  postMessage(formattedData);
 };
+
+
+
+
+
+
+
+
 
 
