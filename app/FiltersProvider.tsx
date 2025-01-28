@@ -1,6 +1,5 @@
 "use client";
 import { filterData } from "@/lib/utils";
-// FiltersContext.tsx
 import { createContext, useContext, useState, useMemo, useEffect } from "react";
 import { MergedData } from "./types";
 
@@ -18,12 +17,17 @@ type FiltersContextType = {
   clearFilters: () => void;
   filtered: any[]; // Assuming your filtered data is an array
   originalData: any[]; // Add originalData here to match its expected type
+  uniqueSubProjects: string[]; // Add this
+  uniqueCreatedBy: string[]; // Add this
+  uniqueDisciplines: string[]; // Add this
+  uniqueStatuses: string[]; // Add this
 };
 
 export const FiltersContext = createContext<FiltersContextType | undefined>(
   undefined
 );
 
+// FiltersProvider component
 export const FiltersProvider = ({
   children,
   originalData,
@@ -37,6 +41,28 @@ export const FiltersProvider = ({
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [searchText, setSearchText] = useState<string>("");
   const [debouncedSearchText, setDebouncedSearchText] = useState<string>("");
+
+  const [filteredData, setFilteredData] = useState<any[]>(originalData);
+
+  const getUniqueValues = (data: any[], column: string) =>
+    Array.from(new Set(data.map((item) => item[column]).filter(Boolean)));
+
+  const uniqueSubProjects = useMemo(
+    () => getUniqueValues(originalData, "selectList3"),
+    [originalData]
+  );
+  const uniqueCreatedBy = useMemo(
+    () => getUniqueValues(originalData, "selectList5"),
+    [originalData]
+  );
+  const uniqueDisciplines = useMemo(
+    () => getUniqueValues(originalData, "selectList1"),
+    [originalData]
+  );
+  const uniqueStatuses = useMemo(
+    () => getUniqueValues(originalData, "reviewStatus"),
+    [originalData]
+  );
 
   const clearFilters = () => {
     setCreatedByFilter("");
@@ -52,38 +78,39 @@ export const FiltersProvider = ({
       setDebouncedSearchText(searchText);
     }, 500); // Debounce time (500ms)
 
-    // Cleanup the timeout if the searchText changes before the timeout finishes
-    return () => clearTimeout(timer);
+    return () => clearTimeout(timer); // Cleanup the timeout if the searchText changes before the timeout finishes
   }, [searchText]);
 
-  const filtered = useMemo(() => {
-    let data = originalData;
+  // Web Worker filtering logic
+  useEffect(() => {
+    const worker = new Worker("/filterWorker.js");
 
-    // First apply the debounced search text filter if it's present
-    if (debouncedSearchText) {
-      data = data.filter(
-        (item: MergedData) =>
-          item.documentNo.includes(debouncedSearchText) ||
-          item.title.toLowerCase().includes(debouncedSearchText.toLowerCase())
-      );
-    }
+    // Send the filtering data to the worker
+    worker.postMessage({
+      data: originalData,
+      filters: {
+        searchText: debouncedSearchText,
+        createdByFilter,
+        subProjectFilter,
+        disciplineFilter,
+        statusFilter,
+      },
+    });
 
-    // Then apply the other filters (if they're not set to "all")
-    data = filterData(
-      data,
-      createdByFilter === "all" ? "" : createdByFilter,
-      subProjectFilter === "all" ? "" : subProjectFilter,
-      disciplineFilter === "all" ? "" : disciplineFilter,
-      statusFilter === "all" ? "" : statusFilter
-    );
+    // Listen for the result of the filtering from the worker
+    worker.onmessage = (e) => {
+      setFilteredData(e.data); // Update filtered data
+    };
 
-    return data;
+    return () => {
+      worker.terminate(); // Cleanup worker on component unmount
+    };
   }, [
+    debouncedSearchText,
     createdByFilter,
     subProjectFilter,
     disciplineFilter,
     statusFilter,
-    debouncedSearchText,
     originalData,
   ]);
 
@@ -100,8 +127,12 @@ export const FiltersProvider = ({
       setStatusFilter,
       setSearchText,
       clearFilters,
-      filtered,
+      filtered: filteredData,
       originalData,
+      uniqueSubProjects, // Add uniqueSubProjects here
+      uniqueCreatedBy, // Add uniqueCreatedBy here
+      uniqueDisciplines, // Add uniqueDisciplines here
+      uniqueStatuses, // Add uniqueStatuses here
     }),
     [
       createdByFilter,
@@ -109,8 +140,12 @@ export const FiltersProvider = ({
       disciplineFilter,
       statusFilter,
       searchText,
-      filtered,
+      filteredData,
       originalData,
+      uniqueSubProjects,
+      uniqueCreatedBy,
+      uniqueDisciplines,
+      uniqueStatuses,
     ]
   );
 

@@ -9,8 +9,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { MergedData } from "../../types";
-import { useEffect, useMemo } from "react";
 import { useFilters } from "../../FiltersProvider";
 import { Input } from "@/components/ui/input";
 import {
@@ -33,36 +31,11 @@ const Filters = () => {
     setStatusFilter,
     setSearchText,
     clearFilters,
-    filtered,
-    originalData,
+    uniqueSubProjects,
+    uniqueCreatedBy,
+    uniqueDisciplines,
+    uniqueStatuses,
   } = useFilters();
-
-  const getUniqueValues = (data: MergedData[], column: string) =>
-    Array.from(
-      new Set(
-        data
-          // .filter((x) => x.reviewStatus !== "Terminated")
-          .map((item: any) => item[column])
-          .filter(Boolean)
-      )
-    );
-
-  const uniqueSubProjects = useMemo(
-    () => getUniqueValues(originalData, "selectList3"),
-    [originalData]
-  );
-  const uniqueCreatedBy = useMemo(
-    () => getUniqueValues(originalData, "selectList5"),
-    [originalData]
-  );
-  const uniqueDisciplines = useMemo(
-    () => getUniqueValues(originalData, "selectList1"),
-    [originalData]
-  );
-  const uniqueStatuses = useMemo(
-    () => getUniqueValues(originalData, "reviewStatus"),
-    [originalData]
-  );
 
   return (
     <div className="sticky top-0 z-50 p-2 bg-white shadow-md w-full flex justify-between items-center gap-2 xl:gap-4">

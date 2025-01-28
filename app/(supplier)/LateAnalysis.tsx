@@ -49,10 +49,8 @@ const LateAnalysis: React.FC<Data> = memo(({ data }) => {
 
         if (typeof rawDate === "number") {
           dateKey = excelDateToJSDate(rawDate);
-          // console.log("🚀 ~ .number ~ row:", rawDate);
         } else if (typeof rawDate === "string") {
           dateKey = rawDate;
-          // console.log("🚀 ~ .string ~ row:", rawDate);
         }
 
         if (dateKey) {
@@ -81,18 +79,12 @@ const LateAnalysis: React.FC<Data> = memo(({ data }) => {
             }
             groupedData[receivedDate].receivedDocs += 1;
             groupedData[receivedDate].realReceivedDocs += 1;
-            console.log(
-              "🚀 ~ .forEach ~ groupedData[receivedDate]:",
-              groupedData[receivedDate]
-            );
           }
         }
       });
 
     return groupedData;
   };
-  console.log("🚀 ~ chartValuesRealReceivedDocs:", chartValuesRealReceivedDocs);
-  console.log("🚀 ~ chartData.datasets[1]?.data:", chartData.datasets[1]?.data);
 
   const calculateChartValues = (
     groupedData: Record<
@@ -112,7 +104,6 @@ const LateAnalysis: React.FC<Data> = memo(({ data }) => {
 
       return parseDate(a).getTime() - parseDate(b).getTime();
     });
-    console.log("🚀 ~ chartLabels:", chartLabels);
     const chartValuesdocs = chartLabels.map((_, index) => {
       return chartLabels
         .slice(0, index + 1)
