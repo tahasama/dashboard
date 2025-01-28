@@ -140,8 +140,9 @@ const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
                 <SelectItem value="25">25</SelectItem>
                 <SelectItem value="50">50</SelectItem>
                 <SelectItem value="100">100</SelectItem>
+                <SelectItem value="150">150</SelectItem>
                 <SelectItem value="200">200</SelectItem>
-                <SelectItem value="300">300</SelectItem>
+                <SelectItem value="350">250</SelectItem>
               </SelectGroup>
             </SelectContent>
           </Select>
