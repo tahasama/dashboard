@@ -59,6 +59,12 @@ const parseDate = (dateString: any): Date | null => {
 
 const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
   const { filtered } = useFilters(); // Get filtered data
+  console.log(
+    "🚀 ~ ~ filtered:",
+    filtered.filter(
+      (x) => x.documentNo === "QB230601-00-GID-QB230601B-PS-A101-00001"
+    )
+  );
   // let bbb = [...new Set(xxx.filtered)];
   const { currentPage, setCurrentPage, rowsPerPage, setRowsPerPage } =
     usePagination();
@@ -191,7 +197,7 @@ const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
         </div>
       </div>
       <div className="relative">
-        {filtered[0]?.dateCompleted === filtered[0]?.dateIn &&
+        {/* {filtered[0]?.dateCompleted === filtered[0]?.dateIn &&
           !filtered[0]?.plannedSubmissionDate && (
             <p className="absolute left-60 top-[0.99px] z-50 w-3/4 bg-sky-200 p-2 text-neutral-700 text-xs">
               This document was uploaded and reviewed on:{" "}
@@ -204,7 +210,7 @@ const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
                 }
               ) || "Invalid Date"}
             </p>
-          )}
+          )} */}
         <List height={485} itemCount={1} itemSize={100} width="100%">
           {() => (
             <Chart

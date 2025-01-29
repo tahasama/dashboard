@@ -215,6 +215,7 @@ const ExcelForm = ({}: any) => {
         "Select List 5",
         "Status",
         "Revision",
+        "Step Outcome",
       ];
       const secondFileColumns = [
         "Document No.",
@@ -227,6 +228,7 @@ const ExcelForm = ({}: any) => {
         "Date Completed",
         "Workflow Status",
         "Document Revision",
+        "Step Outcome",
       ];
 
       const filteredFirstFileData = filterColumns(allData[0], firstFileColumns);
@@ -238,6 +240,12 @@ const ExcelForm = ({}: any) => {
       const mergedData = mergeFileData(
         filteredFirstFileData,
         filteredSecondFileData
+      );
+      console.log(
+        "🚀 ~ handleGenerate ~ mergedData:",
+        mergedData.filter(
+          (x) => x.documentNo === "QB230601-00-GID-QB230601B-PS-A101-00001"
+        )
       );
       const projectNumber = mergedData[0].documentNo?.split("-")[0];
 
@@ -259,93 +267,140 @@ const ExcelForm = ({}: any) => {
 
   // Helper function to merge the data from both files
   const mergeFileData = (file1Data: any[], file2Data: any[]) => {
-    // Combine records from file1 and file2
-    const mergedData = [
-      ...file1Data
-        .filter(
-          (file1Record) => file1Record["Submission Status"] !== "Canceled"
-        ) // Filter for non-canceled records
-        .map((file1Record) => {
-          // Find matching file2 record
-          const matchingFile2Record = file2Data.find(
-            (file2Record) =>
-              file2Record["Document No."] === file1Record["Document No"]
-          );
+    const mergedData: any[] = [];
+    const seenRevisions = new Set(); // Track unique revisions for each document
 
-          // Default file2 record to avoid errors
-          const file2Record = matchingFile2Record || {};
+    // Step 1: Iterate through file1 and merge with file2
+    file1Data.forEach((file1Record) => {
+      if (file1Record["Submission Status"] === "Canceled") return; // Skip canceled records
 
-          return {
+      const matchingFile2Records = file2Data.filter(
+        (file2Record) =>
+          file2Record["Document No."] === file1Record["Document No"]
+      );
+
+      // Process each matching file2 record
+      if (matchingFile2Records.length > 0) {
+        matchingFile2Records.forEach((file2Record) => {
+          const revision = Number(file2Record["Document Revision"] || 0);
+          const uniqueKey = `${file1Record["Document No"]}-${revision}`;
+
+          // Prevent duplicates
+          if (!seenRevisions.has(uniqueKey)) {
+            seenRevisions.add(uniqueKey);
+
+            // If it's revision 0, assign plannedSubmissionDate from file1Record
+            let plannedSubmissionDate = "";
+            if (revision === 0) {
+              plannedSubmissionDate = file1Record["Planned Submission Date"];
+            } else {
+              // For higher revisions, assign plannedSubmissionDate from file2Record
+              plannedSubmissionDate =
+                file1Record["Planned Submission Date"] ||
+                file2Record["Date In"];
+            }
+
+            mergedData.push({
+              documentNo: file1Record["Document No"],
+              title: file1Record["Title"] || file2Record["Document Title"],
+              assignedTo: file2Record["Assigned To"] || "",
+              stepStatus: file2Record["Step Status"] || "",
+              originalDueDate: file2Record["Original Due Date"] || "",
+              submissionStatus: file1Record["Submission Status"] || "",
+              reviewStatus: file1Record["Review Status"] || "",
+              createdBy: file1Record["Created By"] || "",
+              plannedSubmissionDate,
+              dateIn: file1Record["Date In"] || file2Record["Date In"] || "",
+              dateCompleted:
+                file1Record["Date Completed"] ||
+                file2Record["Date Completed"] ||
+                "",
+              selectList1: file1Record["Select List 1"] || "",
+              selectList3: file1Record["Select List 3"] || "",
+              selectList5: file1Record["Select List 5"] || "",
+              status: file1Record["Status"] || "",
+              workflowStatus: file2Record["Workflow Status"] || "",
+              revision: revision,
+              stepOutcome: file2Record["Step Outcome"] || "",
+            });
+          }
+        });
+      } else {
+        // If no match found in file2, just add file1 data with its revision
+        const revision = Number(file1Record["Revision"] || 0);
+        const uniqueKey = `${file1Record["Document No"]}-${revision}`;
+
+        if (!seenRevisions.has(uniqueKey)) {
+          seenRevisions.add(uniqueKey);
+
+          // If it's revision 0, assign plannedSubmissionDate from file1Record
+          let plannedSubmissionDate = "";
+          if (revision === 0) {
+            plannedSubmissionDate =
+              file1Record["Planned Submission Date"] || file1Record["Date In"];
+          }
+
+          mergedData.push({
             documentNo: file1Record["Document No"],
-            title: file1Record["Title"] || file2Record["Document Title"],
-            assignedTo: file2Record["Assigned To"] || "",
-            stepStatus: file2Record["Step Status"] || "",
-            originalDueDate: file2Record["Original Due Date"] || "",
-            daysLateSubmission: file1Record["Days Late"] || 0,
-            daysLateReview: file2Record["Days Late"] || 0,
-            submissionStatus: file1Record["Submission Status"] || "",
-            reviewStatus: file1Record["Review Status"] || "",
-            createdBy: file1Record["Created By"] || "",
-            plannedSubmissionDate: file1Record["Planned Submission Date"] || "",
-            dateIn: file2Record["Date In"] || "",
-            dateCompleted: file2Record["Date Completed"] || "",
+            title: file1Record["Title"],
+            assignedTo: "",
+            stepStatus: "",
+            originalDueDate: "",
+            submissionStatus: file1Record["Submission Status"],
+            reviewStatus: file1Record["Review Status"],
+            createdBy: file1Record["Created By"],
+            plannedSubmissionDate,
+            dateIn: file1Record["Date In"] || "",
+            dateCompleted: file1Record["Date Completed"] || "",
             selectList1: file1Record["Select List 1"] || "",
             selectList3: file1Record["Select List 3"] || "",
             selectList5: file1Record["Select List 5"] || "",
             status: file1Record["Status"] || "",
-            workflowStatus: file2Record["Workflow Status"] || "",
-            revision: Number(
-              file1Record["Revision"] || file2Record["Document Revision"] || 0
-            ),
-          };
-        }),
-      // Handle records in file2 but not in file1
-      ...(() => {
-        const unmatchedFile2Records = file2Data.filter((file2Record) => {
-          // Break the codification into parts
-          const file2Parts = file2Record["Document No."].split("-");
-
-          // Compare each file1 document against file2 document
-          return !file1Data.some((file1Record) => {
-            const file1Parts = file1Record["Document No"].split("-");
-            // Check if file1 and file2 are the same with one missing element
-            const uniqueParts = [...new Set([...file1Parts, ...file2Parts])];
-            return uniqueParts.length === file1Parts.length; // Matching if unique parts remain the same
+            workflowStatus: "",
+            revision: revision,
+            stepOutcome: "",
           });
-        });
+        }
+      }
+    });
 
-        // Map the unmatched records into the merged data structure, excluding "Canceled"
-        return unmatchedFile2Records
-          .filter(
-            (file2Record) => file2Record["Submission Status"] !== "Canceled"
-          ) // Exclude canceled records
-          .map((file2Record) => ({
-            documentNo: file2Record["Document No."],
-            title: file2Record["Document Title"],
-            assignedTo: file2Record["Assigned To"] || "",
-            stepStatus: file2Record["Step Status"] || "",
-            originalDueDate: file2Record["Original Due Date"] || "",
-            daysLateSubmission: 0,
-            daysLateReview: 0,
-            submissionStatus: "",
-            reviewStatus: "",
-            createdBy: "",
-            plannedSubmissionDate: "",
-            dateIn: file2Record["Date In"] || "",
-            dateCompleted: file2Record["Date Completed"] || "",
-            selectList1: "",
-            selectList3: "",
-            selectList5: "",
-            status: "",
-            workflowStatus: file2Record["Workflow Status"] || "",
-            revision: Number(file2Record["Document Revision"] || 0),
-          }));
-      })(),
-    ];
-    console.log(
-      "🚀 ~ mergeFileData ~ mergedData:",
-      mergedData.filter((x) => x.documentNo === "QB230601-00-DM-DMX-00001")
-    );
+    // Step 2: Handle records that exist in file2 but NOT in file1
+    file2Data.forEach((file2Record) => {
+      const revision = Number(file2Record["Document Revision"] || 0);
+      const uniqueKey = `${file2Record["Document No."]}-${revision}`;
+
+      if (!seenRevisions.has(uniqueKey)) {
+        seenRevisions.add(uniqueKey);
+
+        // For revision 0, assign plannedSubmissionDate as empty for file2-only records
+        let plannedSubmissionDate = "";
+        if (revision === 0) {
+          plannedSubmissionDate =
+            file2Record["Planned Submission Date"] || file2Record["Date In"];
+        }
+
+        mergedData.push({
+          documentNo: file2Record["Document No."],
+          title: file2Record["Document Title"],
+          assignedTo: file2Record["Assigned To"] || "",
+          stepStatus: file2Record["Step Status"] || "",
+          originalDueDate: file2Record["Original Due Date"] || "",
+          submissionStatus: "",
+          reviewStatus: "",
+          createdBy: "",
+          plannedSubmissionDate,
+          dateIn: file2Record["Date In"] || "",
+          dateCompleted: file2Record["Date Completed"] || "",
+          selectList1: "",
+          selectList3: "",
+          selectList5: "",
+          status: "",
+          workflowStatus: file2Record["Workflow Status"] || "",
+          revision: revision,
+          stepOutcome: file2Record["Step Outcome"] || "",
+        });
+      }
+    });
 
     return mergedData;
   };

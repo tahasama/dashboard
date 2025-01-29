@@ -56,59 +56,20 @@ const formatDate = (date) => {
 self.onmessage = function (event) {
   const { filtered, currentPage, rowsPerPage } = event.data;
 
-  // Step 1: Group data by `documentNo` and `title`, ensuring unique entries by reviewStep or other criteria
-  const groupedData = filtered
-    .filter(
-      (x) =>
-        x.submissionStatus !== "Canceled" &&
-        x.stepStatus !== "Terminated"
-    )
-    .reduce((acc, doc) => {
-      // Use documentNo and title as the grouping key
-      const uniqueKey = `${doc.documentNo}_${doc.title}`;
-      
-      // Check if this key exists in the accumulator
-      if (!acc[uniqueKey]) {
-        // If not, initialize with an array containing the current document
-        acc[uniqueKey] = [doc];
-      } else {
-        // If it exists, just push the document to the group
-        acc[uniqueKey].push(doc);
-      }
+  // Step 1: Group data by `documentNo` and `title`
+  const groupedData = filtered.reduce((acc, doc) => {
+    const uniqueKey = `${doc.documentNo}_${doc.title}`;
+    if (!acc[uniqueKey]) {
+      acc[uniqueKey] = [];
+    }
+    acc[uniqueKey].push(doc); // Keep all revisions
+    return acc;
+  }, {});
 
-      return acc;
-    }, {});
+  // Step 2: Flatten all revisions into a single array (KEEP ALL REVISIONS)
+  const processedData = Object.values(groupedData).flatMap((docs) => docs);
 
-  // Step 2: Flatten grouped data and keep only the documents with the highest revision value
-  const processedData = Object.values(groupedData).flatMap((docs) => {
-    // Find the maximum revision value in the group
-    const maxRevision = Math.max(...docs.map(doc => doc.revision));
-
-    // Filter out documents that do not have the highest revision
-    const highestRevisionDocs = docs.filter(doc => doc.revision === maxRevision);
-
-    // Sort the documents by `reviewStep` and `originalDueDate` (chronologically)
-    highestRevisionDocs.sort((a, b) => {
-      if (a.reviewStep === b.reviewStep) {
-        // If the review step is the same, sort by the original due date
-        return new Date(a.originalDueDate) - new Date(b.originalDueDate);
-      }
-      return a.reviewStep - b.reviewStep; // Sort by review step
-    });
-
-    // Add step indicator to the title for documents with multiple steps
-    return highestRevisionDocs.map((doc, index) => {
-      const titleWithStep =
-        highestRevisionDocs.length > 1
-          ? `${doc.title} - Step ${index + 1}`
-          : doc.title;
-
-      return { ...doc, title: titleWithStep };
-    });
-  });
-
-
-  // Step 3: Apply pagination using the `processedData`
+  // Step 3: Apply pagination
   const startIndex = currentPage * rowsPerPage;
   const endIndex = startIndex + rowsPerPage;
 
@@ -122,29 +83,39 @@ self.onmessage = function (event) {
       dateCompleted,
       submissionStatus,
       reviewStatus,
-      stepStatus
+      stepOutcome,
+      revision
     } = doc;
 
-    // Parse the dates
-    const submissionEndDate = parseDate(dateIn);
-    const reviewStartDate = submissionEndDate
-      ? new Date(submissionEndDate.getTime() + 24 * 60 * 60 * 1000)
-      : null;
-    const reviewEndDate = parseDate(dateCompleted);
+    const revisionNumber = Number(revision);
 
-    let validSubmissionStartDate = parseDate(plannedSubmissionDate) || new Date();
-    let validSubmissionEndDate = submissionEndDate || new Date();
-    let validReviewStartDate = reviewStartDate || new Date();
-    let validReviewEndDate = reviewEndDate || new Date();
+    // Determine submission start date for Revision 0
+    let validSubmissionStartDate;
+    let validSubmissionEndDate;
 
-    if (plannedSubmissionDate && validSubmissionStartDate > new Date()) {
-      validSubmissionStartDate =
-        validSubmissionEndDate =
-        validReviewStartDate =
-        validReviewEndDate =
-          validSubmissionStartDate;
+    if (revisionNumber === 0) {
+      validSubmissionStartDate = parseDate(plannedSubmissionDate) || new Date(); // Use plannedSubmissionDate for Revision 0
+      console.log("🚀 ~ paginatedData ~ parseDate(plannedSubmissionDate):", parseDate(plannedSubmissionDate))
+      validSubmissionEndDate = parseDate(dateIn) || new Date(); // Use dateIn for Revision 0
+    } else {
+      validSubmissionStartDate = parseDate(dateIn) || new Date(); // Use dateIn for higher revisions
+      validSubmissionEndDate = parseDate(dateIn) || new Date(); // Use dateIn as submission end date for higher revisions
     }
 
+    // Determine review dates
+    let validReviewStartDate = validSubmissionEndDate
+      ? new Date(validSubmissionEndDate.getTime() + 24 * 60 * 60 * 1000) // Set review start date after submission end date
+      : null;
+    let validReviewEndDate = parseDate(dateCompleted);
+
+    if (!validReviewStartDate) {
+      validReviewStartDate = new Date();
+    }
+    if (!validReviewEndDate) {
+      validReviewEndDate = new Date();
+    }
+
+    // Ensure start dates are not after end dates
     if (validSubmissionStartDate > validSubmissionEndDate) {
       validSubmissionStartDate = validSubmissionEndDate;
     }
@@ -155,7 +126,7 @@ self.onmessage = function (event) {
     // Add submission row
     rowSet.push([
       title,
-      `Submission: ${formatDate(validSubmissionStartDate)} - ${formatDate(validSubmissionEndDate)} ${submissionStatus}`,
+      `Submission: ${formatDate(validSubmissionStartDate)} - ${formatDate(validSubmissionEndDate)} ${submissionStatus} rev ${revision}`,
       validSubmissionStartDate,
       validSubmissionEndDate,
     ]);
@@ -164,7 +135,7 @@ self.onmessage = function (event) {
     if (validReviewStartDate && validReviewEndDate) {
       rowSet.push([
         title,
-        `Review: ${formatDate(validReviewStartDate)} - ${formatDate(validReviewEndDate)} ${reviewStatus || stepStatus}`,
+        `Review: ${formatDate(validReviewStartDate)} - ${formatDate(validReviewEndDate)} ${reviewStatus || stepOutcome} rev ${revision}`,
         validReviewStartDate,
         validReviewEndDate,
       ]);
@@ -184,6 +155,11 @@ self.onmessage = function (event) {
   // Step 5: Post the result
   postMessage(formattedData);
 };
+
+
+
+
+
 
 
 
