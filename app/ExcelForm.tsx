@@ -281,59 +281,70 @@ const ExcelForm = ({}: any) => {
 
       // Process each matching file2 record
       if (matchingFile2Records.length > 0) {
-        matchingFile2Records.forEach((file2Record) => {
-          const revision = Number(file2Record["Document Revision"] || 0);
-          const uniqueKey = `${file1Record["Document No"]}-${revision}`;
+        // Group by revision
+        const groupedByRevision = matchingFile2Records.reduce((acc, record) => {
+          const revision = Number(record["Document Revision"] || 0);
+          if (!acc[revision]) {
+            acc[revision] = [];
+          }
+          acc[revision].push(record);
+          return acc;
+        }, {} as Record<number, any[]>);
 
-          // Prevent duplicates
+        // Handle each revision group separately
+        Object.keys(groupedByRevision).forEach((revisionKey) => {
+          const revision = Number(revisionKey);
+          const records = groupedByRevision[revision];
+
+          // Determine which record to use
+          let rowToMerge =
+            records.find((rec) => !rec["Date Completed"]) || records[0];
+
+          const uniqueKey = `${file1Record["Document No"]}-${revision}`;
           if (!seenRevisions.has(uniqueKey)) {
             seenRevisions.add(uniqueKey);
 
-            // If it's revision 0, assign plannedSubmissionDate from file1Record
             let plannedSubmissionDate = "";
             if (revision === 0) {
               plannedSubmissionDate = file1Record["Planned Submission Date"];
             } else {
-              // For higher revisions, assign plannedSubmissionDate from file2Record
               plannedSubmissionDate =
-                file1Record["Planned Submission Date"] ||
-                file2Record["Date In"];
+                file1Record["Planned Submission Date"] || rowToMerge["Date In"];
             }
 
             mergedData.push({
               documentNo: file1Record["Document No"],
-              title: file1Record["Title"] || file2Record["Document Title"],
-              assignedTo: file2Record["Assigned To"] || "",
-              stepStatus: file2Record["Step Status"] || "",
-              originalDueDate: file2Record["Original Due Date"] || "",
+              title: file1Record["Title"] || rowToMerge["Document Title"],
+              assignedTo: rowToMerge["Assigned To"] || "",
+              stepStatus: "Pending", // No workflow status yet
+              originalDueDate: rowToMerge["Original Due Date"] || "",
               submissionStatus: file1Record["Submission Status"] || "",
               reviewStatus: file1Record["Review Status"] || "",
               createdBy: file1Record["Created By"] || "",
               plannedSubmissionDate,
-              dateIn: file1Record["Date In"] || file2Record["Date In"] || "",
+              dateIn: file1Record["Date In"] || rowToMerge["Date In"] || "",
               dateCompleted:
                 file1Record["Date Completed"] ||
-                file2Record["Date Completed"] ||
+                rowToMerge["Date Completed"] ||
                 "",
               selectList1: file1Record["Select List 1"] || "",
               selectList3: file1Record["Select List 3"] || "",
               selectList5: file1Record["Select List 5"] || "",
               status: file1Record["Status"] || "",
-              workflowStatus: file2Record["Workflow Status"] || "",
+              workflowStatus: rowToMerge["Workflow Status"] || "",
               revision: revision,
-              stepOutcome: file2Record["Step Outcome"] || "",
+              stepOutcome: rowToMerge["Step Outcome"] || "",
             });
           }
         });
       } else {
-        // If no match found in file2, just add file1 data with its revision
+        // If no match found in file2, add file1 data with its revision
         const revision = Number(file1Record["Revision"] || 0);
         const uniqueKey = `${file1Record["Document No"]}-${revision}`;
 
         if (!seenRevisions.has(uniqueKey)) {
           seenRevisions.add(uniqueKey);
 
-          // If it's revision 0, assign plannedSubmissionDate from file1Record
           let plannedSubmissionDate = "";
           if (revision === 0) {
             plannedSubmissionDate =
@@ -344,7 +355,7 @@ const ExcelForm = ({}: any) => {
             documentNo: file1Record["Document No"],
             title: file1Record["Title"],
             assignedTo: "",
-            stepStatus: "",
+            stepStatus: "Pending",
             originalDueDate: "",
             submissionStatus: file1Record["Submission Status"],
             reviewStatus: file1Record["Review Status"],
@@ -372,7 +383,18 @@ const ExcelForm = ({}: any) => {
       if (!seenRevisions.has(uniqueKey)) {
         seenRevisions.add(uniqueKey);
 
-        // For revision 0, assign plannedSubmissionDate as empty for file2-only records
+        // Find all records for this document number and revision
+        const matchingRecords = file2Data.filter(
+          (rec) =>
+            rec["Document No."] === file2Record["Document No."] &&
+            Number(rec["Document Revision"] || 0) === revision
+        );
+
+        // Determine which record to use
+        let rowToMerge =
+          matchingRecords.find((rec) => !rec["Date Completed"]) ||
+          matchingRecords[0];
+
         let plannedSubmissionDate = "";
         if (revision === 0) {
           plannedSubmissionDate =
@@ -382,22 +404,22 @@ const ExcelForm = ({}: any) => {
         mergedData.push({
           documentNo: file2Record["Document No."],
           title: file2Record["Document Title"],
-          assignedTo: file2Record["Assigned To"] || "",
-          stepStatus: file2Record["Step Status"] || "",
-          originalDueDate: file2Record["Original Due Date"] || "",
+          assignedTo: rowToMerge["Assigned To"] || "",
+          stepStatus: "Pending",
+          originalDueDate: rowToMerge["Original Due Date"] || "",
           submissionStatus: "",
           reviewStatus: "",
           createdBy: "",
           plannedSubmissionDate,
-          dateIn: file2Record["Date In"] || "",
-          dateCompleted: file2Record["Date Completed"] || "",
+          dateIn: rowToMerge["Date In"] || "",
+          dateCompleted: rowToMerge["Date Completed"] || "",
           selectList1: "",
           selectList3: "",
           selectList5: "",
           status: "",
-          workflowStatus: file2Record["Workflow Status"] || "",
+          workflowStatus: rowToMerge["Workflow Status"] || "",
           revision: revision,
-          stepOutcome: file2Record["Step Outcome"] || "",
+          stepOutcome: rowToMerge["Step Outcome"] || "",
         });
       }
     });

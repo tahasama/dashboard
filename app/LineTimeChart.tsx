@@ -60,10 +60,8 @@ const parseDate = (dateString: any): Date | null => {
 const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
   const { filtered } = useFilters(); // Get filtered data
   console.log(
-    "🚀 ~ ~ filtered:",
-    filtered.filter(
-      (x) => x.documentNo === "QB230601-00-GID-QB230601B-PS-A101-00001"
-    )
+    "🚀 ~ ~ filtered DMX:",
+    filtered.filter((x) => x.documentNo === "QB230601-00-DM-DMX-00001")
   );
   // let bbb = [...new Set(xxx.filtered)];
   const { currentPage, setCurrentPage, rowsPerPage, setRowsPerPage } =
