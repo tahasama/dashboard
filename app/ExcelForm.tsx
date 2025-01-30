@@ -277,8 +277,6 @@ const ExcelForm = ({}: any) => {
 
     // Step 2: Merge file1Data with file2Lookup
     file1Data.forEach((file1Record) => {
-      if (file1Record["Submission Status"] === "Canceled") return; // Skip canceled records
-
       const docNo = file1Record["Document No"];
       const revision = Number(file1Record["Revision"] || 0);
       const uniqueKey = `${docNo}-${revision}`;
@@ -337,6 +335,13 @@ const ExcelForm = ({}: any) => {
             matchingRecords.find((rec: any) => !rec["Date Completed"]) ||
             matchingRecords[0];
 
+          if (
+            !seenRevisions.has(uniqueKey) &&
+            rowToMerge?.["Review Status"] !== "Canceled"
+          ) {
+            seenRevisions.add(uniqueKey);
+          }
+
           let plannedSubmissionDate =
             revision === 0
               ? rowToMerge?.["Planned Submission Date"] ||
@@ -367,7 +372,13 @@ const ExcelForm = ({}: any) => {
       });
     });
 
-    return mergedData;
+    return mergedData.filter(
+      (record) =>
+        record.submissionStatus !== "Canceled" &&
+        record.stepStatus !== "Terminated" &&
+        record.reviewStatus !== "Terminated"
+    );
+    // return mergedData;
   };
 
   const labels: { [key: number]: string } = {
