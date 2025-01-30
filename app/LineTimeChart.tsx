@@ -59,13 +59,13 @@ const parseDate = (dateString: any): Date | null => {
 
 const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
   const { filtered } = useFilters(); // Get filtered data
+  console.log("🚀 ~ filtered0:", filtered);
 
   // let bbb = [...new Set(xxx.filtered)];
   const { currentPage, setCurrentPage, rowsPerPage, setRowsPerPage } =
     usePagination();
 
   const [rows, setRows] = useState<any[][]>([]);
-  console.log("🚀 ~ 11111111111111111111", rows);
 
   const totalDocs = useMemo(
     () =>

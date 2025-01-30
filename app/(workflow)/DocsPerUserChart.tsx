@@ -67,8 +67,6 @@ const DocsPerUserChart: React.FC<Data> = memo(({ data }) => {
       if (!userDocTracker[user]) {
         userDocTracker[user] = new Set();
       }
-      console.log("🚀 ~ data.forEach ~ userDocCount:", userDocCount);
-      console.log("🚀 ~ data.forEach ~ userDocTracker:", userDocTracker);
 
       // 🔥 Ensure unique documents per user, not across all users
       if (!userDocTracker[user].has(documentNo)) {
@@ -85,7 +83,6 @@ const DocsPerUserChart: React.FC<Data> = memo(({ data }) => {
     const filteredUserDocCount = Object.entries(userDocCount).filter(
       ([, count]) => count.overdue > 0 || count.current > 0
     );
-    console.log("Filtered data:", filteredUserDocCount);
 
     const labels = filteredUserDocCount.map(([user]) => user);
     const overdueValues = filteredUserDocCount.map(

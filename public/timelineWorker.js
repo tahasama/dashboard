@@ -55,6 +55,7 @@ const formatDate = (date) => {
 
 self.onmessage = function (event) {
   const { filtered, currentPage, rowsPerPage } = event.data;
+  console.log("🚀 ~ filtered1:", filtered.filter((x)=>x.documentNo==='QB230601-00-JET-QB230601A-CI-F999-00047').map((x)=>parseDate(x.plannedSubmissionDate)))
 
   // Step 1: Group data by `documentNo` and `title`
   const groupedData = filtered.reduce((acc, doc) => {
@@ -100,6 +101,7 @@ self.onmessage = function (event) {
       validSubmissionStartDate = parseDate(dateIn) || new Date(); // Use dateIn for higher revisions
       validSubmissionEndDate = parseDate(dateIn) || new Date(); // Use dateIn as submission end date for higher revisions
     }
+    console.log("🚀 ~ paginatedData ~ validSubmissionStartDate:", validSubmissionStartDate > validSubmissionEndDate,'validSubmissionStartDate',validSubmissionStartDate,'validSubmissionEndDate',validSubmissionEndDate)
 
     // Determine review dates
     let validReviewStartDate = validSubmissionEndDate
@@ -127,10 +129,12 @@ self.onmessage = function (event) {
       validReviewEndDate.setHours(validReviewEndDate.getHours() + 1); // Add 1 hour to ensure visibility
     }
 
+    const aheadOfPlanning =
+    parseDate(plannedSubmissionDate) > parseDate(dateIn) ? ` (Ahead of Planning ${formatDate(parseDate(plannedSubmissionDate))}) ` : "";
     // Add submission row
     rowSet.push([
       title,
-      `Submission: ${formatDate(validSubmissionStartDate)} - ${formatDate(validSubmissionEndDate)} ${submissionStatus} rev ${revision}`,
+      `Submission: ${formatDate(validSubmissionStartDate)} - ${formatDate(validSubmissionEndDate)} ${submissionStatus} rev ${revision} ${aheadOfPlanning}`,
       validSubmissionStartDate,
       validSubmissionEndDate,
     ]);

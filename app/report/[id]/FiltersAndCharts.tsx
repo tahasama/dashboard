@@ -23,14 +23,6 @@ const LineTimeChart = lazy(() => import("../../LineTimeChart"));
 
 const FiltersAndCharts = () => {
   const { filtered } = useFilters();
-  console.log(
-    "🚀 ~ FiltersAndCharts ~ filtered:",
-    filtered.filter(
-      (x: MergedData) =>
-        x.assignedTo === " Mehdi Benjelloun Touimi - JESA SA" &&
-        x.stepStatus === "Overdue"
-    ).length
-  );
 
   // Memoize uniqueFiltered to prevent unnecessary recalculations
   const uniqueFiltered = useMemo(() => {
