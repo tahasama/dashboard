@@ -163,7 +163,7 @@ const LateAnalysis: React.FC<Data> = memo(({ data }) => {
         },
         legend: {
           show: true,
-          top: 10,
+          top: 24,
         },
         tooltip: {
           trigger: "axis",
