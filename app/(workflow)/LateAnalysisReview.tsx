@@ -216,17 +216,31 @@ const LateAnalysisReview: React.FC<Data> = memo(({ data }) => {
           },
           formatter: function (params: any) {
             let tooltipContent = "";
+            let plannedValue = 0;
+            let actualValue = 0;
+
             params.forEach((item: any) => {
-              if (item.seriesType === "line") {
-                tooltipContent += `${item.seriesName}: ${item.data.toFixed(
-                  0
-                )}<br>`;
-              } else if (item.seriesType === "bar") {
-                tooltipContent += `${item.seriesName}: ${
-                  item.data ? item.data.toFixed(0) : 0
-                }<br>`;
+              if (item.seriesName === "Planned Reviews") {
+                plannedValue = item.data;
+              } else if (item.seriesName === "Actual Reviews") {
+                actualValue = item.data;
               }
+
+              tooltipContent += `${item.seriesName}: ${item.data.toFixed(
+                0
+              )}<br>`;
             });
+
+            // Compute Delta Difference
+            let delta = plannedValue - actualValue;
+            tooltipContent += `
+            <i>Difference: ${(plannedValue - actualValue).toFixed(0)}</i>
+            </br>
+            <i>Completion: ${((actualValue / plannedValue) * 100).toFixed(
+              1
+            )}%</i>
+            `;
+
             return tooltipContent;
           },
         },
