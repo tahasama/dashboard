@@ -95,7 +95,6 @@ self.onmessage = function (event) {
 
     if (revisionNumber === 0) {
       validSubmissionStartDate = parseDate(plannedSubmissionDate) || new Date(); // Use plannedSubmissionDate for Revision 0
-      console.log("🚀 ~ paginatedData ~ parseDate(plannedSubmissionDate):", parseDate(plannedSubmissionDate))
       validSubmissionEndDate = parseDate(dateIn) || new Date(); // Use dateIn for Revision 0
     } else {
       validSubmissionStartDate = parseDate(dateIn) || new Date(); // Use dateIn for higher revisions
@@ -121,6 +120,11 @@ self.onmessage = function (event) {
     }
     if (validReviewStartDate > validReviewEndDate) {
       validReviewStartDate = validReviewEndDate;
+    }
+
+    // Add an hour to ReviewStartDate and ReviewEndDate if they are the same
+    if (validReviewStartDate.getTime() === validReviewEndDate.getTime()) {
+      validReviewEndDate.setHours(validReviewEndDate.getHours() + 1); // Add 1 hour to ensure visibility
     }
 
     // Add submission row
@@ -155,6 +159,7 @@ self.onmessage = function (event) {
   // Step 5: Post the result
   postMessage(formattedData);
 };
+
 
 
 

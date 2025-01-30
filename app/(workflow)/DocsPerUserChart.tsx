@@ -14,6 +14,7 @@ import { lightColors, sankeyColorList } from "../colors";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { Data, MergedData } from "../types";
+import { filter } from "lodash";
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
@@ -52,43 +53,40 @@ const DocsPerUserChart: React.FC<Data> = memo(({ data }) => {
     const userDocCount: {
       [key: string]: { overdue: number; current: number };
     } = {};
+    const userDocTracker: { [key: string]: Set<string> } = {};
 
-    const userDocTracker: { [key: string]: Set<string> } = {}; // Track documents per user to prevent duplicates
-
-    // Step 1: Aggregate document counts for each user without duplication
     data.forEach((row: MergedData) => {
-      const user = row.assignedTo ?? ""; // Fallback to an empty string if `assignedTo` is missing
+      const user = row.assignedTo ?? "";
       const status = row.stepStatus;
-      const documentNo = row.documentNo; // Unique identifier for each document
+      const documentNo = row.documentNo;
 
       if (!userDocCount[user]) {
         userDocCount[user] = { overdue: 0, current: 0 };
       }
 
-      // Initialize user document tracker for this user if not present
       if (!userDocTracker[user]) {
         userDocTracker[user] = new Set();
       }
+      console.log("🚀 ~ data.forEach ~ userDocCount:", userDocCount);
+      console.log("🚀 ~ data.forEach ~ userDocTracker:", userDocTracker);
 
-      // Skip duplicate document counting for the user
+      // 🔥 Ensure unique documents per user, not across all users
       if (!userDocTracker[user].has(documentNo)) {
+        // Track unique documents per user
         if (status === "Overdue") {
           userDocCount[user].overdue += 1;
         } else if (status === "Current") {
           userDocCount[user].current += 1;
         }
-
-        // Mark the document as counted for this user
-        userDocTracker[user].add(documentNo);
       }
     });
 
-    // Step 2: Remove users with no "Overdue" or "Current" counts
+    // Remove users with no documents
     const filteredUserDocCount = Object.entries(userDocCount).filter(
       ([, count]) => count.overdue > 0 || count.current > 0
     );
+    console.log("Filtered data:", filteredUserDocCount);
 
-    // Step 3: Prepare labels and data for the chart
     const labels = filteredUserDocCount.map(([user]) => user);
     const overdueValues = filteredUserDocCount.map(
       ([, count]) => count.overdue
@@ -97,54 +95,16 @@ const DocsPerUserChart: React.FC<Data> = memo(({ data }) => {
       ([, count]) => count.current
     );
 
-    // Step 4: Update chart data
     setChartData((prev) => ({
       ...prev,
       labels,
       datasets: [
-        {
-          ...prev.datasets[0],
-          data: overdueValues,
-        },
-        {
-          ...prev.datasets[1],
-          data: currentValues,
-        },
+        { ...prev.datasets[0], data: overdueValues },
+        { ...prev.datasets[1], data: currentValues },
       ],
     }));
 
-    // Step 5: Dynamically adjust chart height
-    setChartHeight(
-      labels.length > 3 ? labels.length * 50 : 200 // Adjust height based on labels
-    );
-
-    // Step 6: Debugging total calculations
-    const totalOverdue = overdueValues.reduce((sum, val) => sum + val, 0);
-    const totalCurrent = currentValues.reduce((sum, val) => sum + val, 0);
-    const totalDocuments = overdueValues.reduce((sum, val) => sum + val, 0); // Calculate the total number of overdue documents
-
-    const isTooManyLateDocs = totalDocuments > 30; // Threshold for number of late documents
-    // const isTooHighDaysLatePerDoc = avgDaysLate > 7; // Threshold for average days late per document
-
-    if (isTooManyLateDocs) {
-      setAdditionalInsights({
-        color: "bg-red-100 ring-red-400/90",
-        message: `⚠️ Warning: Too many documents are late (${totalDocuments}).`,
-      });
-    }
-    // else if (isTooHighDaysLatePerDoc) {
-    //   setAdditionalInsights({
-    //     color: "bg-orange-100 ring-orange-400/90",
-    //     message:
-    //       "⚠️ Warning: Average days late per document is too high. Review processes may be taking longer than acceptable.",
-    //   });
-    // }
-    else {
-      setAdditionalInsights({
-        color: "bg-teal-100 ring-teal-400/90",
-        message: "Recent workflows demonstrate efficient review processes.",
-      });
-    }
+    setChartHeight(labels.length > 3 ? labels.length * 50 : 200);
   }, [data]);
 
   // Chart options (do not remove any existing options and styling)

@@ -241,12 +241,7 @@ const ExcelForm = ({}: any) => {
         filteredFirstFileData,
         filteredSecondFileData
       );
-      console.log(
-        "🚀 ~ handleGenerate ~ mergedData:",
-        mergedData.filter(
-          (x) => x.documentNo === "QB230601-00-GID-QB230601B-PS-A101-00001"
-        )
-      );
+
       const projectNumber = mergedData[0].documentNo?.split("-")[0];
 
       if (projectNumber) {
@@ -270,158 +265,106 @@ const ExcelForm = ({}: any) => {
     const mergedData: any[] = [];
     const seenRevisions = new Set(); // Track unique revisions for each document
 
-    // Step 1: Iterate through file1 and merge with file2
+    // Step 1: Preprocess file2Data into a lookup object
+    const file2Lookup = file2Data.reduce((acc, record) => {
+      const docNo = record["Document No."];
+      const revision = Number(record["Document Revision"] || 0);
+      if (!acc[docNo]) acc[docNo] = {};
+      if (!acc[docNo][revision]) acc[docNo][revision] = [];
+      acc[docNo][revision].push(record);
+      return acc;
+    }, {} as Record<string, Record<number, any[]>>);
+
+    // Step 2: Merge file1Data with file2Lookup
     file1Data.forEach((file1Record) => {
       if (file1Record["Submission Status"] === "Canceled") return; // Skip canceled records
 
-      const matchingFile2Records = file2Data.filter(
-        (file2Record) =>
-          file2Record["Document No."] === file1Record["Document No"]
-      );
+      const docNo = file1Record["Document No"];
+      const revision = Number(file1Record["Revision"] || 0);
+      const uniqueKey = `${docNo}-${revision}`;
 
-      // Process each matching file2 record
-      if (matchingFile2Records.length > 0) {
-        // Group by revision
-        const groupedByRevision = matchingFile2Records.reduce((acc, record) => {
-          const revision = Number(record["Document Revision"] || 0);
-          if (!acc[revision]) {
-            acc[revision] = [];
-          }
-          acc[revision].push(record);
-          return acc;
-        }, {} as Record<number, any[]>);
+      let matchingRecords = file2Lookup[docNo]?.[revision] || [];
 
-        // Handle each revision group separately
-        Object.keys(groupedByRevision).forEach((revisionKey) => {
-          const revision = Number(revisionKey);
-          const records = groupedByRevision[revision];
-
-          // Determine which record to use
-          let rowToMerge =
-            records.find((rec) => !rec["Date Completed"]) || records[0];
-
-          const uniqueKey = `${file1Record["Document No"]}-${revision}`;
-          if (!seenRevisions.has(uniqueKey)) {
-            seenRevisions.add(uniqueKey);
-
-            let plannedSubmissionDate = "";
-            if (revision === 0) {
-              plannedSubmissionDate = file1Record["Planned Submission Date"];
-            } else {
-              plannedSubmissionDate =
-                file1Record["Planned Submission Date"] || rowToMerge["Date In"];
-            }
-
-            mergedData.push({
-              documentNo: file1Record["Document No"],
-              title: file1Record["Title"] || rowToMerge["Document Title"],
-              assignedTo: rowToMerge["Assigned To"] || "",
-              stepStatus: "Pending", // No workflow status yet
-              originalDueDate: rowToMerge["Original Due Date"] || "",
-              submissionStatus: file1Record["Submission Status"] || "",
-              reviewStatus: file1Record["Review Status"] || "",
-              createdBy: file1Record["Created By"] || "",
-              plannedSubmissionDate,
-              dateIn: file1Record["Date In"] || rowToMerge["Date In"] || "",
-              dateCompleted:
-                file1Record["Date Completed"] ||
-                rowToMerge["Date Completed"] ||
-                "",
-              selectList1: file1Record["Select List 1"] || "",
-              selectList3: file1Record["Select List 3"] || "",
-              selectList5: file1Record["Select List 5"] || "",
-              status: file1Record["Status"] || "",
-              workflowStatus: rowToMerge["Workflow Status"] || "",
-              revision: revision,
-              stepOutcome: rowToMerge["Step Outcome"] || "",
-            });
-          }
-        });
-      } else {
-        // If no match found in file2, add file1 data with its revision
-        const revision = Number(file1Record["Revision"] || 0);
-        const uniqueKey = `${file1Record["Document No"]}-${revision}`;
-
-        if (!seenRevisions.has(uniqueKey)) {
-          seenRevisions.add(uniqueKey);
-
-          let plannedSubmissionDate = "";
-          if (revision === 0) {
-            plannedSubmissionDate =
-              file1Record["Planned Submission Date"] || file1Record["Date In"];
-          }
-
-          mergedData.push({
-            documentNo: file1Record["Document No"],
-            title: file1Record["Title"],
-            assignedTo: "",
-            stepStatus: "Pending",
-            originalDueDate: "",
-            submissionStatus: file1Record["Submission Status"],
-            reviewStatus: file1Record["Review Status"],
-            createdBy: file1Record["Created By"],
-            plannedSubmissionDate,
-            dateIn: file1Record["Date In"] || "",
-            dateCompleted: file1Record["Date Completed"] || "",
-            selectList1: file1Record["Select List 1"] || "",
-            selectList3: file1Record["Select List 3"] || "",
-            selectList5: file1Record["Select List 5"] || "",
-            status: file1Record["Status"] || "",
-            workflowStatus: "",
-            revision: revision,
-            stepOutcome: "",
-          });
-        }
-      }
-    });
-
-    // Step 2: Handle records that exist in file2 but NOT in file1
-    file2Data.forEach((file2Record) => {
-      const revision = Number(file2Record["Document Revision"] || 0);
-      const uniqueKey = `${file2Record["Document No."]}-${revision}`;
+      let rowToMerge =
+        matchingRecords.find((rec: any) => !rec["Date Completed"]) ||
+        matchingRecords[0];
 
       if (!seenRevisions.has(uniqueKey)) {
         seenRevisions.add(uniqueKey);
 
-        // Find all records for this document number and revision
-        const matchingRecords = file2Data.filter(
-          (rec) =>
-            rec["Document No."] === file2Record["Document No."] &&
-            Number(rec["Document Revision"] || 0) === revision
-        );
-
-        // Determine which record to use
-        let rowToMerge =
-          matchingRecords.find((rec) => !rec["Date Completed"]) ||
-          matchingRecords[0];
-
-        let plannedSubmissionDate = "";
-        if (revision === 0) {
-          plannedSubmissionDate =
-            file2Record["Planned Submission Date"] || file2Record["Date In"];
-        }
+        let plannedSubmissionDate =
+          revision === 0
+            ? file1Record["Planned Submission Date"]
+            : file1Record["Planned Submission Date"] || rowToMerge?.["Date In"];
 
         mergedData.push({
-          documentNo: file2Record["Document No."],
-          title: file2Record["Document Title"],
-          assignedTo: rowToMerge["Assigned To"] || "",
-          stepStatus: "Pending",
-          originalDueDate: rowToMerge["Original Due Date"] || "",
-          submissionStatus: "",
-          reviewStatus: "",
-          createdBy: "",
+          documentNo: docNo,
+          title: file1Record["Title"] || rowToMerge?.["Document Title"] || "",
+          assignedTo: rowToMerge?.["Assigned To"] || "",
+          stepStatus: rowToMerge?.["Step Status"] || "Pending",
+          originalDueDate: rowToMerge?.["Original Due Date"] || "",
+          submissionStatus: file1Record["Submission Status"] || "",
+          reviewStatus: file1Record["Review Status"] || "",
+          createdBy: file1Record["Created By"] || "",
           plannedSubmissionDate,
-          dateIn: rowToMerge["Date In"] || "",
-          dateCompleted: rowToMerge["Date Completed"] || "",
-          selectList1: "",
-          selectList3: "",
-          selectList5: "",
-          status: "",
-          workflowStatus: rowToMerge["Workflow Status"] || "",
-          revision: revision,
-          stepOutcome: rowToMerge["Step Outcome"] || "",
+          dateIn: file1Record["Date In"] || rowToMerge?.["Date In"] || "",
+          dateCompleted:
+            file1Record["Date Completed"] ||
+            rowToMerge?.["Date Completed"] ||
+            "",
+          selectList1: file1Record["Select List 1"] || "",
+          selectList3: file1Record["Select List 3"] || "",
+          selectList5: file1Record["Select List 5"] || "",
+          status: file1Record["Status"] || "",
+          workflowStatus: rowToMerge?.["Workflow Status"] || "",
+          revision,
+          stepOutcome: rowToMerge?.["Step Outcome"] || "",
         });
       }
+    });
+
+    // Step 3: Handle file2Data records that don't exist in file1Data
+    Object.keys(file2Lookup).forEach((docNo) => {
+      Object.keys(file2Lookup[docNo]).forEach((revisionKey) => {
+        const revision = Number(revisionKey);
+        const uniqueKey = `${docNo}-${revision}`;
+
+        if (!seenRevisions.has(uniqueKey)) {
+          seenRevisions.add(uniqueKey);
+
+          let matchingRecords = file2Lookup[docNo][revision] || [];
+          let rowToMerge =
+            matchingRecords.find((rec: any) => !rec["Date Completed"]) ||
+            matchingRecords[0];
+
+          let plannedSubmissionDate =
+            revision === 0
+              ? rowToMerge?.["Planned Submission Date"] ||
+                rowToMerge?.["Date In"]
+              : "";
+
+          mergedData.push({
+            documentNo: docNo,
+            title: rowToMerge?.["Document Title"] || "",
+            assignedTo: rowToMerge?.["Assigned To"] || "",
+            stepStatus: rowToMerge?.["Step Status"] || "Pending",
+            originalDueDate: rowToMerge?.["Original Due Date"] || "",
+            submissionStatus: "",
+            reviewStatus: "",
+            createdBy: "",
+            plannedSubmissionDate,
+            dateIn: rowToMerge?.["Date In"] || "",
+            dateCompleted: rowToMerge?.["Date Completed"] || "",
+            selectList1: "",
+            selectList3: "",
+            selectList5: "",
+            status: "",
+            workflowStatus: rowToMerge?.["Workflow Status"] || "",
+            revision,
+            stepOutcome: rowToMerge?.["Step Outcome"] || "",
+          });
+        }
+      });
     });
 
     return mergedData;

@@ -23,6 +23,34 @@ const LineTimeChart = lazy(() => import("../../LineTimeChart"));
 
 const FiltersAndCharts = () => {
   const { filtered } = useFilters();
+  console.log(
+    "🚀 ~ FiltersAndCharts ~ filtered:",
+    filtered.filter(
+      (x: MergedData) =>
+        x.assignedTo === " Mehdi Benjelloun Touimi - JESA SA" &&
+        x.stepStatus === "Overdue"
+    ).length
+  );
+
+  // Memoize uniqueFiltered to prevent unnecessary recalculations
+  const uniqueFiltered = useMemo(() => {
+    return Array.from(
+      new Map(
+        filtered
+          .filter((doc) => doc.selectList5.trim() !== "") // Keep only non-empty selectList5
+          .map((doc) => [doc.documentNo, doc]) // Map by documentNo
+      ).values()
+    );
+  }, [filtered]); // Only recompute when `filtered` changes
+
+  // Memoize uniqueFiltered to prevent unnecessary recalculations
+  const uniqueDocuments = useMemo(() => {
+    return Array.from(
+      new Map(
+        filtered.map((doc) => [doc.documentNo, doc]) // Map by documentNo
+      ).values()
+    );
+  }, [filtered]); // Only recompute when `filtered` changes
 
   const { setCurrentPage } = usePagination();
 
@@ -39,19 +67,19 @@ const FiltersAndCharts = () => {
             <ResizablePanelGroup direction="vertical">
               <ResizablePanel defaultSize={33}>
                 <Suspense fallback={"Loading..."}>
-                  <ReviewStatus data={filtered} />
+                  <ReviewStatus data={uniqueFiltered} />
                 </Suspense>
               </ResizablePanel>
               <ResizableHandle withHandle />
               <ResizablePanel defaultSize={34}>
                 <Suspense fallback={"Loading..."}>
-                  <SubmissionStatus data={filtered} />
+                  <SubmissionStatus data={uniqueFiltered} />
                 </Suspense>
               </ResizablePanel>
               <ResizableHandle withHandle />
               <ResizablePanel defaultSize={33}>
                 <Suspense fallback={"Loading..."}>
-                  <StatusChart data={filtered} />
+                  <StatusChart data={uniqueFiltered} />
                 </Suspense>
               </ResizablePanel>
             </ResizablePanelGroup>
@@ -61,13 +89,13 @@ const FiltersAndCharts = () => {
             <ResizablePanelGroup direction="vertical">
               <ResizablePanel defaultSize={71}>
                 <Suspense fallback={"Loading..."}>
-                  <LateAnalysis data={filtered} />
+                  <LateAnalysis data={uniqueFiltered} />
                 </Suspense>
               </ResizablePanel>
               <ResizableHandle withHandle />
               <ResizablePanel defaultSize={29}>
                 <Suspense fallback={"Loading..."}>
-                  <HeatX data={filtered} />
+                  <HeatX data={uniqueFiltered} />
                 </Suspense>
               </ResizablePanel>
             </ResizablePanelGroup>

@@ -59,19 +59,13 @@ const parseDate = (dateString: any): Date | null => {
 
 const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
   const { filtered } = useFilters(); // Get filtered data
-  console.log(
-    "🚀 ~ ~ filtered DMX:",
-    filtered.filter((x) => x.documentNo === "QB230601-00-DM-DMX-00001")
-  );
+
   // let bbb = [...new Set(xxx.filtered)];
   const { currentPage, setCurrentPage, rowsPerPage, setRowsPerPage } =
     usePagination();
 
   const [rows, setRows] = useState<any[][]>([]);
-  console.log(
-    "🚀 ~ constLineTimeChart:React.FC<{data:MergedData[]}>=memo ~ rows:",
-    rows
-  );
+  console.log("🚀 ~ 11111111111111111111", rows);
 
   const totalDocs = useMemo(
     () =>
@@ -196,7 +190,7 @@ const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
       </div>
       <div className="relative">
         {/* {filtered[0]?.dateCompleted === filtered[0]?.dateIn &&
-          !filtered[0]?.plannedSubmissionDate && (
+          filtered[0]?.dateIn === filtered[0]?.plannedSubmissionDate && (
             <p className="absolute left-60 top-[0.99px] z-50 w-3/4 bg-sky-200 p-2 text-neutral-700 text-xs">
               This document was uploaded and reviewed on:{" "}
               {parseDate(filtered[0]?.dateCompleted)?.toLocaleDateString(
