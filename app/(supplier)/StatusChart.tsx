@@ -62,7 +62,10 @@ const StatusChart: React.FC<Data> = memo(({ data }) => {
         formatter: (params: any) => {
           return `${params.name}: ${params.value} submissions`;
         },
-        position: "top",
+        position: "center",
+        textStyle: {
+          fontSize: 11,
+        },
       },
       series: [
         {

@@ -65,7 +65,10 @@ const SubmissionStatus: React.FC<Data> = memo(({ data }) => {
         formatter: (params: any) => {
           return `${params.name}: ${params.value} submissions`;
         },
-        position: "top", // Tooltip position
+        position: "center",
+        textStyle: {
+          fontSize: 11,
+        },
       },
 
       series: [

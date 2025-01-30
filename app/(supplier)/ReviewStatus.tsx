@@ -55,6 +55,10 @@ const ReviewStatus: React.FC<Data> = memo(({ data }) => {
         trigger: "item",
         formatter: (params: any) =>
           `${params.name}: ${params.value} submissions`,
+        textStyle: {
+          fontSize: 11,
+        },
+        position: "center",
       },
       series: [
         {
