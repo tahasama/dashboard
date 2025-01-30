@@ -299,7 +299,7 @@ const ExcelForm = ({}: any) => {
           documentNo: docNo,
           title: file1Record["Title"] || rowToMerge?.["Document Title"] || "",
           assignedTo: rowToMerge?.["Assigned To"] || "",
-          stepStatus: rowToMerge?.["Step Status"] || "Pending",
+          stepStatus: rowToMerge?.["Step Status"] || "",
           originalDueDate: rowToMerge?.["Original Due Date"] || "",
           submissionStatus: file1Record["Submission Status"] || "",
           reviewStatus: file1Record["Review Status"] || "",

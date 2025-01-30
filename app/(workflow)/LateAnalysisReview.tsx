@@ -234,11 +234,15 @@ const LateAnalysisReview: React.FC<Data> = memo(({ data }) => {
             // Compute Delta Difference
             let delta = plannedValue - actualValue;
             tooltipContent += `
-            <i>Difference: ${(plannedValue - actualValue).toFixed(0)}</i>
+            <i>Δ (planned - actual): ${(plannedValue - actualValue).toFixed(
+              0
+            )}</i>
             </br>
-            <i>Completion: ${((actualValue / plannedValue) * 100).toFixed(
-              1
-            )}%</i>
+            <i>Completion / step: ${
+              (actualValue / plannedValue) * 100 <= 100
+                ? ((actualValue / plannedValue) * 100).toFixed(1)
+                : 100
+            }%</i>
             `;
 
             return tooltipContent;
@@ -325,7 +329,7 @@ const LateAnalysisReview: React.FC<Data> = memo(({ data }) => {
     <div className="w-full h-full flex">
       <div className="w-9/12 h-full flex flex-col mt-0.5">
         <div className="flex justify-between mr-10 ml-4">
-          <h2>Late Reviews Analysis </h2>
+          <h2>Documents Reviews Analysis </h2>
         </div>
         <div
           ref={chartRef}
