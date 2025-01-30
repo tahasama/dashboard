@@ -55,7 +55,6 @@ const formatDate = (date) => {
 
 self.onmessage = function (event) {
   const { filtered, currentPage, rowsPerPage } = event.data;
-  console.log("🚀 ~ filtered1:", filtered.filter((x)=>x.documentNo==='QB230601-00-JET-QB230601A-CI-F999-00047').map((x)=>parseDate(x.plannedSubmissionDate)))
 
   // Step 1: Group data by `documentNo` and `title`
   const groupedData = filtered.reduce((acc, doc) => {
@@ -85,7 +84,8 @@ self.onmessage = function (event) {
       submissionStatus,
       reviewStatus,
       stepOutcome,
-      revision
+      revision,
+      documentNo
     } = doc;
 
     const revisionNumber = Number(revision);
@@ -101,7 +101,6 @@ self.onmessage = function (event) {
       validSubmissionStartDate = parseDate(dateIn) || new Date(); // Use dateIn for higher revisions
       validSubmissionEndDate = parseDate(dateIn) || new Date(); // Use dateIn as submission end date for higher revisions
     }
-    console.log("🚀 ~ paginatedData ~ validSubmissionStartDate:", validSubmissionStartDate > validSubmissionEndDate,'validSubmissionStartDate',validSubmissionStartDate,'validSubmissionEndDate',validSubmissionEndDate)
 
     // Determine review dates
     let validReviewStartDate = validSubmissionEndDate
@@ -132,8 +131,10 @@ self.onmessage = function (event) {
     const aheadOfPlanning =
     parseDate(plannedSubmissionDate) > parseDate(dateIn) ? ` (Ahead of Planning ${formatDate(parseDate(plannedSubmissionDate))}) ` : "";
     // Add submission row
+    const titleWithDocNo = `${title}${String.fromCharCode(160).repeat(100)} - ${documentNo.split("-")[2]}`;
+
     rowSet.push([
-      title,
+      titleWithDocNo,
       `Submission: ${formatDate(validSubmissionStartDate)} - ${formatDate(validSubmissionEndDate)} ${submissionStatus} rev ${revision} ${aheadOfPlanning}`,
       validSubmissionStartDate,
       validSubmissionEndDate,
@@ -142,7 +143,7 @@ self.onmessage = function (event) {
     // Add review row if dates are valid
     if (validReviewStartDate && validReviewEndDate) {
       rowSet.push([
-        title,
+        titleWithDocNo,
         `Review: ${formatDate(validReviewStartDate)} - ${formatDate(validReviewEndDate)} ${reviewStatus || stepOutcome} rev ${revision}`,
         validReviewStartDate,
         validReviewEndDate,

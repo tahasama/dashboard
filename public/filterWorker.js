@@ -41,7 +41,6 @@ self.onmessage = (e) => {
     }
     if (statusFilter && statusFilter !== "all") {
       filteredData = filteredData.filter((item) => item.reviewStatus === statusFilter);
-      console.log("🚀 ~ filteredData:", filteredData)
     }
   
     // Send filtered data back to the main thread
