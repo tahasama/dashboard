@@ -210,6 +210,15 @@ const LateAnalysisReview: React.FC<Data> = memo(({ data }) => {
           trigger: "axis",
           axisPointer: {
             type: "cross",
+            label: {
+              show: true,
+              fontSize: 10, // Change this to adjust font size
+              padding: [5, 5], // Improve spacing
+              formatter: (params: any) => {
+                const value = Number(params.value); // Ensure it's a number
+                return isNaN(value) ? params.value : value.toFixed(0); // Convert only if it's a valid number
+              }, // Show raw value without toFixed(0)
+            },
           },
           textStyle: {
             fontSize: 11,
