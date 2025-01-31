@@ -25,7 +25,10 @@ const SubmissionStatus: React.FC<Data> = memo(({ data }) => {
           row.submissionStatus !== "Cancelled"
       )
       .forEach((row: any) => {
-        const status = row.submissionStatus;
+        let status = row.submissionStatus;
+        if (status === "Marked As Submitted") {
+          status = "Submitted";
+        }
         if (status) {
           statusCounts[status] = (statusCounts[status] || 0) + 1;
         }
