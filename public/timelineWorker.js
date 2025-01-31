@@ -85,7 +85,7 @@ self.onmessage = function (event) {
       reviewStatus,
       stepOutcome,
       revision,
-      documentNo
+      documentNo,
     } = doc;
 
     const revisionNumber = Number(revision);
@@ -129,13 +129,19 @@ self.onmessage = function (event) {
     }
 
     const aheadOfPlanning =
-    parseDate(plannedSubmissionDate) > parseDate(dateIn) ? ` (Ahead of Planning ${formatDate(parseDate(plannedSubmissionDate))}) ` : "";
+      parseDate(plannedSubmissionDate) > parseDate(dateIn)
+        ? `(Ahead of Planning ${formatDate(parseDate(plannedSubmissionDate))}) `
+        : "";
     // Add submission row
-    const titleWithDocNo = `${title}${String.fromCharCode(160).repeat(100)} - ${documentNo.split("-")[2]}`;
+    const titleWithDocNo = `${title}${String.fromCharCode(160).repeat(100)} - ${
+      documentNo.split("-")[2]
+    }`;
 
     rowSet.push([
       titleWithDocNo,
-      `Submission: ${formatDate(validSubmissionStartDate)} - ${formatDate(validSubmissionEndDate)} ${submissionStatus} rev ${revision} ${aheadOfPlanning}`,
+      `Submission: ${formatDate(validSubmissionStartDate)} - ${formatDate(
+        validSubmissionEndDate
+      )} - ${submissionStatus} - rev ${revision} ${aheadOfPlanning}`,
       validSubmissionStartDate,
       validSubmissionEndDate,
     ]);
@@ -144,7 +150,9 @@ self.onmessage = function (event) {
     if (validReviewStartDate && validReviewEndDate) {
       rowSet.push([
         titleWithDocNo,
-        `Review: ${formatDate(validReviewStartDate)} - ${formatDate(validReviewEndDate)} ${reviewStatus || stepOutcome} rev ${revision}`,
+        `Review: ${formatDate(validReviewStartDate)} - ${formatDate(
+          validReviewEndDate
+        )} - ${reviewStatus || stepOutcome} - rev ${revision}`,
         validReviewStartDate,
         validReviewEndDate,
       ]);
@@ -154,29 +162,15 @@ self.onmessage = function (event) {
   });
 
   // Step 4: Filter and normalize rows
-  const formattedData = paginatedData.filter((row) => row !== null).map((row) => {
-    while (row.length < 4) {
-      row.push(null);
-    }
-    return row;
-  });
+  const formattedData = paginatedData
+    .filter((row) => row !== null)
+    .map((row) => {
+      while (row.length < 4) {
+        row.push(null);
+      }
+      return row;
+    });
 
   // Step 5: Post the result
   postMessage(formattedData);
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

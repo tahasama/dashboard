@@ -1,49 +1,47 @@
 self.onmessage = (e) => {
-    const { data, filters } = e.data;
+  const { data, filters } = e.data;
 
-    const {
-      searchText,
-      createdByFilter,
-      subProjectFilter,
-      disciplineFilter,
-      statusFilter,
-    } = filters;
-  
-    let filteredData = data;
+  const {
+    searchText,
+    createdByFilter,
+    subProjectFilter,
+    disciplineFilter,
+    statusFilter,
+  } = filters;
 
-    
-  
-    // Apply searchText filter
-    if (searchText) {
-      filteredData = filteredData.filter(
-        (item) =>
-          item.documentNo.includes(searchText) ||
-          item.title.toLowerCase().includes(searchText.toLowerCase())
-      );
-    }
-  
-    // Apply other filters
-    if (createdByFilter && createdByFilter !== "all") {
-      filteredData = filteredData.filter(
-        (item) => item.selectList5 === createdByFilter
+  let filteredData = data;
 
-      );
-    }
-    if (subProjectFilter && subProjectFilter !== "all") {
-      filteredData = filteredData.filter(
-        (item) => item.selectList3 === subProjectFilter
-      );
-    }
-    if (disciplineFilter && disciplineFilter !== "all") {
-      filteredData = filteredData.filter(
-        (item) => item.selectList1 === disciplineFilter
-      );
-    }
-    if (statusFilter && statusFilter !== "all") {
-      filteredData = filteredData.filter((item) => item.reviewStatus === statusFilter);
-    }
-  
-    // Send filtered data back to the main thread
-    self.postMessage(filteredData);
-  };
-  
+  // Apply searchText filter
+  if (searchText) {
+    filteredData = filteredData.filter(
+      (item) =>
+        item.documentNo.includes(searchText) ||
+        item.title.toLowerCase().includes(searchText.toLowerCase())
+    );
+  }
+
+  // Apply other filters
+  if (createdByFilter && createdByFilter !== "all") {
+    filteredData = filteredData.filter(
+      (item) => item.selectList5 === createdByFilter
+    );
+  }
+  if (subProjectFilter && subProjectFilter !== "all") {
+    filteredData = filteredData.filter(
+      (item) => item.selectList3 === subProjectFilter
+    );
+  }
+  if (disciplineFilter && disciplineFilter !== "all") {
+    filteredData = filteredData.filter(
+      (item) => item.selectList1 === disciplineFilter
+    );
+  }
+  if (statusFilter && statusFilter !== "all") {
+    filteredData = filteredData.filter(
+      (item) => item.reviewStatus === statusFilter
+    );
+  }
+
+  // Send filtered data back to the main thread
+  self.postMessage(filteredData);
+};

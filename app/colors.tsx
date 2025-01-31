@@ -70,3 +70,27 @@ export const sankeyColorListWf = [
 //   "#2E7D32", // Forest Green (Bold Green)
 //   "#66BB6A", // Vibrant Green (Medium Green)
 // ];
+
+export const statusColorMap: Record<string, string> = {
+  Submitted: "#63A8E6", // Light Blue
+  "Marked As Submitted": "#63A8E6", // Light Blue
+  Completed: "#84C3A3", // Green
+  "Under Review": "purple", // Darker Green
+  C1: "#4682B4", // Dark Blue for reviewed and approved
+  C2: "yellow", // Blue for approved with comments
+  C3: "#FF4D4D", // Red for rejected
+  C4: "#A9A9A9", // Gray for information only
+  "Submission Required": "#FF69B4", // Light Pink for submission required
+};
+
+export const statusPrefixMap: Record<string, string> = {
+  C1: statusColorMap.C1,
+  C2: statusColorMap.C2,
+  C3: statusColorMap.C3,
+  C4: statusColorMap.C4,
+  Submitted: statusColorMap.Submitted,
+  "Marked As Submitted": statusColorMap.Submitted,
+  Completed: statusColorMap.Completed,
+  "Under Review": statusColorMap["Under Review"],
+  "Submission Required": statusColorMap["Submission Required"],
+};

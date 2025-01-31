@@ -13,7 +13,7 @@ export type MergedData = {
   // Days Late fields from both files
   daysLateSubmission?: number; // Days Late (file 1)
   daysLateReview?: string; // Days Late (file 2)
-
+  stepOutcome?: string;
   // Columns from file 1
   submissionStatus?: string; // Submission Status
   reviewStatus?: string; // Review Status
