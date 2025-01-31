@@ -68,10 +68,11 @@ const SubmissionStatus: React.FC<Data> = memo(({ data }) => {
         formatter: (params: any) => {
           return `${params.name}: ${params.value} submissions`;
         },
-        position: "center",
+        position: "top",
         textStyle: {
           fontSize: 11,
         },
+        padding: 6,
       },
 
       series: [
