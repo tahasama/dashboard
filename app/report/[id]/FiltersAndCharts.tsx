@@ -139,7 +139,7 @@ const FiltersAndCharts = () => {
       </div>
 
       {/* Line Time Chart */}
-      {/* <Suspense
+      <Suspense
         fallback={
           <div className="w-screen h-screen grid place-content-center">
             Loading LineTimeChart...
@@ -147,7 +147,7 @@ const FiltersAndCharts = () => {
         }
       >
         <LineTimeChart data={filtered} />
-      </Suspense> */}
+      </Suspense>
     </div>
   );
 };

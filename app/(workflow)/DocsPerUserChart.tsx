@@ -24,7 +24,7 @@ const DocsPerUserChart: React.FC<Data> = memo(({ data }) => {
     datasets: [
       {
         label: "Overdue",
-        backgroundColor: "#ef4444", // Red for Overdue
+        backgroundColor: "#EF5C5C", // Red for Overdue
         borderColor: lightColors[1],
         borderWidth: 1,
         data: [] as number[],
@@ -36,7 +36,7 @@ const DocsPerUserChart: React.FC<Data> = memo(({ data }) => {
         borderColor: "#388e3c",
         borderWidth: 1,
         data: [] as number[],
-        barThickness: 20, // Controls bar height
+        barThickness: 16, // Controls bar height
       },
     ],
   });
