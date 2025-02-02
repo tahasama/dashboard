@@ -24,16 +24,35 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { usePagination } from "./PaginationProvider";
+import { getStatusColor } from "@/lib/utils";
+import { statusColorMap, statusPrefixMap } from "./colors";
+
+// import { Timeline } from "vis-timeline";
+import "vis-timeline/styles/vis-timeline-graph2d.css";
+
+import {
+  DateHeader,
+  SidebarHeader,
+  Timeline,
+  TimelineHeaders,
+} from "react-calendar-timeline";
+import "react-calendar-timeline/dist/style.css";
+import { stringify } from "querystring";
 
 const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
   const { filtered } = useFilters(); // Get filtered data
-
-  // let bbb = [...new Set(xxx.filtered)];
   const { currentPage, setCurrentPage, rowsPerPage, setRowsPerPage } =
     usePagination();
+  const timelineRef = useRef<Timeline | null>(null);
 
-  const [rows, setRows] = useState<any[][]>([]);
+  const [loading, setLoading] = useState(true); // ✅ New loading state
 
+  const [timelineItems, setTimelineItems] = useState([]);
+  const [timelineGroups, setTimelineGroups] = useState([]);
+  const [defaultTimeStart, setDefaultTimeStart] = useState<any>(null); // Change to Date or null
+  const [defaultTimeEnd, setDefaultTimeEnd] = useState<any>(null); // Change to Date or null
+
+  // Total unique documents
   const totalDocs = useMemo(
     () =>
       filtered.filter(
@@ -43,62 +62,62 @@ const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
     [filtered]
   );
 
-  const workerRef = useRef<Worker | null>(null);
-
+  // Initialize/update timeline
   useEffect(() => {
     if (typeof window !== "undefined") {
-      // Initialize the Web Worker
-      workerRef.current = new Worker("/timelineWorker.js");
+      const worker = new Worker("/timelineWorker.js");
 
-      // Listen for messages from the worker
-      workerRef.current.onmessage = (event) => {
-        const xxx = event.data;
-        setRows(xxx.flat().filter((x: MergedData) => x !== null)); // Update rows with the filtered and paginated data
+      worker.onmessage = (event) => {
+        const { items, groups } = event.data;
+
+        setTimelineItems(items); // ✅ Update state
+
+        setTimelineGroups(groups); // ✅ Update state
+
+        // Log to check start_time and end_time values
+        const allDates = items.flatMap(({ start_time, end_time }: any) => {
+          return [start_time, end_time];
+        });
+
+        // Only update defaultTimeStart and defaultTimeEnd when items are loaded
+        if (allDates.length) {
+          const minDate = new Date(
+            Math.min(...allDates.map((date: any) => new Date(date).getTime()))
+          );
+          const maxDate = new Date(
+            Math.max(...allDates.map((date: any) => new Date(date).getTime()))
+          );
+
+          // Update the state with the calculated min/max date range
+          setDefaultTimeStart(minDate);
+          setDefaultTimeEnd(maxDate);
+        }
       };
 
-      return () => {
-        workerRef.current?.terminate();
-      };
-    }
-  }, []);
+      setLoading(false); // ✅ Done loading
 
-  useEffect(() => {
-    if (workerRef.current) {
-      // Send filtered data, currentPage, and rowsPerPage to the worker for processing
-      workerRef.current.postMessage({
+      worker.postMessage({
         filtered,
         currentPage,
         rowsPerPage,
       });
+
+      return () => {
+        worker.terminate();
+      };
     }
-  }, [filtered, currentPage, rowsPerPage]);
+  }, [filtered, currentPage, rowsPerPage]); // Trigger only when filtered data, currentPage, or rowsPerPage change
 
   const handlePageChange = useCallback(
     (page: number) => setCurrentPage(page),
     []
   );
-
   const handleSelectChange = useCallback((value: string) => {
     setCurrentPage(0); // Reset to first page when rows per page changes
     setRowsPerPage(Number(value));
   }, []);
 
-  const options = {
-    timeline: {
-      groupByRowLabel: true,
-      showRowLabels: true,
-      rowLabelStyle: {
-        fontName: "Arial",
-        fontSize: 11,
-        color: "#333",
-      },
-      barLabelStyle: { fontName: "Arial", fontSize: 10 },
-      barHeight: 25,
-    },
-    colors: ["#63A8E6", "#84C3A3"],
-  };
-
-  if (!rows.length) {
+  if (!filtered.length) {
     return (
       <span className="grid place-content-center h-[calc(100vh-90px)]">
         <Alert variant="destructive" className="gap-0 mt-4 w-fit">
@@ -117,7 +136,6 @@ const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
         <h1 className="md:w-1/3">
           Document&apos;s Timeline: {totalDocs.length}
         </h1>
-
         <div className="md:w-1/3 flex justify-center">
           <PaginationX
             currentPage={currentPage}
@@ -125,7 +143,6 @@ const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
             onPageChange={handlePageChange}
           />
         </div>
-
         <div className="md:w-1/3 flex items-center justify-end gap-2">
           <Label
             htmlFor="rowsPerPage"
@@ -133,7 +150,6 @@ const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
           >
             Rows per page
           </Label>
-
           <Select
             value={String(rowsPerPage)}
             onValueChange={handleSelectChange}
@@ -155,39 +171,76 @@ const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
           </Select>
         </div>
       </div>
-      <div className="relative">
-        {/* {filtered[0]?.dateCompleted === filtered[0]?.dateIn &&
-          filtered[0]?.dateIn === filtered[0]?.plannedSubmissionDate && (
-            <p className="absolute left-60 top-[0.99px] z-50 w-3/4 bg-sky-200 p-2 text-neutral-700 text-xs">
-              This document was uploaded and reviewed on:{" "}
-              {parseDate(filtered[0]?.dateCompleted)?.toLocaleDateString(
-                "en-GB",
-                {
-                  day: "2-digit",
-                  month: "short",
-                  year: "numeric",
-                }
-              ) || "Invalid Date"}
-            </p>
-          )} */}
-        <List height={485} itemCount={1} itemSize={100} width="100%">
-          {() => (
-            <Chart
-              chartType="Timeline"
-              rows={rows}
-              columns={[
-                { type: "string" },
-                { type: "string" },
-                { type: "date" },
-                { type: "date" },
-              ]}
-              options={options}
-              width="100%"
-              height="470px"
-            />
-          )}
-        </List>
-      </div>
+      {!loading && defaultTimeEnd !== null ? (
+        <div className="h-[75vh] overflow-auto">
+          <Timeline
+            ref={timelineRef}
+            groups={timelineGroups}
+            items={timelineItems}
+            defaultTimeStart={defaultTimeStart}
+            defaultTimeEnd={defaultTimeEnd}
+            canMove={true}
+            canResize={false}
+            stackItems={true}
+            lineHeight={35}
+            itemRenderer={({
+              item,
+              itemContext,
+              getItemProps,
+              getResizeProps,
+            }) => {
+              const itemProps = item.itemProps ? item.itemProps : {};
+              const leftResizeProps: any = getResizeProps(item as any); // Get left resize props
+              const rightResizeProps: any = getResizeProps(item as any); // Get right resize props
+              return (
+                <div {...getItemProps(itemProps)}>
+                  {itemContext.useResizeHandle ? (
+                    <div {...leftResizeProps} />
+                  ) : (
+                    ""
+                  )}
+
+                  <div
+                    className="rct-item-content overflow-visible text-black h-fit text-xs grid place-content-center"
+                    style={{
+                      backgroundColor: getStatusColor(
+                        String(item?.title)?.split("-")[1]
+                      ),
+                    }}
+                  >
+                    {itemContext.title}
+                  </div>
+                  {itemContext.useResizeHandle ? (
+                    <div {...rightResizeProps} />
+                  ) : (
+                    ""
+                  )}
+                </div>
+              );
+            }}
+          >
+            {/* <TimelineHeaders className="sticky top-0 z-50 bg-slate-500">
+                <SidebarHeader>
+                  {({ getRootProps }) => {
+                    return (
+                      <div
+                        {...getRootProps()}
+                        className="bg-slate-500 text-sm grid place-content-center"
+                      >
+                        Titles
+                      </div>
+                    );
+                  }}
+                </SidebarHeader>
+
+                <DateHeader unit="primaryHeader" className="bg-slate-500" />
+                <DateHeader />
+              </TimelineHeaders> */}
+          </Timeline>
+        </div>
+      ) : (
+        <div>Loading...</div>
+      )}
     </div>
   );
 });

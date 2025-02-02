@@ -93,9 +93,9 @@ const WorkflowStepStatusChart: React.FC<Data> = memo(({ data }) => {
             show: true,
             position: "outside", // Position the label outside the pie
             formatter: (params: any) => `${params.name}\n${params.value}`, // Name on top, value below
-            textStyle: {
-              fontSize: 9,
-            },
+            // textStyle: {
+            //   fontSize: 9,
+            // },
           },
           labelLine: {
             show: true,

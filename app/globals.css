@@ -62,3 +62,65 @@ body {
 .animate-spin-slow {
   animation: spin-slow 2s linear infinite;
 }
+/* 
+.rct-calendar-header {
+  z-index: 100;
+} */
+
+/* .rct-item-content {
+  z-index: 0 !important;
+} */
+
+/* .rct-items {
+  z-index: 0 !important;
+} */
+
+.rct-sidebar-row {
+  font-size: 12px;
+  height: 35px !important;
+  display: grid;
+  place-content: center start;
+}
+.rct-hl-even  {
+  font-size: 12px;
+  height: 35px !important;
+  display: grid;
+  place-content: center start;
+}
+
+.rct-hl-odd  {
+  font-size: 12px;
+  height: 35px !important;
+  display: grid;
+  place-content: center start;
+}
+
+.rct-item {
+  font-size: 12px;
+  height: 20px !important;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  z-index: 0 !important;
+  overflow: visible !important; /* Ensure the item container allows text overflow */
+
+}
+
+.rct-item-content {
+  font-size: 12px;
+  /* height: 22px !important; */
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  white-space: nowrap;
+  
+  
+}
+
+.rct-header-root{
+  background-color:  rgb(100 116 139) !important;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
