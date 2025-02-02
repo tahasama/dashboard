@@ -53,8 +53,90 @@ const FiltersAndCharts = () => {
   return (
     <div className="w-full">
       {/* Filters */}
+      <div className="bg-slate- p-2 mx-1 rounded-md mt-4 flex h-[120vh] lg:h-[calc(100vh-60px)] w- shadow-md">
+        <ResizablePanelGroup direction="horizontal">
+          <ResizablePanel defaultSize={24}>
+            <ResizablePanelGroup direction="vertical">
+              <ResizablePanel defaultSize={33}>
+                <Suspense fallback={"Loading..."}>
+                  <ReviewStatus data={uniqueFiltered} />
+                </Suspense>
+              </ResizablePanel>
+              <ResizableHandle withHandle />
+              <ResizablePanel defaultSize={34}>
+                <Suspense fallback={"Loading..."}>
+                  <SubmissionStatus data={uniqueFiltered} />
+                </Suspense>
+              </ResizablePanel>
+              <ResizableHandle withHandle />
+              <ResizablePanel defaultSize={33}>
+                <Suspense fallback={"Loading..."}>
+                  <StatusChart data={uniqueFiltered} />
+                </Suspense>
+              </ResizablePanel>
+            </ResizablePanelGroup>
+          </ResizablePanel>
+          <ResizableHandle withHandle />
+          <ResizablePanel defaultSize={76}>
+            <ResizablePanelGroup direction="vertical">
+              <ResizablePanel defaultSize={71}>
+                <Suspense fallback={"Loading..."}>
+                  <LateAnalysis data={uniqueFiltered} />
+                </Suspense>
+              </ResizablePanel>
+              <ResizableHandle withHandle />
+              <ResizablePanel defaultSize={29}>
+                <Suspense fallback={"Loading..."}>
+                  <HeatX data={uniqueFiltered} />
+                </Suspense>
+              </ResizablePanel>
+            </ResizablePanelGroup>
+          </ResizablePanel>
+        </ResizablePanelGroup>
+      </div>
 
       {/* Workflow Charts */}
+      <div className="bg-slate- p-2 mx-1 rounded-md mt-4 flex h-[120vh] lg:h-[calc(100vh-60px)] w- shadow-md">
+        <ResizablePanelGroup direction="horizontal">
+          <ResizablePanel defaultSize={24}>
+            <ResizablePanelGroup direction="vertical">
+              <ResizablePanel defaultSize={60}>
+                <Suspense fallback={"Loading..."}>
+                  <DocsPerUserChart data={filtered} />
+                </Suspense>
+              </ResizablePanel>
+              <ResizableHandle withHandle />
+              <ResizablePanel defaultSize={40}>
+                {" "}
+                {/* Explicit defaultSize added */}
+                <Suspense fallback={"Loading..."}>
+                  <WorkflowStepStatusChart data={filtered} />
+                </Suspense>
+              </ResizablePanel>
+            </ResizablePanelGroup>
+          </ResizablePanel>
+          <ResizableHandle withHandle />
+          <ResizablePanel defaultSize={76}>
+            {" "}
+            {/* Explicit defaultSize added */}
+            <ResizablePanelGroup direction="vertical">
+              <ResizablePanel defaultSize={72}>
+                <Suspense fallback={"Loading..."}>
+                  <LateAnalysisReview data={filtered} />
+                </Suspense>
+              </ResizablePanel>
+              <ResizableHandle withHandle />
+              <ResizablePanel defaultSize={28}>
+                {" "}
+                {/* Explicit defaultSize added */}
+                <Suspense fallback={"Loading..."}>
+                  <StatusOutcomeHeatMap data={filtered} />
+                </Suspense>
+              </ResizablePanel>
+            </ResizablePanelGroup>
+          </ResizablePanel>
+        </ResizablePanelGroup>
+      </div>
 
       {/* Line Time Chart */}
       <Suspense
