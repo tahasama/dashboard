@@ -24,7 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { usePagination } from "./PaginationProvider";
-import { getStatusColor } from "@/lib/utils";
+import { getStatusColor, parseDates } from "@/lib/utils";
 import { statusColorMap, statusPrefixMap } from "./colors";
 
 import {
@@ -75,9 +75,15 @@ const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
         setTimelineGroups(groups); // ✅ Update state
 
         // Log to check start_time and end_time values
-        const allDates = items.flatMap(({ start_time, end_time }: any) => {
-          return [start_time, end_time];
-        });
+        const allDates = filtered
+          .flatMap(({ plannedSubmissionDate, dateIn, dateCompleted }: any) => {
+            return [
+              parseDates(plannedSubmissionDate),
+              parseDates(dateIn),
+              parseDates(dateCompleted),
+            ];
+          })
+          .filter((date) => date !== null);
 
         // Only update defaultTimeStart and defaultTimeEnd when items are loaded
         if (allDates.length) {
@@ -132,7 +138,7 @@ const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
 
   return (
     <div className="snap-start h-[calc(100vh-90px)] my-5 mx-2 lg:mx-10">
-      <div className="gap-3 md:gap-0 flex justify-between items-center mb-2 -top-1.5 relative">
+      <div className="gap-3 md:gap-0 flex justify-between items-center mb-2 top- relative">
         <h1 className="md:w-1/3">
           Document&apos;s Timeline: {totalDocs.length}
         </h1>

@@ -65,3 +65,35 @@ export const getStatusColor = (status: string): string => {
       return "#CCCCCC"; // Default gray for unknown statuses
   }
 };
+
+export const parseDates = (dateString: string) => {
+  const excelBaseDate = new Date(1899, 11, 30).getTime();
+  if (typeof dateString !== "string" && dateString !== null) {
+    dateString = String(dateString);
+  }
+
+  if (typeof dateString === "string") {
+    const trimmedDate = dateString.trim();
+    const excelNumber = Number(trimmedDate);
+    if (!isNaN(excelNumber) && excelNumber > 0) {
+      return new Date(excelBaseDate + excelNumber * 24 * 60 * 60 * 1000);
+    }
+    if (trimmedDate.includes("/")) {
+      const parts = trimmedDate.split("/");
+      if (parts.length === 3) {
+        const day = parseInt(parts[0], 10);
+        const month = parseInt(parts[1], 10) - 1;
+        const year = parseInt(parts[2], 10);
+        const parsedDate = new Date(year, month, day);
+        if (!isNaN(parsedDate.getTime())) {
+          return parsedDate;
+        }
+      }
+    }
+    const date = new Date(trimmedDate);
+    if (!isNaN(date.getTime())) {
+      return date;
+    }
+  }
+  return null;
+};
