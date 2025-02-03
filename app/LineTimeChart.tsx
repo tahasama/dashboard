@@ -10,7 +10,7 @@ import React, {
 import { FixedSizeList as List } from "react-window";
 import Chart from "react-google-charts";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Loader2 } from "lucide-react";
 import { useFilters } from "./FiltersProvider";
 import { MergedData } from "./types";
 import PaginationX from "./PaginationX";
@@ -157,7 +157,7 @@ const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
     );
   }
 
-  return (
+  return !loading && defaultTimeEnd !== null ? (
     <div className="snap-start h-[calc(100vh-90px)] my-5 mx-2 lg:mx-7 relative -top-1.5">
       <div className="gap-3 md:gap-0 flex justify-between items-center mb-2 top- relative">
         <h1 className="md:w-1/3">
@@ -200,59 +200,61 @@ const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
       </div>
       <Toaster />
       <Legend />
-      {!loading && defaultTimeEnd !== null ? (
-        <div className="h-[74vh] overflow-auto">
-          <Timeline
-            ref={timelineRef}
-            groups={timelineGroups}
-            items={timelineItems}
-            defaultTimeStart={defaultTimeStart}
-            defaultTimeEnd={defaultTimeEnd}
-            canMove={true}
-            canResize={false}
-            stackItems={true}
-            lineHeight={35}
-            onItemSelect={handleItemClick}
-            itemRenderer={({
-              item,
-              itemContext,
-              getItemProps,
-              getResizeProps,
-            }) => {
-              const itemProps = item.itemProps ? item.itemProps : {};
-              const leftResizeProps: any = getResizeProps(item as any); // Get left resize props
-              const rightResizeProps: any = getResizeProps(item as any); // Get right resize props
-              return (
-                <div {...getItemProps(itemProps)}>
-                  {itemContext.useResizeHandle ? (
-                    <div {...leftResizeProps} />
-                  ) : (
-                    ""
-                  )}
 
-                  <div
-                    className="rct-item-content overflow-visible text-black h-fit text-xs grid place-content-center"
-                    style={{
-                      backgroundColor: getStatusColor(
-                        String(item?.title)?.split("-")[0]
-                      ),
-                    }}
-                  >
-                    {itemContext.title}
-                  </div>
-                  {itemContext.useResizeHandle ? (
-                    <div {...rightResizeProps} />
-                  ) : (
-                    ""
-                  )}
+      <div className="h-[74vh] overflow-auto">
+        <Timeline
+          ref={timelineRef}
+          groups={timelineGroups}
+          items={timelineItems}
+          defaultTimeStart={defaultTimeStart}
+          defaultTimeEnd={defaultTimeEnd}
+          canMove={true}
+          canResize={false}
+          stackItems={true}
+          lineHeight={35}
+          onItemSelect={handleItemClick}
+          itemRenderer={({
+            item,
+            itemContext,
+            getItemProps,
+            getResizeProps,
+          }) => {
+            const itemProps = item.itemProps ? item.itemProps : {};
+            const leftResizeProps: any = getResizeProps(item as any); // Get left resize props
+            const rightResizeProps: any = getResizeProps(item as any); // Get right resize props
+            return (
+              <div {...getItemProps(itemProps)}>
+                {itemContext.useResizeHandle ? (
+                  <div {...leftResizeProps} />
+                ) : (
+                  ""
+                )}
+
+                <div
+                  className="rct-item-content overflow-visible text-black h-fit text-xs grid place-content-center"
+                  style={{
+                    backgroundColor: getStatusColor(
+                      String(item?.title)?.split("-")[0]
+                    ),
+                  }}
+                >
+                  {itemContext.title}
                 </div>
-              );
-            }}
-          ></Timeline>
-        </div>
-      ) : (
-        <div>Loading...</div>
-      )}
+                {itemContext.useResizeHandle ? (
+                  <div {...rightResizeProps} />
+                ) : (
+                  ""
+                )}
+              </div>
+            );
+          }}
+        />
+      </div>
+    </div>
+  ) : (
+    <div className="w-screen h-screen flex justify-center items-center">
+      <Loader2 className="animate-spin" />
+      &nbsp; <p>Loading LineTimeChart...</p>
     </div>
   );
 });

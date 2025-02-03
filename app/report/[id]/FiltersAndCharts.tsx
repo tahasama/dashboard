@@ -18,6 +18,7 @@ import {
   ResizableHandle,
 } from "@/components/ui/resizable";
 import { filterData } from "@/lib/utils";
+import { Loader2 } from "lucide-react";
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 const LineTimeChart = lazy(() => import("../../LineTimeChart"));
 
@@ -141,8 +142,9 @@ const FiltersAndCharts = () => {
       {/* Line Time Chart */}
       <Suspense
         fallback={
-          <div className="w-screen h-screen grid place-content-center">
-            Loading LineTimeChart...
+          <div className="w-screen h-screen flex justify-center items-center">
+            &nbsp; <Loader2 className="animate-spin" />{" "}
+            <p>Loading LineTimeChart...</p>
           </div>
         }
       >
