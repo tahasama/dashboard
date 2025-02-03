@@ -103,16 +103,15 @@ const LateAnalysisConclusion: React.FC<{
           ➡️ Real Total Submissions: <strong>{formatNumber(totalReal)}</strong>
         </li>
         <li>
-          ➡️ Average Daily Difference:{" "}
-          <strong>{Math.abs(average).toFixed(0)}</strong> documents{" "}
-          {average >= 0 ? "ahead" : "behind"}
+          ➡️ Average Daily Diff: <strong>{Math.abs(average).toFixed(0)}</strong>{" "}
+          docs {average >= 0 ? "ahead" : "behind"}
         </li>
         <li>
-          ➡️ Max Difference: <strong>{Math.abs(min)}</strong> documents{" "}
+          ➡️ Max Diff: <strong>{Math.abs(min)}</strong> docs{" "}
           {min >= 0 ? "ahead" : "behind"}
         </li>
         <li>
-          ➡️ Min Difference: <strong>{Math.abs(max)}</strong> documents{" "}
+          ➡️ Min Diff: <strong>{Math.abs(max)}</strong> docs{" "}
           {max >= 0 ? "ahead" : "behind"}
         </li>
       </ul>
