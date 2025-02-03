@@ -121,12 +121,12 @@ const LateAnalysisReviewConclusion: React.FC<{
           <strong>{Math.abs(avgReviewDifference).toFixed(0)}</strong>
         </li>
         <li>
-          ➡️ Max Difference: <strong>{Math.abs(minReviewDifference)}</strong>{" "}
-          reviews
+          ➡️ Max Difference: <strong>{Math.abs(min)}</strong> documents{" "}
+          {min >= 0 ? "ahead" : "behind"}
         </li>
         <li>
-          ➡️ Min Difference: <strong>{Math.abs(maxReviewDifference)}</strong>{" "}
-          reviews
+          ➡️ Min Difference: <strong>{Math.abs(max)}</strong> documents{" "}
+          {max >= 0 ? "ahead" : "behind"}
         </li>
       </ul>
     </div>

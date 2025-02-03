@@ -68,12 +68,14 @@ body {
   height: 35px !important;
   display: grid;
   place-content: center start;
+  
 }
 .rct-hl-even  {
   /* font-size: 12px; */
   height: 35px !important;
   display: grid;
   place-content: center start;
+  
 }
 
 .rct-hl-odd  {
@@ -121,5 +123,10 @@ body {
 .rct-sidebar .rct-sidebar-row {
   white-space: pre-line !important; /* or pre-wrap */
   line-height: 1.2 !important; /* Adjust this value to control spacing */
-
 }
+
+
+/* .rct-sidebar{
+  min-width: 300px;
+} */
+

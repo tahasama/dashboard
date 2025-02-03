@@ -102,6 +102,28 @@ const DocsPerUserChart: React.FC<Data> = memo(({ data }) => {
     }));
 
     setChartHeight(labels.length > 3 ? labels.length * 50 : 200);
+
+    // Calculate the total number of overdue documents
+    const totalOverdue = overdueValues.reduce((sum, value) => sum + value, 0);
+
+    // Update additional insights based on the overdue documents
+    if (totalOverdue > 100) {
+      setAdditionalInsights({
+        color: "bg-red-100 ring-red-400/90",
+        message: `🔴 Critical Issue: There are ${totalOverdue} overdue documents, indicating a significant backlog and potential delays in the review process.`,
+      });
+    } else if (totalOverdue > 0) {
+      setAdditionalInsights({
+        color: "bg-orange-100 ring-orange-400/90",
+        message: `🟠 Warning: There are ${totalOverdue} overdue documents, indicating potential delays in the review process.`,
+      });
+    } else {
+      setAdditionalInsights({
+        color: "bg-teal-100 ring-teal-400/90",
+        message:
+          "🟢 On Track: There are no overdue documents, indicating a smooth and efficient review process.",
+      });
+    }
   }, [data]);
 
   // Chart options (do not remove any existing options and styling)
@@ -204,9 +226,7 @@ const DocsPerUserChart: React.FC<Data> = memo(({ data }) => {
   }
 
   return (
-    // <div className="">
     <div className="max-h-[400px] scrollbar-thin  scrollbar-thumb-slate-600 scrollbar-track-slate-300 rounded-md scrollbar-corner-transparent overflow-y-scroll">
-      {/* Dynamically rendering criticality text with inline styles */}
       <p
         className={`rounded-md p-2 m-1 font-thin text-xs lg:leading-loose text-black lg:text-slate-800 ${additionalInsights.color}`}
       >

@@ -97,3 +97,21 @@ export const parseDates = (dateString: string) => {
   }
   return null;
 };
+
+export const excelDateToJSDate = (serial: number): string => {
+  // Handle Excel's leap year bug (1900 is not a leap year but Excel thinks it is)
+  const utcDays = Math.floor(serial - 25569); // Adjust for Excel/JS epoch difference
+  const utcValue = utcDays * 86400000; // Milliseconds per day
+  const dateInfo = new Date(utcValue);
+
+  // Fix date shift for dates after February 28, 1900
+  if (serial >= 60) {
+    dateInfo.setTime(dateInfo.getTime() - 86400000);
+  }
+
+  return dateInfo.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+};
