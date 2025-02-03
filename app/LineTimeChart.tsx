@@ -36,6 +36,8 @@ import {
 import "react-calendar-timeline/dist/style.css";
 import { stringify } from "querystring";
 import Legend from "./TimeLineLegend";
+import { Toaster } from "@/components/ui/sonner";
+import { toast } from "sonner";
 
 const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
   const { filtered } = useFilters(); // Get filtered data
@@ -121,6 +123,27 @@ const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
     setRowsPerPage(Number(value));
   }, []);
 
+  const handleItemClick = (itemId: string) => {
+    // e.stopPropagation();
+
+    // Extract the document number from itemId
+    const documentNo = itemId.split(".")[0];
+    console.log("Item clicked:", documentNo);
+
+    // Copy document number to clipboard
+    navigator.clipboard
+      .writeText(documentNo)
+      .then(() => {
+        console.log("Document number copied to clipboard:", documentNo);
+        toast("", {
+          description: `${documentNo} Copied!`,
+        });
+      })
+      .catch((err) => {
+        console.error("Failed to copy text to clipboard:", err);
+      });
+  };
+
   if (!filtered.length) {
     return (
       <span className="grid place-content-center h-[calc(100vh-90px)]">
@@ -175,8 +198,8 @@ const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
           </Select>
         </div>
       </div>
+      <Toaster />
       <Legend />
-
       {!loading && defaultTimeEnd !== null ? (
         <div className="h-[74vh] overflow-auto">
           <Timeline
@@ -189,6 +212,7 @@ const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
             canResize={false}
             stackItems={true}
             lineHeight={35}
+            onItemSelect={handleItemClick}
             itemRenderer={({
               item,
               itemContext,
@@ -210,7 +234,7 @@ const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
                     className="rct-item-content overflow-visible text-black h-fit text-xs grid place-content-center"
                     style={{
                       backgroundColor: getStatusColor(
-                        String(item?.title)?.split("-")[1]
+                        String(item?.title)?.split("-")[0]
                       ),
                     }}
                   >

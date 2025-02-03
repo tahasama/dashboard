@@ -186,12 +186,14 @@ self.onmessage = function (event) {
 
     // Add submission row
     rowSet.push({
-      id: `${documentNo}-submission-${revision}`,
+      id: `${documentNo}.submission.${revision}`,
       group: documentNo,
-      title: `Submission - ${submissionStatus} - rev ${revision} 
+      title: `${submissionStatus} - rev ${revision} 
+Title: ${title}
+doc: ${documentNo}
 Start: ${formatDate(validSubmissionStartDate)} 
-End: ${formatDate(validSubmissionEndDate)}
-doc: ${documentNo}`,
+End: ${formatDate(validSubmissionEndDate)}`,
+
       start_time: validSubmissionStartDate,
       end_time: validSubmissionEndDate,
       style: { backgroundColor: getStatusColor(submissionStatus) },
@@ -200,12 +202,14 @@ doc: ${documentNo}`,
     // Add review row if dates are valid
     if (validReviewStartDate && validReviewEndDate) {
       rowSet.push({
-        id: `${documentNo}-review-${revision}`,
+        id: `${documentNo}.review.${revision}`,
         group: documentNo,
-        title: `Review - ${reviewStatus || stepOutcome} - rev ${revision} 
+        title: `${reviewStatus || stepOutcome} - rev ${revision} 
+title: ${title}
+doc: ${documentNo}
 Start: ${formatDate(validReviewStartDate)} 
-End: ${formatDate(validReviewEndDate)}
-doc: ${documentNo}`,
+End: ${formatDate(validReviewEndDate)}`,
+
         start_time: validReviewStartDate,
         end_time: validReviewEndDate,
         style: { backgroundColor: getStatusColor(reviewStatus || stepOutcome) },
@@ -224,8 +228,8 @@ doc: ${documentNo}`,
       const matchingItem = filtered.find((item) => item.documentNo === docNo);
 
       const limitedTitle = matchingItem
-        ? matchingItem.title.length > 45
-          ? matchingItem.title.substring(0, 45) + "..."
+        ? matchingItem.title.length > 35
+          ? matchingItem.title.substring(0, 35) + "..."
           : matchingItem.title
         : "";
       return {

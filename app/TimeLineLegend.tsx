@@ -17,16 +17,25 @@ const statusColors = [
 
 const Legend = () => {
   return (
-    <div className="flex flex-wrap gap-4 p-2 bg-white shadow-lg rounded-lg -mt- mb-1">
-      {statusColors.map((status) => (
-        <div key={status.label} className="flex items-center gap-2">
-          <span
-            className="w-3 h-3 rounded-full"
-            style={{ backgroundColor: status.color }}
-          ></span>
-          <span className="text-xs">{status.label}</span>
-        </div>
-      ))}
+    <div className="flex justify-between items-center  -mt-1 mb-1 p-2 bg-white shadow-lg rounded-lg">
+      <div className="flex flex-wrap  gap-4 ">
+        {statusColors.map((status) => (
+          <div
+            key={status.label}
+            className="flex items-center justify-center gap-2"
+          >
+            <span
+              className="w-3 h-3 rounded-full"
+              style={{ backgroundColor: status.color }}
+            ></span>
+            <span className="text-xs">{status.label}</span>
+          </div>
+        ))}
+      </div>
+
+      <div className="text-xs place-self-end text-slate-800 bg-red-50 shadow-md rounded-[2px] py-1 px-1.5">
+        <b>Tip:</b> click on a bar to copy doc number
+      </div>
     </div>
   );
 };
