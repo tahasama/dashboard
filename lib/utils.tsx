@@ -41,7 +41,7 @@ export const toCamelCase = (str: string) => {
 export const getStatusColor = (status: string): string => {
   switch (status?.trim().toLowerCase()) {
     case "submitted":
-      return "#63A8E6"; // Light Blue
+      return "#78a8cf"; // Light Blue
     case "completed":
       return "#84C3A3"; // Green
     // return "#84C3A3"; // Green
@@ -53,7 +53,7 @@ export const getStatusColor = (status: string): string => {
     case "approved":
       return "#4682B4"; // Dark Blue for reviewed and approved
     case "c2 reviewed & accepted as marked revise & resubmi":
-      return "#5F9EA0"; // Blue for approved with comments
+      return "#B58ED2"; // Blue for approved with comments
     case "c3 reviewed & returned correct and resubmit":
       return "#FF4D4D"; // Red for rejected
     case "c4 review not required for information only":

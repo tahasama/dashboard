@@ -64,7 +64,7 @@ body {
 }
 
 .rct-sidebar-row {
-  font-size: 12px;
+  font-size: 10px;
   height: 35px !important;
   display: grid;
   place-content: center start;
@@ -115,5 +115,11 @@ body {
 .rct-dateHeader  {
   font-size: 12px !important;
   font-stretch: condensed  ;
+
+}
+
+.rct-sidebar .rct-sidebar-row {
+  white-space: pre-line !important; /* or pre-wrap */
+  line-height: 1.2 !important; /* Adjust this value to control spacing */
 
 }

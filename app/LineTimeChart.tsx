@@ -35,6 +35,7 @@ import {
 } from "react-calendar-timeline";
 import "react-calendar-timeline/dist/style.css";
 import { stringify } from "querystring";
+import Legend from "./TimeLineLegend";
 
 const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
   const { filtered } = useFilters(); // Get filtered data
@@ -130,8 +131,8 @@ const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
   }
 
   return (
-    <div className="snap-start h-[calc(100vh-90px)] my-4 mx-2 lg:mx-10">
-      <div className="gap-3 md:gap-0 flex justify-between items-center mb-2 top-1.5 relative">
+    <div className="snap-start h-[calc(100vh-90px)] my-5 mx-2 lg:mx-10">
+      <div className="gap-3 md:gap-0 flex justify-between items-center mb-2 -top-1.5 relative">
         <h1 className="md:w-1/3">
           Document&apos;s Timeline: {totalDocs.length}
         </h1>
@@ -170,6 +171,8 @@ const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
           </Select>
         </div>
       </div>
+      <Legend />
+
       {!loading && defaultTimeEnd !== null ? (
         <div className="h-[75vh] overflow-auto">
           <Timeline

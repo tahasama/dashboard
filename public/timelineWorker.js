@@ -214,10 +214,19 @@ const getMonthDifference = (startDate, endDate) => {
     const formattedData = paginatedData.filter(Boolean).flat();
   
     // Step 5: Generate groups
-    const groups = [...new Set(formattedData.map((item) => item.group))].map((docNo) => ({
-      id: docNo,
-      title: docNo,
-    }));
+    const groups = [...new Set(formattedData.map((item) => item.group))].map((docNo) => {
+      const matchingItem = filtered.find((item) => item.documentNo === docNo);
+
+      const limitedTitle = matchingItem 
+    ? matchingItem.title.length > 45 
+      ? matchingItem.title.substring(0, 45) + "..." 
+      : matchingItem.title 
+    : "";
+      return {
+        id: docNo,
+        title:  limitedTitle, // Use \n for multiline text
+      };
+    });
   
     // Step 6: Post result
     postMessage({ items: formattedData, groups });
