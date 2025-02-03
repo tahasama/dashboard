@@ -79,124 +79,153 @@ const getMonthDifference = (startDate, endDate) => {
   return diffMonths;
 };
 
-self.onmessage = function (event) {
-  const { filtered, currentPage, rowsPerPage } = event.data;
+   // Helper functions for date adjustments
+   const startOfDay = (date) => {
+    date.setHours(0, 0, 0, 0);
+    return date;
+  };
+  const endOfDay = (date) => {
+    date.setHours(23, 59, 59, 999);
+    return date;
+  };
 
-  // Group data by documentNo
-  const groupedData = filtered.reduce((acc, doc) => {
-    if (!acc[doc.documentNo]) {
-      acc[doc.documentNo] = [];
-    }
-    acc[doc.documentNo].push(doc);
-    return acc;
-  }, {});
-
-  // Paginate at the document level
-  const startIndex = currentPage * rowsPerPage;
-  const endIndex = startIndex + rowsPerPage;
-  const paginatedGroups = Object.keys(groupedData).slice(startIndex, endIndex);
-
-  // Flatten the paginated groups
-  const paginatedData = paginatedGroups.flatMap((docNo) => groupedData[docNo]);
-
-  // Process the data for timeline events
-  const formattedData = paginatedData.map((doc) => {
-    const { plannedSubmissionDate, dateIn, dateCompleted, submissionStatus, reviewStatus, stepOutcome, revision, documentNo } = doc;
-
-    const revisionNumber = Number(revision);
-
-    let validSubmissionStartDate = parseDate(plannedSubmissionDate) || new Date();
-    let validSubmissionEndDate = parseDate(dateIn) || new Date();
-    let validReviewStartDate = parseDate(dateIn) || new Date();
-    let validReviewEndDate = parseDate(dateCompleted) || new Date();
-
-    // Handle revisions: adjust submission dates accordingly
-    if (revisionNumber === 0) {
-      validSubmissionStartDate = parseDate(plannedSubmissionDate) || new Date();
-      validSubmissionEndDate = parseDate(dateIn) || new Date();
-    } else {
-      validSubmissionStartDate = parseDate(dateIn) || new Date();
-      validSubmissionEndDate = parseDate(dateIn) || new Date();
-    }
-
-    // Helper functions for date adjustments
-    const startOfDay = (date) => {
-      date.setHours(0, 0, 0, 0);
-      return date;
-    };
-    const endOfDay = (date) => {
-      date.setHours(23, 59, 59, 999);
-      return date;
-    };
-
-    validSubmissionStartDate = startOfDay(validSubmissionStartDate);
-    validSubmissionEndDate = endOfDay(validSubmissionEndDate);
-    validReviewStartDate = startOfDay(validReviewStartDate);
-    validReviewEndDate = endOfDay(validReviewEndDate);
-
-    // Ensure submissionStart and submissionEnd are in order
-    if (validSubmissionStartDate > validSubmissionEndDate) {
-      validSubmissionStartDate = validSubmissionEndDate;
-    }
-
-    // Ensure reviewStart and reviewEnd are in order
-    if (validReviewStartDate > validReviewEndDate) {
-      validReviewStartDate = validReviewEndDate;
-    }
-
-    // Adjust submission and review to share the day, but ensure no overlap
-    if (validSubmissionStartDate.getTime() === validSubmissionEndDate.getTime() && validReviewStartDate.getTime() === validReviewEndDate.getTime()) {
-      const midOfDay = validSubmissionStartDate.getTime() + (12 * 60 * 60 * 1000); // 12 hours
-      validSubmissionEndDate = new Date(midOfDay); // First half of the day
-      validReviewStartDate = new Date(midOfDay); // Second half of the day
-      validReviewEndDate = new Date(midOfDay + (12 * 60 * 60 * 1000)); // Ends 12 hours later
-    } else {
-      // Ensure that review starts after submission
-      if (validReviewStartDate.getTime() <= validSubmissionEndDate.getTime()) {
-        validReviewStartDate = new Date(validSubmissionEndDate.getTime() + 60 * 60 * 1000); // Start review after submission
+  self.onmessage = function (event) {
+    const { filtered, currentPage, rowsPerPage } = event.data;
+  
+    // Step 1: Group data by `documentNo` and `title`
+    const groupedData = filtered.reduce((acc, doc) => {
+      const uniqueKey = `${doc.documentNo}_${doc.title}`;
+      if (!acc[uniqueKey]) {
+        acc[uniqueKey] = [];
       }
-    }
-
-    const submissionItem = {
-      id: `${doc.documentNo}-submission-${revision}`,
-      group: doc.documentNo,
-      title: `Submission - ${submissionStatus} - rev ${revision} 
-      \nStart: ${formatDate(validSubmissionStartDate)} 
-      \nEnd: ${formatDate(validSubmissionEndDate)} 
-      \nDuration: ${getDateDifference(validSubmissionStartDate, validSubmissionEndDate)} days (${getMonthDifference(validSubmissionStartDate, validSubmissionEndDate)} months)`,
-      start_time: validSubmissionStartDate,
-      end_time: validSubmissionEndDate,
-      style: { backgroundColor: getStatusColor(submissionStatus) },
-    };
-    
-    const reviewItem = validReviewStartDate && validReviewEndDate ? {
-      id: `${doc.documentNo}-review-${revision}`,
-      group: doc.documentNo,
-      title: `Review - ${reviewStatus || stepOutcome} - rev ${revision} 
-      \nStart: ${formatDate(validReviewStartDate)} 
-      \nEnd: ${formatDate(validReviewEndDate)} 
-      \nDuration: ${getDateDifference(validReviewStartDate, validReviewEndDate)} days (${getMonthDifference(validReviewStartDate, validReviewEndDate)} months)`,
-      start_time: validReviewStartDate,
-      end_time: validReviewEndDate,
-      style: { backgroundColor: getStatusColor(reviewStatus || stepOutcome) },
-    } : null;
-    
-    return [submissionItem, reviewItem].filter(Boolean);
-  }).flat(); // Flatten the array of events
-
-  // Generate groups from paginated data
-  const groups = paginatedGroups.map((docNo) => {
-    const doc = groupedData[docNo][0];
-    const docTitle = doc ? doc.title.slice(0, 70) : "Unknown Title";
-    const maxLength = 15;
-    const shortenedTitle = docTitle.length > maxLength ? docTitle.slice(0, maxLength) + "..." : docTitle;
-
-    return {
+      acc[uniqueKey].push(doc);
+      return acc;
+    }, {});
+  
+    // Step 2: Flatten all revisions into a single array
+    const processedData = Object.values(groupedData).flatMap((docs) => docs);
+  
+    // Step 3: Apply pagination
+    const startIndex = currentPage * rowsPerPage;
+    const endIndex = startIndex + rowsPerPage;
+  
+    const paginatedData = processedData.slice(startIndex, endIndex).map((doc) => {
+      const rowSet = [];
+  
+      const {
+        title,
+        plannedSubmissionDate,
+        dateIn,
+        dateCompleted,
+        submissionStatus,
+        reviewStatus,
+        stepOutcome,
+        revision,
+        documentNo,
+      } = doc;
+  
+      const revisionNumber = Number(revision);
+  
+      // Initialize dates
+      let validSubmissionStartDate, validSubmissionEndDate;
+      let validReviewStartDate, validReviewEndDate;
+  
+      // Condition: Has plannedSubmissionDate but no dateIn/dateCompleted
+      if (plannedSubmissionDate && !dateIn && !dateCompleted) {
+        const parsedPlannedDate = parseDate(plannedSubmissionDate);
+        const today = new Date();
+  
+        // CASE 1: Planned date is in the past
+        if (parsedPlannedDate <= today) {
+          validSubmissionStartDate = parsedPlannedDate;
+          validSubmissionEndDate = today; // End at today
+  
+          // Review starts tomorrow and ends tomorrow + 1 hour
+          validReviewStartDate = new Date(today);
+          validReviewStartDate.setDate(today.getDate() + 1);
+          validReviewEndDate = new Date(validReviewStartDate);
+          validReviewEndDate.setHours(validReviewEndDate.getHours() + 1);
+        } else {
+          // CASE 2: Planned date is in the future
+          validSubmissionStartDate = parsedPlannedDate;
+          validSubmissionEndDate = parsedPlannedDate; // End at planned date
+  
+          // Review starts next day after planned date
+          validReviewStartDate = new Date(parsedPlannedDate);
+          validReviewStartDate.setDate(parsedPlannedDate.getDate() + 1);
+          validReviewEndDate = new Date(validReviewStartDate);
+          validReviewEndDate.setHours(validReviewEndDate.getHours() + 1);
+        }
+      } else {
+        // CASE 3: Default logic when dateIn/dateCompleted exist
+        if (revisionNumber === 0) {
+          validSubmissionStartDate = parseDate(plannedSubmissionDate) || new Date();
+          validSubmissionEndDate = parseDate(dateIn) || new Date();
+        } else {
+          validSubmissionStartDate = parseDate(dateIn) || new Date();
+          validSubmissionEndDate = parseDate(dateIn) || new Date();
+        }
+  
+        // Review dates
+        validReviewStartDate = validSubmissionEndDate
+          ? new Date(validSubmissionEndDate.getTime() + 24 * 60 * 60 * 1000)
+          : new Date();
+        validReviewEndDate = parseDate(dateCompleted) || new Date();
+  
+        // Ensure start <= end
+        if (validSubmissionStartDate > validSubmissionEndDate) {
+          validSubmissionStartDate = validSubmissionEndDate;
+        }
+        if (validReviewStartDate > validReviewEndDate) {
+          validReviewStartDate = validReviewEndDate;
+        }
+      }
+  
+      // Add submission row
+      rowSet.push({
+        id: `${documentNo}-submission-${revision}`,
+        group: documentNo,
+        title: `Submission - ${submissionStatus} - rev ${revision} 
+        \nStart: ${formatDate(validSubmissionStartDate)} 
+        \nEnd: ${formatDate(validSubmissionEndDate)}`,
+        start_time: validSubmissionStartDate,
+        end_time: validSubmissionEndDate,
+        style: { backgroundColor: getStatusColor(submissionStatus) },
+      });
+  
+      // Add review row if dates are valid
+      if (validReviewStartDate && validReviewEndDate) {
+        rowSet.push({
+          id: `${documentNo}-review-${revision}`,
+          group: documentNo,
+          title: `Review - ${reviewStatus || stepOutcome} - rev ${revision} 
+          \nStart: ${formatDate(validReviewStartDate)} 
+          \nEnd: ${formatDate(validReviewEndDate)}`,
+          start_time: validReviewStartDate,
+          end_time: validReviewEndDate,
+          style: { backgroundColor: getStatusColor(reviewStatus || stepOutcome) },
+        });
+      }
+  
+      return rowSet.length > 0 ? rowSet : null;
+    });
+  
+    // Step 4: Filter and flatten items
+    const formattedData = paginatedData.filter(Boolean).flat();
+  
+    // Step 5: Generate groups
+    const groups = [...new Set(formattedData.map((item) => item.group))].map((docNo) => ({
       id: docNo,
-      title: shortenedTitle,
-    };
-  });
+      title: docNo,
+    }));
+  
+    // Step 6: Post result
+    postMessage({ items: formattedData, groups });
+  };
+  
+  
+  
 
-  // Post the result with only the visible groups and items
-  postMessage({ items: formattedData, groups });
-};
+
+
+

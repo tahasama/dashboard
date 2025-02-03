@@ -44,10 +44,12 @@ export const getStatusColor = (status: string): string => {
       return "#63A8E6"; // Light Blue
     case "completed":
       return "#84C3A3"; // Green
+    // return "#84C3A3"; // Green
     case "under review":
       return "#4C9A8F"; // Darker Green
     case "c1 reviewed & accepted as final & certified":
-      return "#4682B4"; // Dark Blue for reviewed and approved
+      return "#63A8E6"; // Dark Blue for reviewed and approved
+    // return "#4682B4"; // Dark Blue for reviewed and approved
     case "approved":
       return "#4682B4"; // Dark Blue for reviewed and approved
     case "c2 reviewed & accepted as marked revise & resubmi":

@@ -62,18 +62,6 @@ body {
 .animate-spin-slow {
   animation: spin-slow 2s linear infinite;
 }
-/* 
-.rct-calendar-header {
-  z-index: 100;
-} */
-
-/* .rct-item-content {
-  z-index: 0 !important;
-} */
-
-/* .rct-items {
-  z-index: 0 !important;
-} */
 
 .rct-sidebar-row {
   font-size: 12px;
@@ -82,40 +70,37 @@ body {
   place-content: center start;
 }
 .rct-hl-even  {
-  font-size: 12px;
+  /* font-size: 12px; */
   height: 35px !important;
   display: grid;
   place-content: center start;
 }
 
 .rct-hl-odd  {
-  font-size: 12px;
+  /* font-size: 12px; */
   height: 35px !important;
   display: grid;
   place-content: center start;
 }
 
 .rct-item {
-  font-size: 12px;
+  /* font-size: 12px; */
   height: 20px !important;
   display: flex;
   align-items: center;
   width: 100%;
   z-index: 0 !important;
-  overflow: visible !important; /* Ensure the item container allows text overflow */
+  overflow: visible !important; 
 
 }
 
 .rct-item-content {
-  font-size: 12px;
-  /* height: 22px !important; */
+  font-size: 11px;
   flex-grow: 1;
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  white-space: nowrap;
-  
-  
+  white-space: nowrap; 
 }
 
 .rct-header-root{
@@ -123,4 +108,12 @@ body {
   position: sticky;
   top: 0;
   z-index: 50;
+  font-size: 5px !important;
+  /* color: rgb(4, 0, 255); */
+}
+
+.rct-dateHeader  {
+  font-size: 12px !important;
+  font-stretch: condensed  ;
+
 }

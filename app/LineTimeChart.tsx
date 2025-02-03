@@ -27,9 +27,6 @@ import { usePagination } from "./PaginationProvider";
 import { getStatusColor } from "@/lib/utils";
 import { statusColorMap, statusPrefixMap } from "./colors";
 
-// import { Timeline } from "vis-timeline";
-import "vis-timeline/styles/vis-timeline-graph2d.css";
-
 import {
   DateHeader,
   SidebarHeader,
@@ -48,7 +45,9 @@ const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
   const [loading, setLoading] = useState(true); // ✅ New loading state
 
   const [timelineItems, setTimelineItems] = useState([]);
+  console.log("🚀 ~  ~ setTimelineItems:", timelineItems.length);
   const [timelineGroups, setTimelineGroups] = useState([]);
+  console.log("🚀 ~  ~ setTimelineGroups:", timelineGroups.length);
   const [defaultTimeStart, setDefaultTimeStart] = useState<any>(null); // Change to Date or null
   const [defaultTimeEnd, setDefaultTimeEnd] = useState<any>(null); // Change to Date or null
 
@@ -218,25 +217,7 @@ const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
                 </div>
               );
             }}
-          >
-            {/* <TimelineHeaders className="sticky top-0 z-50 bg-slate-500">
-                <SidebarHeader>
-                  {({ getRootProps }) => {
-                    return (
-                      <div
-                        {...getRootProps()}
-                        className="bg-slate-500 text-sm grid place-content-center"
-                      >
-                        Titles
-                      </div>
-                    );
-                  }}
-                </SidebarHeader>
-
-                <DateHeader unit="primaryHeader" className="bg-slate-500" />
-                <DateHeader />
-              </TimelineHeaders> */}
-          </Timeline>
+          ></Timeline>
         </div>
       ) : (
         <div>Loading...</div>
