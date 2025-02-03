@@ -41,7 +41,7 @@ const LateAnalysisConclusion: React.FC<{
 
   // Impact Insight
   const impactInsight =
-    average > -20 && average < 0
+    average > -10 && average < 0
       ? {
           color: "bg-blue-100 ring-blue-400/90",
           message:
