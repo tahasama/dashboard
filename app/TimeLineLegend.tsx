@@ -17,11 +17,11 @@ const statusColors = [
 
 const Legend = () => {
   return (
-    <div className="flex flex-wrap gap-4 p-2 bg-white shadow-lg rounded-lg -mt-2 mb-1">
+    <div className="flex flex-wrap gap-4 p-2 bg-white shadow-lg rounded-lg -mt- mb-1">
       {statusColors.map((status) => (
         <div key={status.label} className="flex items-center gap-2">
           <span
-            className="w-4 h-4 rounded-full"
+            className="w-3 h-3 rounded-full"
             style={{ backgroundColor: status.color }}
           ></span>
           <span className="text-xs">{status.label}</span>

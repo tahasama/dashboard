@@ -180,7 +180,7 @@ const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
       <Legend />
 
       {!loading && defaultTimeEnd !== null ? (
-        <div className="h-[75vh] overflow-auto">
+        <div className="h-[74vh] overflow-auto">
           <Timeline
             ref={timelineRef}
             groups={timelineGroups}
