@@ -53,19 +53,19 @@ const LateAnalysisReviewConclusion: React.FC<{
   const reviewImpactInsight =
     avgReviewDifference === 0
       ? {
-          color: "bg-blue-100 ring-blue-400/90",
+          color: "bg-blue-100 ring-blue-200/90",
           message:
             "🔵 Perfect Alignment: Real reviews matched the planned review timeline.",
         }
       : avgReviewDifference < -5
       ? {
-          color: "bg-red-100 ring-red-400/90",
+          color: "bg-red-100 ring-red-200/90",
           message: `🔴 Behind Schedule: On average, real reviews lagged behind the plan by ${Math.abs(
             avgReviewDifference + 5
           ).toFixed(0)} reviews per time point.`,
         }
       : {
-          color: "bg-green-100 ring-green-400/90",
+          color: "bg-green-100 ring-green-200/90",
           message: "🟢 On Track: Reviews are within the planned schedule.",
         };
 
@@ -73,11 +73,11 @@ const LateAnalysisReviewConclusion: React.FC<{
   const reviewProgressionInsight =
     totalRealReview >= totalPlannedReview
       ? {
-          color: "bg-teal-100 ring-teal-400/90",
+          color: "bg-teal-100 ring-teal-200/90",
           message: `🟢 Excellent Progression: Real reviews (${totalRealReview}) met or exceeded the planned reviews (${totalPlannedReview}).`,
         }
       : {
-          color: "bg-orange-100 ring-orange-400/90",
+          color: "bg-orange-100 ring-orange-200/90",
           message: `🟠 Needs Improvement: Real reviews did not meet the planned reviews${
             totalPlannedReview - totalRealReview !== 0
               ? ` by ${Math.abs(
@@ -94,17 +94,21 @@ const LateAnalysisReviewConclusion: React.FC<{
       {/* <div className="w-3/12 font-thin text-black lg:text-slate-800 mb-2  lg:pt-0 lg:mt-0 text-xs grid content-center mr-1"> */}
 
       {/* Impact Insights for Review */}
-      <p className={`p-2 rounded-md mb-2 ${reviewImpactInsight.color}`}>
+      <p
+        className={`p-2 rounded-md mb-2 mx-0.5 ring- ${reviewImpactInsight.color}`}
+      >
         {reviewImpactInsight.message}
       </p>
 
       {/* Progression Insights for Review */}
-      <p className={`p-2 rounded-md mb-2 ${reviewProgressionInsight.color}`}>
+      <p
+        className={`p-2 rounded-md mb-2 mx-0.5 ring- ${reviewProgressionInsight.color}`}
+      >
         {reviewProgressionInsight.message}
       </p>
 
       <br />
-      <ul className="space-y-1">
+      <ul className="space-y-1 ml-0.5">
         <li>
           ➡️ Planned Total Reviews:{" "}
           <strong>{formatNumber(totalPlannedReview)}</strong>

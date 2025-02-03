@@ -190,7 +190,7 @@ self.onmessage = function (event) {
       group: documentNo,
       title: `${submissionStatus} - rev ${revision} 
 Title: ${title}
-doc: ${documentNo}
+Doc: ${documentNo}
 Start: ${formatDate(validSubmissionStartDate)} 
 End: ${formatDate(validSubmissionEndDate)}`,
 
@@ -205,8 +205,8 @@ End: ${formatDate(validSubmissionEndDate)}`,
         id: `${documentNo}.review.${revision}`,
         group: documentNo,
         title: `${reviewStatus || stepOutcome} - rev ${revision} 
-title: ${title}
-doc: ${documentNo}
+Title: ${title}
+Doc: ${documentNo}
 Start: ${formatDate(validReviewStartDate)} 
 End: ${formatDate(validReviewEndDate)}`,
 
