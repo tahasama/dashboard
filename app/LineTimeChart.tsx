@@ -46,9 +46,7 @@ const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
   const [loading, setLoading] = useState(true); // ✅ New loading state
 
   const [timelineItems, setTimelineItems] = useState([]);
-  console.log("🚀 ~  ~ setTimelineItems:", timelineItems.length);
   const [timelineGroups, setTimelineGroups] = useState([]);
-  console.log("🚀 ~  ~ setTimelineGroups:", timelineGroups.length);
   const [defaultTimeStart, setDefaultTimeStart] = useState<any>(null); // Change to Date or null
   const [defaultTimeEnd, setDefaultTimeEnd] = useState<any>(null); // Change to Date or null
 
