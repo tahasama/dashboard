@@ -8,19 +8,22 @@ type FiltersContextType = {
   subProjectFilter: string;
   disciplineFilter: string;
   statusFilter: string;
+  // subStatusFilter: string;
   searchText: string;
   setCreatedByFilter: React.Dispatch<React.SetStateAction<string>>;
   setSubProjectFilter: React.Dispatch<React.SetStateAction<string>>;
   setDisciplineFilter: React.Dispatch<React.SetStateAction<string>>;
   setStatusFilter: React.Dispatch<React.SetStateAction<string>>;
   setSearchText: React.Dispatch<React.SetStateAction<string>>;
+  // setSubStatusFilter: React.Dispatch<React.SetStateAction<string>>;
   clearFilters: () => void;
-  filtered: any[]; // Assuming your filtered data is an array
-  originalData: any[]; // Add originalData here to match its expected type
-  uniqueSubProjects: string[]; // Add this
-  uniqueCreatedBy: string[]; // Add this
-  uniqueDisciplines: string[]; // Add this
-  uniqueStatuses: string[]; // Add this
+  filtered: any[];
+  originalData: any[];
+  uniqueSubProjects: string[];
+  uniqueCreatedBy: string[];
+  uniqueDisciplines: string[];
+  uniqueStatuses: string[];
+  // uniqueSubStatuses: string[];
 };
 
 export const FiltersContext = createContext<FiltersContextType | undefined>(
@@ -39,6 +42,7 @@ export const FiltersProvider = ({
   const [subProjectFilter, setSubProjectFilter] = useState<string>("");
   const [disciplineFilter, setDisciplineFilter] = useState<string>("");
   const [statusFilter, setStatusFilter] = useState<string>("");
+  // const [subStatusFilter, setSubStatusFilter] = useState<string>("");
   const [searchText, setSearchText] = useState<string>("");
   const [debouncedSearchText, setDebouncedSearchText] = useState<string>("");
 
@@ -63,6 +67,10 @@ export const FiltersProvider = ({
     () => getUniqueValues(originalData, "reviewStatus"),
     [originalData]
   );
+  // const uniqueSubStatuses = useMemo(
+  //   () => getUniqueValues(originalData, "submissionStatus"),
+  //   [originalData]
+  // );
 
   const clearFilters = () => {
     setCreatedByFilter("");
@@ -70,6 +78,7 @@ export const FiltersProvider = ({
     setDisciplineFilter("");
     setStatusFilter("");
     setSearchText(""); // Clear the searchText as well
+    // setSubStatusFilter("");
   };
 
   // Debounce the search text
@@ -94,6 +103,7 @@ export const FiltersProvider = ({
         subProjectFilter,
         disciplineFilter,
         statusFilter,
+        // subStatusFilter,
       },
     });
 
@@ -111,6 +121,7 @@ export const FiltersProvider = ({
     subProjectFilter,
     disciplineFilter,
     statusFilter,
+    // subStatusFilter,
     originalData,
   ]);
 
@@ -121,11 +132,13 @@ export const FiltersProvider = ({
       disciplineFilter,
       statusFilter,
       searchText,
+      // subStatusFilter,
       setCreatedByFilter,
       setSubProjectFilter,
       setDisciplineFilter,
       setStatusFilter,
       setSearchText,
+      // setSubStatusFilter,
       clearFilters,
       filtered: filteredData,
       originalData,
@@ -133,6 +146,7 @@ export const FiltersProvider = ({
       uniqueCreatedBy, // Add uniqueCreatedBy here
       uniqueDisciplines, // Add uniqueDisciplines here
       uniqueStatuses, // Add uniqueStatuses here
+      // uniqueSubStatuses,
     }),
     [
       createdByFilter,
@@ -146,6 +160,7 @@ export const FiltersProvider = ({
       uniqueCreatedBy,
       uniqueDisciplines,
       uniqueStatuses,
+      // uniqueSubStatuses,
     ]
   );
 

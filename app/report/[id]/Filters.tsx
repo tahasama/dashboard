@@ -24,17 +24,20 @@ const Filters = () => {
     subProjectFilter,
     disciplineFilter,
     statusFilter,
+    // subStatusFilter,
     searchText,
     setCreatedByFilter,
     setSubProjectFilter,
     setDisciplineFilter,
     setStatusFilter,
+    // setSubStatusFilter,
     setSearchText,
     clearFilters,
     uniqueSubProjects,
     uniqueCreatedBy,
     uniqueDisciplines,
     uniqueStatuses,
+    // uniqueSubStatuses,
   } = useFilters();
 
   return (
@@ -92,10 +95,26 @@ const Filters = () => {
           </SelectContent>
         </Select>
 
+        {/* <Select value={subStatusFilter} onValueChange={setSubStatusFilter}>
+          <SelectTrigger className="text-sm lg:text-md lg:min-w-[120px]">
+            <SelectValue placeholder="Submission Status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectItem value={"all"}>All</SelectItem>
+              {uniqueSubStatuses.map((value: any) => (
+                <SelectItem key={value} value={value}>
+                  {value}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select> */}
+
         {/* Status Filter */}
         <Select value={statusFilter} onValueChange={setStatusFilter}>
           <SelectTrigger className="text-sm lg:text-md lg:min-w-[120px]">
-            <SelectValue placeholder="Status" />
+            <SelectValue placeholder="Review Status" />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
@@ -178,6 +197,22 @@ const Filters = () => {
                 </SelectGroup>
               </SelectContent>
             </Select>
+
+            {/* <Select value={subStatusFilter} onValueChange={setSubStatusFilter}>
+              <SelectTrigger className="text-sm lg:text-md lg:min-w-[120px]">
+                <SelectValue placeholder="Submission Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value={"all"}>All</SelectItem>
+                  {uniqueSubStatuses.map((value: any) => (
+                    <SelectItem key={value} value={value}>
+                      {value}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select> */}
 
             {/* Status Filter */}
             <Select value={statusFilter} onValueChange={setStatusFilter}>

@@ -301,7 +301,10 @@ const ExcelForm = ({}: any) => {
           assignedTo: rowToMerge?.["Assigned To"] || "",
           stepStatus: rowToMerge?.["Step Status"] || "",
           originalDueDate: rowToMerge?.["Original Due Date"] || "",
-          submissionStatus: file1Record["Submission Status"] || "",
+          submissionStatus:
+            file1Record["Submission Status"] === "Marked As Submitted"
+              ? "Submitted"
+              : file1Record["Submission Status"] || "",
           reviewStatus: file1Record["Review Status"] || "",
           createdBy: file1Record["Created By"] || "",
           plannedSubmissionDate,

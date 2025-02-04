@@ -39,30 +39,28 @@ export const toCamelCase = (str: string) => {
 };
 
 export const getStatusColor = (status: string): string => {
-  switch (status?.trim().toLowerCase()) {
+  const trimmedStatus = status?.trim().toLowerCase();
+
+  switch (trimmedStatus) {
     case "submitted":
-      return "#78a8cf"; // Light Blue
+      return "#78a8cf";
     case "completed":
-      return "#84C3A3"; // Green
-    // return "#84C3A3"; // Green
+      return "#84C3A3";
     case "under review":
-      return "#4C9A8F"; // Darker Green
-    case "c1 reviewed & accepted as final & certified":
-      return "#63A8E6"; // Dark Blue for reviewed and approved
-    // return "#4682B4"; // Dark Blue for reviewed and approved
+      return "#4C9A8F";
     case "approved":
-      return "#4682B4"; // Dark Blue for reviewed and approved
-    case "c2 reviewed & accepted as marked revise & resubmi":
-      return "#B58ED2"; // Blue for approved with commentscase "c2 reviewed & accepted as marked revise & resubmi":
-    case "c2 reviewed & accepted as marked revise & resubmit":
-      return "#B58ED2"; // Blue for approved with comments
-    case "c3 reviewed & returned correct and resubmit":
-      return "#FF4D4D"; // Red for rejected
-    case "c4 review not required for information only":
-      return "#A9A9A9"; // Gray for information only
+      return "#4682B4";
     case "submission required":
-      return "#b0e0e6"; // Light Coral for submission required
+      return "#b0e0e6";
+    case "pending":
+      return "#ffc966";
+
     default:
+      if (trimmedStatus?.startsWith("c1")) return "#63A8E6";
+      if (trimmedStatus?.startsWith("c2")) return "#B58ED2";
+      if (trimmedStatus?.startsWith("c3")) return "#FF4D4D";
+      if (trimmedStatus?.startsWith("c4")) return "#fd9e97";
+
       console.warn("Unknown status:", status); // Log unknown statuses
       return "#CCCCCC"; // Default gray for unknown statuses
   }

@@ -7,6 +7,7 @@ self.onmessage = (e) => {
     subProjectFilter,
     disciplineFilter,
     statusFilter,
+    subStatusFilter,
   } = filters;
 
   let filteredData = data;
@@ -30,6 +31,10 @@ self.onmessage = (e) => {
     filteredData = filteredData.filter(
       (item) => item.selectList3 === subProjectFilter
     );
+  }
+  if (subStatusFilter && subStatusFilter !== "all") {
+    filteredData = filteredData.filter(
+      (item) => item.submissionStatus === subStatusFilter)
   }
   if (disciplineFilter && disciplineFilter !== "all") {
     filteredData = filteredData.filter(
