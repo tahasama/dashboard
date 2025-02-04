@@ -53,6 +53,8 @@ export const getStatusColor = (status: string): string => {
     case "approved":
       return "#4682B4"; // Dark Blue for reviewed and approved
     case "c2 reviewed & accepted as marked revise & resubmi":
+      return "#B58ED2"; // Blue for approved with commentscase "c2 reviewed & accepted as marked revise & resubmi":
+    case "c2 reviewed & accepted as marked revise & resubmit":
       return "#B58ED2"; // Blue for approved with comments
     case "c3 reviewed & returned correct and resubmit":
       return "#FF4D4D"; // Red for rejected

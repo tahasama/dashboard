@@ -33,29 +33,33 @@ const parseDate = (dateString) => {
 
 // Function to format the date
 
-const getStatusColor = (status) => {
-  switch (status?.toLowerCase()) {
+export const getStatusColor = (status) => {
+  switch (status?.trim().toLowerCase()) {
     case "submitted":
-      return "blue";
+      return "#78a8cf"; // Light Blue
     case "completed":
-      return "yellow";
-    case "":
-      return "gray";
+      return "#84C3A3"; // Green
+    // return "#84C3A3"; // Green
     case "under review":
-      return "green";
+      return "#4C9A8F"; // Darker Green
     case "c1 reviewed & accepted as final & certified":
-      return "red";
+      return "#63A8E6"; // Dark Blue for reviewed and approved
+    // return "#4682B4"; // Dark Blue for reviewed and approved
+    case "approved":
+      return "#4682B4"; // Dark Blue for reviewed and approved
     case "c2 reviewed & accepted as marked revise & resubmi":
-      return "pink";
+      return "#B58ED2"; // Blue for approved with commentscase "c2 reviewed & accepted as marked revise & resubmi":
+    case "c2 reviewed & accepted as marked revise & resubmit":
+      return "#B58ED2"; // Blue for approved with comments
     case "c3 reviewed & returned correct and resubmit":
-      return "purple";
+      return "#FF4D4D"; // Red for rejected
     case "c4 review not required for information only":
-      return "#A9A9A9";
+      return "#A9A9A9"; // Gray for information only
     case "submission required":
-      return "magenta";
+      return "#b0e0e6"; // Light Coral for submission required
     default:
-      console.warn("Unknown status:", status);
-      return "black";
+      console.warn("Unknown status:", status); // Log unknown statuses
+      return "#CCCCCC"; // Default gray for unknown statuses
   }
 };
 
