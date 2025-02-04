@@ -268,7 +268,7 @@ const ExcelForm = ({}: any) => {
     // Step 1: Preprocess file2Data into a lookup object
     const file2Lookup = file2Data.reduce((acc, record) => {
       const docNo = record["Document No."];
-      const revision = Number(record["Document Revision"] || 0);
+      const revision = record["Document Revision"] || 0;
       if (!acc[docNo]) acc[docNo] = {};
       if (!acc[docNo][revision]) acc[docNo][revision] = [];
       acc[docNo][revision].push(record);
@@ -278,7 +278,7 @@ const ExcelForm = ({}: any) => {
     // Step 2: Merge file1Data with file2Lookup
     file1Data.forEach((file1Record) => {
       const docNo = file1Record["Document No"];
-      const revision = Number(file1Record["Revision"] || 0);
+      const revision = file1Record["Revision"] || 0;
       const uniqueKey = `${docNo}-${revision}`;
 
       let matchingRecords = file2Lookup[docNo]?.[revision] || [];
@@ -324,7 +324,7 @@ const ExcelForm = ({}: any) => {
     // Step 3: Handle file2Data records that don't exist in file1Data
     Object.keys(file2Lookup).forEach((docNo) => {
       Object.keys(file2Lookup[docNo]).forEach((revisionKey) => {
-        const revision = Number(revisionKey);
+        const revision = revisionKey;
         const uniqueKey = `${docNo}-${revision}`;
 
         if (!seenRevisions.has(uniqueKey)) {
@@ -343,7 +343,7 @@ const ExcelForm = ({}: any) => {
           }
 
           let plannedSubmissionDate =
-            revision === 0
+            Number(revision) === 0 || revision === "A"
               ? rowToMerge?.["Planned Submission Date"] ||
                 rowToMerge?.["Date In"]
               : "";

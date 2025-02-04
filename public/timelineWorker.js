@@ -130,7 +130,7 @@ self.onmessage = function (event) {
       documentNo,
     } = doc;
 
-    const revisionNumber = Number(revision);
+    const revisionNumber = Number(revision)|| revision;
 
     // Initialize dates
     let validSubmissionStartDate, validSubmissionEndDate;
@@ -164,7 +164,7 @@ self.onmessage = function (event) {
       }
     } else {
       // CASE 3: Default logic when dateIn/dateCompleted exist
-      if (revisionNumber === 0) {
+      if (revisionNumber === 0|| revisionNumber==="A") {
         validSubmissionStartDate =
           parseDate(plannedSubmissionDate) || new Date();
         validSubmissionEndDate = parseDate(dateIn) || new Date();
