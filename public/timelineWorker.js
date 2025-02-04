@@ -33,7 +33,7 @@ const parseDate = (dateString) => {
 
 // Function to format the date
 
-export const getStatusColor = (status) => {
+const getStatusColor = (status) => {
   switch (status?.trim().toLowerCase()) {
     case "submitted":
       return "#78a8cf"; // Light Blue
