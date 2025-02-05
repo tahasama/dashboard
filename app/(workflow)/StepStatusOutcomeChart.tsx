@@ -137,22 +137,6 @@ const StatusOutcomeHeatMap: React.FC<Data> = memo(({ data }) => {
           calculable: true,
           show: false,
           pieces: [
-            { min: 0, max: 0, color: "#b3e0ff" }, // Very low (light pastel blue)
-            { min: 1, max: 5, color: "#66c2ff" }, // Low (soft blue)
-            { min: 6, max: 15, color: "#3385ff" }, // Medium-low (slightly darker blue)
-            { min: 16, max: 30, color: "#0073e6" }, // Medium (standard blue)
-            { min: 31, max: 60, color: "#0047b3" }, // Medium-high (dark blue)
-            { min: 61, max: 120, color: "#003366" }, // High (deep blue)
-            { min: 121, max: 180, color: "#001a33" }, // Very high (almost black blue)
-            { min: 181, color: "#000000" }, // Deepest (black blue)
-          ],
-        },
-        {
-          seriesIndex: 1,
-          type: "piecewise",
-          calculable: true,
-          show: false,
-          pieces: [
             { min: 0, max: 0, color: "#99e699" },
             { min: 1, max: 5, color: "#66cc66" },
             { min: 6, max: 15, color: "#33b233" },
@@ -161,6 +145,22 @@ const StatusOutcomeHeatMap: React.FC<Data> = memo(({ data }) => {
             { min: 61, max: 120, color: "#004d00" },
             { min: 121, max: 180, color: "#003300" },
             { min: 181, color: "#002200" },
+          ],
+        },
+        {
+          seriesIndex: 1,
+          type: "piecewise",
+          calculable: true,
+          show: false,
+          pieces: [
+            { min: 0, max: 0, color: "#b3e0ff" }, // Very low (light pastel blue)
+            { min: 1, max: 5, color: "#66c2ff" }, // Low (soft blue)
+            { min: 6, max: 15, color: "#3385ff" }, // Medium-low (slightly darker blue)
+            { min: 16, max: 30, color: "#0073e6" }, // Medium (standard blue)
+            { min: 31, max: 60, color: "#0047b3" }, // Medium-high (dark blue)
+            { min: 61, max: 120, color: "#003366" }, // High (deep blue)
+            { min: 121, max: 180, color: "#001a33" }, // Very high (almost black blue)
+            { min: 181, color: "#000000" }, // Deepest (black blue)
           ],
         },
       ],
@@ -247,10 +247,10 @@ const StatusOutcomeHeatMap: React.FC<Data> = memo(({ data }) => {
       />
       <div className="flex flex-col items-center justify-center ml-10 absolute -right-6 m-1 ">
         <Select value={selectedYear} onValueChange={setSelectedYear}>
-          <SelectTrigger className="scale-75 lg:scale-100">
+          <SelectTrigger className="scale-75 lg:scale-90">
             <SelectValue placeholder="Years" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="scale-75 lg:scale-90">
             <SelectGroup>
               {/* <SelectLabel>Years</SelectLabel> */}
 
@@ -262,6 +262,12 @@ const StatusOutcomeHeatMap: React.FC<Data> = memo(({ data }) => {
             </SelectGroup>
           </SelectContent>
         </Select>
+        <div className="flex flex-col items-center justify-center my-5">
+          <span className="text-xs">Planned</span>
+          <span className="w-10 lg:w-16 h-3 bg-gradient-to-r from-[#b3e0ff] to-[#0047b3] block"></span>
+          <span className="text-xs">Actual</span>
+          <span className="w-10 lg:w-16 h-3 bg-gradient-to-r from-[#99e699] to-[#006600] block"></span>
+        </div>
       </div>
     </div>
   );
