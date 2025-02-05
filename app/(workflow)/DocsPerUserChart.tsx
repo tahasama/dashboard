@@ -24,7 +24,7 @@ const DocsPerUserChart: React.FC<Data> = memo(({ data }) => {
     datasets: [
       {
         label: "Overdue",
-        backgroundColor: "#fc7993", // Red for Overdue
+        backgroundColor: "#de4765", // Red for Overdue eb5b79 ed5574 eb4d6d de4765
         borderColor: lightColors[1],
         borderWidth: 1,
         data: [] as number[],
@@ -203,7 +203,7 @@ const DocsPerUserChart: React.FC<Data> = memo(({ data }) => {
           // Draw the label inside or above the bar
           const labelText = `${label.split("-")[0]} (${value})`;
           const textX = 100; // Adjust position slightly for horizontal alignment
-          const textY = y + 4; // Center vertically relative to the bar
+          const textY = y + 20; // Center vertically relative to the bar
 
           ctx.fillText(labelText, textX, textY);
         }

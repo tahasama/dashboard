@@ -80,7 +80,7 @@ const WorkflowStepStatusChart: React.FC<Data> = memo(({ data }) => {
             value: item.value,
             name: item.label,
             itemStyle: {
-              color: nightColor[(index - 1) % nightColor.length], // Use your custom lightColors
+              color: nightColor[index % nightColor.length], // Use your custom lightColors
             },
           })),
           itemStyle: {
