@@ -17,7 +17,7 @@ import {
   ResizablePanel,
   ResizableHandle,
 } from "@/components/ui/resizable";
-import html2pdf from "html2pdf.js";
+// import html2pdf from "html2pdf.js";
 import { toBlob, toPng } from "html-to-image";
 import download from "downloadjs";
 import { Download, Loader2 } from "lucide-react";
