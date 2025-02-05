@@ -51,7 +51,7 @@ const StatusChart: React.FC<Data> = memo(({ data }) => {
       title: {
         text: "General Status Chart",
         left: "center",
-        top: "top",
+        top: "2%",
         textStyle: {
           fontSize: 14,
           fontWeight: "bold",
@@ -71,9 +71,8 @@ const StatusChart: React.FC<Data> = memo(({ data }) => {
       series: [
         {
           type: "pie",
-          // radius: ["40%", "70%"], // Inner and outer radius for the doughnut chart
-          radius: ["40%", "65%"], // Inner and outer radius for the doughnut chart
-
+          radius: ["34%", "58%"],
+          // radius: ["40%", "65%"],
           center: ["50%", "60%"], // Position of the pie chart
           data: chartData.map((item, index) => ({
             value: item.value,
@@ -136,7 +135,13 @@ const StatusChart: React.FC<Data> = memo(({ data }) => {
     );
   }
 
-  return <div ref={chartRef} style={{ width: "100%", height: "100%" }} />;
+  return (
+    <div
+      ref={chartRef}
+      style={{ width: "100%", height: "100%" }}
+      className="mt-0"
+    />
+  );
 });
 
 export default StatusChart;

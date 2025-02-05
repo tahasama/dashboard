@@ -17,13 +17,15 @@ import {
   ResizablePanel,
   ResizableHandle,
 } from "@/components/ui/resizable";
-import { filterData } from "@/lib/utils";
-import { Loader2 } from "lucide-react";
-import { lazy, Suspense, useEffect, useMemo, useState } from "react";
+import html2pdf from "html2pdf.js";
+import { toBlob, toPng } from "html-to-image";
+import download from "downloadjs";
+import { Download, Loader2 } from "lucide-react";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 const LineTimeChart = lazy(() => import("../../LineTimeChart"));
 
 const FiltersAndCharts = () => {
-  const { filtered } = useFilters();
+  const { filtered, contentRef, content2Ref } = useFilters();
 
   // Memoize uniqueFiltered to prevent unnecessary recalculations
   const uniqueFiltered = useMemo(() => {
@@ -37,13 +39,13 @@ const FiltersAndCharts = () => {
   }, [filtered]); // Only recompute when `filtered` changes
 
   // Memoize uniqueFiltered to prevent unnecessary recalculations
-  const uniqueDocuments = useMemo(() => {
-    return Array.from(
-      new Map(
-        filtered.map((doc) => [doc.documentNo, doc]) // Map by documentNo
-      ).values()
-    );
-  }, [filtered]); // Only recompute when `filtered` changes
+  // const uniqueDocuments = useMemo(() => {
+  //   return Array.from(
+  //     new Map(
+  //       filtered.map((doc) => [doc.documentNo, doc]) // Map by documentNo
+  //     ).values()
+  //   );
+  // }, [filtered]); // Only recompute when `filtered` changes
 
   const { setCurrentPage } = usePagination();
 
@@ -52,9 +54,13 @@ const FiltersAndCharts = () => {
   }, [filtered, setCurrentPage]);
 
   return (
-    <div className="w-full">
+    <div className="w-full  mt-4">
       {/* Filters */}
-      <div className="bg-slate- p-2 mx-1 rounded-md mt-4 flex h-[120vh] lg:h-[calc(100vh-60px)] w- shadow-md">
+
+      <div
+        ref={contentRef}
+        className="relative bg-slate- p-2 mx-1 rounded-md flex h-[120vh] lg:h-[calc(100vh-60px)] w- shadow-md"
+      >
         <ResizablePanelGroup direction="horizontal">
           <ResizablePanel defaultSize={24}>
             <ResizablePanelGroup direction="vertical">
@@ -80,13 +86,13 @@ const FiltersAndCharts = () => {
           <ResizableHandle withHandle />
           <ResizablePanel defaultSize={76}>
             <ResizablePanelGroup direction="vertical">
-              <ResizablePanel defaultSize={71}>
+              <ResizablePanel defaultSize={70}>
                 <Suspense fallback={"Loading..."}>
                   <LateAnalysis data={uniqueFiltered} />
                 </Suspense>
               </ResizablePanel>
               <ResizableHandle withHandle />
-              <ResizablePanel defaultSize={29}>
+              <ResizablePanel defaultSize={30}>
                 <Suspense fallback={"Loading..."}>
                   <HeatX data={uniqueFiltered} />
                 </Suspense>
@@ -97,17 +103,20 @@ const FiltersAndCharts = () => {
       </div>
 
       {/* Workflow Charts */}
-      <div className="bg-slate- p-2 mx-1 rounded-md mt-4 flex h-[120vh] lg:h-[calc(100vh-60px)] w- shadow-md">
+      <div
+        ref={content2Ref}
+        className="relative bg-slate- p-2 mx-1 rounded-md flex h-[120vh] lg:h-[calc(100vh-60px)] w- shadow-md"
+      >
         <ResizablePanelGroup direction="horizontal">
           <ResizablePanel defaultSize={24}>
             <ResizablePanelGroup direction="vertical">
-              <ResizablePanel defaultSize={60}>
+              <ResizablePanel defaultSize={65}>
                 <Suspense fallback={"Loading..."}>
                   <DocsPerUserChart data={filtered} />
                 </Suspense>
               </ResizablePanel>
               <ResizableHandle withHandle />
-              <ResizablePanel defaultSize={40}>
+              <ResizablePanel defaultSize={35}>
                 {" "}
                 {/* Explicit defaultSize added */}
                 <Suspense fallback={"Loading..."}>
@@ -117,17 +126,17 @@ const FiltersAndCharts = () => {
             </ResizablePanelGroup>
           </ResizablePanel>
           <ResizableHandle withHandle />
-          <ResizablePanel defaultSize={76}>
+          <ResizablePanel defaultSize={70}>
             {" "}
             {/* Explicit defaultSize added */}
             <ResizablePanelGroup direction="vertical">
-              <ResizablePanel defaultSize={72}>
+              <ResizablePanel defaultSize={70}>
                 <Suspense fallback={"Loading..."}>
                   <LateAnalysisReview data={filtered} />
                 </Suspense>
               </ResizablePanel>
               <ResizableHandle withHandle />
-              <ResizablePanel defaultSize={28}>
+              <ResizablePanel defaultSize={30}>
                 {" "}
                 {/* Explicit defaultSize added */}
                 <Suspense fallback={"Loading..."}>

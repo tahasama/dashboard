@@ -1,6 +1,13 @@
 "use client";
 import { filterData } from "@/lib/utils";
-import { createContext, useContext, useState, useMemo, useEffect } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useMemo,
+  useEffect,
+  useRef,
+} from "react";
 import { MergedData } from "./types";
 
 type FiltersContextType = {
@@ -24,6 +31,8 @@ type FiltersContextType = {
   uniqueDisciplines: string[];
   uniqueStatuses: string[];
   // uniqueSubStatuses: string[];
+  contentRef: any;
+  content2Ref: any;
 };
 
 export const FiltersContext = createContext<FiltersContextType | undefined>(
@@ -47,6 +56,9 @@ export const FiltersProvider = ({
   const [debouncedSearchText, setDebouncedSearchText] = useState<string>("");
 
   const [filteredData, setFilteredData] = useState<any[]>(originalData);
+
+  const contentRef = useRef<HTMLDivElement>(null);
+  const content2Ref = useRef<HTMLDivElement>(null);
 
   const getUniqueValues = (data: any[], column: string) =>
     Array.from(new Set(data.map((item) => item[column]).filter(Boolean)));
@@ -147,6 +159,8 @@ export const FiltersProvider = ({
       uniqueDisciplines, // Add uniqueDisciplines here
       uniqueStatuses, // Add uniqueStatuses here
       // uniqueSubStatuses,
+      contentRef,
+      content2Ref,
     }),
     [
       createdByFilter,
@@ -160,6 +174,8 @@ export const FiltersProvider = ({
       uniqueCreatedBy,
       uniqueDisciplines,
       uniqueStatuses,
+      contentRef,
+      content2Ref,
       // uniqueSubStatuses,
     ]
   );

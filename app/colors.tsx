@@ -17,6 +17,8 @@ export const nightColors = [
   "#d0f400",
 ];
 
+export const nightColor = ["#76c68f", "#22a7f0", "#9080ff"];
+
 // Miste Line/Bars chart
 
 // export const lightColorsLineBars = {

@@ -44,7 +44,8 @@ const ReviewStatus: React.FC<Data> = memo(({ data }) => {
       title: {
         text: "Review Status Chart",
         left: "center",
-        top: "top",
+        top: "2%",
+
         textStyle: {
           fontSize: 14,
           fontWeight: "bold",
@@ -64,7 +65,7 @@ const ReviewStatus: React.FC<Data> = memo(({ data }) => {
       series: [
         {
           type: "pie",
-          radius: ["40%", "65%"], // Inner and outer radius for the doughnut chart
+          radius: ["34%", "58%"],
           center: ["50%", "60%"],
           data: chartData.map((item, index) => ({
             value: item.value,
@@ -127,7 +128,14 @@ const ReviewStatus: React.FC<Data> = memo(({ data }) => {
     );
   }
 
-  return <div ref={chartRef} style={{ width: "100%", height: "100%" }} />;
+  return (
+    <div
+      ref={chartRef}
+      style={{ width: "100%", height: "100%" }}
+      // className="mt-2.5"
+      className="-mt-1"
+    />
+  );
 });
 
 export default ReviewStatus;

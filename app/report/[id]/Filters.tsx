@@ -16,7 +16,16 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Menu } from "lucide-react";
+import { Download, Loader, Menu } from "lucide-react";
+import { toBlob } from "html-to-image";
+import download from "downloadjs";
+import { useRef, useState } from "react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const Filters = () => {
   const {
@@ -38,7 +47,40 @@ const Filters = () => {
     uniqueDisciplines,
     uniqueStatuses,
     // uniqueSubStatuses,
+    contentRef,
+    content2Ref,
   } = useFilters();
+  const [loading, setLoading] = useState(false);
+  const downloadPdf = async () => {
+    setLoading(true);
+    if (contentRef.current) {
+      // pdf
+      // html2pdf().from(contentRef.current).save("download.pdf");
+      // regular image
+      // const dataUrl = await toPng(contentRef.current);
+      // download(dataUrl, "screenshot.png");
+      const blob = await toBlob(contentRef.current, {
+        pixelRatio: 10,
+      }); // Increase pixel ratio for better quality
+      if (blob) {
+        download(blob, "Submissions.png");
+      }
+    }
+    if (content2Ref.current) {
+      // pdf
+      // html2pdf().from(contentRef.current).save("download.pdf");
+      // regular image
+      // const dataUrl = await toPng(contentRef.current);
+      // download(dataUrl, "screenshot.png");
+      const blob = await toBlob(content2Ref.current, {
+        pixelRatio: 10,
+      }); // Increase pixel ratio for better quality
+      if (blob) {
+        download(blob, "Reviews.png");
+      }
+    }
+    setLoading(false);
+  };
 
   return (
     <div className="sticky top-0 z-50 p-2 bg-white shadow-md w-full flex justify-between items-center gap-2 xl:gap-4">
@@ -114,7 +156,7 @@ const Filters = () => {
         {/* Status Filter */}
         <Select value={statusFilter} onValueChange={setStatusFilter}>
           <SelectTrigger className="text-sm lg:text-md lg:min-w-[120px]">
-            <SelectValue placeholder="Review Status" />
+            <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
@@ -250,6 +292,23 @@ const Filters = () => {
         >
           Clear
         </Button>
+        <button
+          onClick={downloadPdf}
+          className=" p-1 text-sky-800 ring-1 ring-sky-600 rounded-sm"
+        >
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                {!loading ? <Download /> : <Loader className="animate-spin" />}
+              </TooltipTrigger>
+              <TooltipContent className="bg-white shadow-md ring-1 ring-slate-200 p-2.5 text-slate-700">
+                <p>
+                  Download 1<sup>st</sup> and 2<sup>nd</sup> pages
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </button>
       </div>
     </div>
   );

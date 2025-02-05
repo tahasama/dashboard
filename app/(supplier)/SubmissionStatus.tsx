@@ -55,7 +55,7 @@ const SubmissionStatus: React.FC<Data> = memo(({ data }) => {
       title: {
         text: "Submission Status",
         left: "center",
-        top: "top",
+        top: "2%",
         // top: "20%", // Adjust this value to move the title down
 
         textStyle: {
@@ -78,7 +78,8 @@ const SubmissionStatus: React.FC<Data> = memo(({ data }) => {
       series: [
         {
           type: "pie",
-          radius: ["40%", "65%"], // Inner and outer radius for the doughnut chart
+          // radius: ["40%", "65%"],
+          radius: ["34%", "58%"],
           center: ["50%", "60%"], // Position of the pie chart
           data: chartData.map((item, index) => ({
             value: item.value,
@@ -142,7 +143,13 @@ const SubmissionStatus: React.FC<Data> = memo(({ data }) => {
     );
   }
 
-  return <div ref={chartRef} style={{ width: "100%", height: "100%" }} />;
+  return (
+    <div
+      ref={chartRef}
+      style={{ width: "100%", height: "100%" }}
+      className="-mt-"
+    />
+  );
 });
 
 export default SubmissionStatus;

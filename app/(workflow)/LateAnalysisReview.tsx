@@ -343,7 +343,7 @@ const LateAnalysisReview: React.FC<Data> = memo(({ data }) => {
         <div
           ref={chartRef}
           // style={{ width: "100%", height: "100%" }}
-          className="w-full h-full lg:scale-[1.1] xl:scale-[1.15] mt-2 -right-4"
+          className="w-full h-full lg:scale-[1.1] xl:scale-[1.1] mt-2 -right-4"
         />
       </div>
       <LateAnalysisReviewConclusion

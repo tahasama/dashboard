@@ -234,7 +234,7 @@ const StatusOutcomeHeatMap: React.FC<Data> = memo(({ data }) => {
   }
 
   return (
-    <div className="flex justify-between w-full  h-full relative -ml-6">
+    <div className="flex justify-between w-full  h-full relative -ml-6 -mt-0.5">
       <div
         ref={chartRef}
         style={{
@@ -248,9 +248,9 @@ const StatusOutcomeHeatMap: React.FC<Data> = memo(({ data }) => {
       <div className="flex flex-col items-center justify-center ml-10 absolute -right-6 m-1 ">
         <Select value={selectedYear} onValueChange={setSelectedYear}>
           <SelectTrigger className="scale-75 lg:scale-100">
-            <SelectValue placeholder="Years" className="" />
+            <SelectValue placeholder="Years" />
           </SelectTrigger>
-          <SelectContent className="">
+          <SelectContent>
             <SelectGroup>
               {/* <SelectLabel>Years</SelectLabel> */}
 

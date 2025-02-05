@@ -249,7 +249,7 @@ const HeatX: React.FC<Data> = memo(({ data }) => {
   }
 
   return (
-    <div className="flex justify-between w-full  h-full relative -ml-6">
+    <div className="flex justify-between w-full  h-full relative -ml-6 -mt-0.5">
       <div
         ref={chartRef}
         style={{
