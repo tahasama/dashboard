@@ -36,7 +36,7 @@ export async function getProject(
 ): Promise<{ project: any; message: string }> {
   try {
     const result = await query(
-      "SELECT project_number, data FROM projects WHERE project_number = $1",
+      "SELECT project_number, data, project_name FROM projects WHERE project_number = $1",
       [projectNumber]
     );
 
@@ -62,18 +62,19 @@ export async function getProject(
 // Create or Update Project (equivalent to POST request)
 export async function createNewProject(
   projectNumber: string,
-  mergedData: any[]
+  mergedData: any[],
+  projectName: string
 ): Promise<{ message: string }> {
   try {
     // Insert or update project data in the database
     await query(
       `
-      INSERT INTO projects (project_number, data)
-      VALUES ($1, $2)
+      INSERT INTO projects (project_number, data, project_name)
+      VALUES ($1, $2, $3)
       ON CONFLICT (project_number)
-      DO UPDATE SET data = $2, updated_at = CURRENT_TIMESTAMP
+      DO UPDATE SET data = $2, updated_at = CURRENT_TIMESTAMP, project_name = $3
       `,
-      [projectNumber, JSON.stringify(mergedData)]
+      [projectNumber, JSON.stringify(mergedData), projectName]
     );
     revalidatePath(`/report/${projectNumber}`);
     return {
@@ -89,17 +90,18 @@ export async function createNewProject(
 // Update existing project (equivalent to PUT request)
 export async function updateProjectData(
   projectNumber: string,
-  mergedData: any[]
+  mergedData: any[],
+  projectName: string
 ): Promise<{ message: string }> {
   try {
     const result = await query(
       `
       UPDATE projects
-      SET data = $2, updated_at = CURRENT_TIMESTAMP
+      SET data = $2, updated_at = CURRENT_TIMESTAMP, project_name = $3
       WHERE project_number = $1
-      RETURNING project_number, data
+      RETURNING project_number, data, project_name
       `,
-      [projectNumber, JSON.stringify(mergedData)]
+      [projectNumber, JSON.stringify(mergedData), projectName]
     );
     revalidatePath(`/report/${projectNumber}`);
     if (result.rows.length > 0) {

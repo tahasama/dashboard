@@ -33,6 +33,7 @@ const ExcelForm = ({}: any) => {
   const [error, setError] = useState<any>("");
   const [isReadyToGenerate, setIsReadyToGenerate] = useState<boolean>(false);
   const [isPending, setIsPending] = useState(false);
+  const [projectName, setProjectName] = useState("");
 
   const router = useRouter();
 
@@ -96,8 +97,9 @@ const ExcelForm = ({}: any) => {
           const workbook = XLSX.read(binaryStr, { type: "binary" });
           const sheetName = workbook.SheetNames[0];
           const sheet = workbook.Sheets[sheetName];
+          const sheetData: any = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+          setProjectName(sheetData[2][1]);
 
-          const sheetData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
           const headers: any = sheetData[indexRows[fileIndex]];
 
           if (!validateHeaders(headers, expectedHeaders[fileIndex])) {
@@ -171,9 +173,10 @@ const ExcelForm = ({}: any) => {
                 const sheetName = workbook.SheetNames[0];
                 const sheet = workbook.Sheets[sheetName];
 
-                const sheetData = XLSX.utils.sheet_to_json(sheet, {
+                const sheetData: any = XLSX.utils.sheet_to_json(sheet, {
                   header: 1,
                 });
+
                 const headers = sheetData[indexRows[fileIndex]];
                 const rows = sheetData.slice(indexRows[fileIndex] + 1);
 
@@ -247,9 +250,9 @@ const ExcelForm = ({}: any) => {
       if (projectNumber) {
         const existingProjectResponse = await getProject(projectNumber);
         if (!!existingProjectResponse.project) {
-          await updateProjectData(projectNumber, mergedData);
+          await updateProjectData(projectNumber, mergedData, projectName);
         } else {
-          await createNewProject(projectNumber, mergedData);
+          await createNewProject(projectNumber, mergedData, projectName);
         }
         setError(null);
         router.push(`/report/${projectNumber}`);

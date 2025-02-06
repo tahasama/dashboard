@@ -32,14 +32,14 @@ const Report = async ({ params }: { params: Promise<{ id: string }> }) => {
     );
   }
 
-  const { data } = project;
+  const { data, project_number, project_name } = project;
 
   return (
     <div className="relative -mt-2">
       {/* <Filters /> */}
       <PaginationProvider>
         <FiltersProvider originalData={data}>
-          <Filters />
+          <Filters projectNumber={project_number} projectName={project_name} />
           <FiltersAndCharts />
         </FiltersProvider>
       </PaginationProvider>
