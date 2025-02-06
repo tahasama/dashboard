@@ -158,8 +158,8 @@ const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
   }
 
   return !loading && defaultTimeEnd !== null ? (
-    <div className="snap-start h-[calc(100vh-90px)] my-5 mx-2 lg:mx-7 relative -top-1.5">
-      <div className="gap-3 md:gap-0 flex justify-between items-center mb-2 top- relative">
+    <div className="snap-start h-[calc(100vh-90px)] my-5 mx-2 lg:mx-7 relative -top-2">
+      <div className="gap-3 md:gap-0 flex justify-between items-center mb-2 top-0.5 relative">
         <h1 className="md:w-1/3">
           Document&apos;s Timeline: {totalDocs.length}
         </h1>

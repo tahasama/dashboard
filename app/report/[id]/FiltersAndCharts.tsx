@@ -105,7 +105,7 @@ const FiltersAndCharts = () => {
       {/* Workflow Charts */}
       <div
         ref={content2Ref}
-        className="relative bg-slate- p-2 mx-1 rounded-md flex h-[120vh] lg:h-[calc(100vh-60px)] w- shadow-md"
+        className="relative bg-slate- p-2 mx-1 rounded-md flex h-[120vh] lg:h-[calc(100vh-50px)] w- shadow-md"
       >
         <ResizablePanelGroup direction="horizontal">
           <ResizablePanel defaultSize={24}>
