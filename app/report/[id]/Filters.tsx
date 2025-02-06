@@ -27,9 +27,16 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-import { Inter } from "next/font/google";
+import {
+  Inter,
+  Amiri,
+  Merriweather,
+  Poppins,
+  Playfair_Display,
+  Work_Sans,
+} from "next/font/google";
 
-const inter = Inter({ subsets: ["latin"], weight: ["400", "600", "700"] });
+const inter = Work_Sans({ subsets: ["latin"], weight: ["400"] });
 
 const Filters = ({ projectNumber, projectName }: any) => {
   const {
@@ -87,69 +94,67 @@ const Filters = ({ projectNumber, projectName }: any) => {
   };
 
   return (
-    <div className="sticky top-0 z-50 p-2 bg-white shadow-md w-full flex justify-between items-center gap-2 xl:gap-4">
-      {/* <p className="text-lg text-gray-800 font-medium whitespace-nowrap ">
-        {projectName}
-      </p> */}
+    <div className="sticky top-0 z-50  bg-white shadow-md w-full h-full flex justify-between items-center gap-2">
       <p
-        className={`${inter.className} text-lg text-gray-900 tracking-wide whitespace-nowrap`}
+        className={`font-medium  text- text-black bg-gray-100 border-r-2 border-gray-50  h-full py-[13px] px-2 `}
       >
         {projectName}
       </p>
-      {/* Filters for large screens */}
-      <div className="hidden md:flex gap-2 xl:gap-4 w-full">
-        {/* Subproject Filter */}
-        <Select value={subProjectFilter} onValueChange={setSubProjectFilter}>
-          <SelectTrigger className="text-sm xl:text-md w-min-w-[100px] lg:min-w-[120px]">
-            <SelectValue placeholder="Subproject" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectItem value={"all"}>All</SelectItem>
-              {uniqueSubProjects.map((value: any) => (
-                <SelectItem key={value} value={value}>
-                  {value}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+      <div className="flex justify-between items-center gap-2 xl:gap-4 flex-1 p-[7px]">
+        {/* Filters for large screens */}
+        <div className="hidden md:flex gap-2 xl:gap-4 w-full">
+          {/* Subproject Filter */}
+          <Select value={subProjectFilter} onValueChange={setSubProjectFilter}>
+            <SelectTrigger className="text-sm xl:text-md w-min-w-[100px] lg:min-w-[120px]">
+              <SelectValue placeholder="Subproject" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value={"all"}>All</SelectItem>
+                {uniqueSubProjects.map((value: any) => (
+                  <SelectItem key={value} value={value}>
+                    {value}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
 
-        {/* Supplier Filter */}
-        <Select value={createdByFilter} onValueChange={setCreatedByFilter}>
-          <SelectTrigger className="text-sm lg:text-md lg:min-w-[120px]">
-            <SelectValue placeholder="Supplier" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectItem value={"all"}>All</SelectItem>
-              {uniqueCreatedBy.map((value: any) => (
-                <SelectItem key={value} value={value}>
-                  {value}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+          {/* Supplier Filter */}
+          <Select value={createdByFilter} onValueChange={setCreatedByFilter}>
+            <SelectTrigger className="text-sm lg:text-md lg:min-w-[120px]">
+              <SelectValue placeholder="Supplier" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value={"all"}>All</SelectItem>
+                {uniqueCreatedBy.map((value: any) => (
+                  <SelectItem key={value} value={value}>
+                    {value}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
 
-        {/* Discipline Filter */}
-        <Select value={disciplineFilter} onValueChange={setDisciplineFilter}>
-          <SelectTrigger className="text-sm lg:text-md lg:min-w-[120px]">
-            <SelectValue placeholder="Discipline" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectItem value={"all"}>All</SelectItem>
-              {uniqueDisciplines.map((value: any) => (
-                <SelectItem key={value} value={value}>
-                  {value}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+          {/* Discipline Filter */}
+          <Select value={disciplineFilter} onValueChange={setDisciplineFilter}>
+            <SelectTrigger className="text-sm lg:text-md lg:min-w-[120px]">
+              <SelectValue placeholder="Discipline" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value={"all"}>All</SelectItem>
+                {uniqueDisciplines.map((value: any) => (
+                  <SelectItem key={value} value={value}>
+                    {value}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
 
-        {/* <Select value={subStatusFilter} onValueChange={setSubStatusFilter}>
+          {/* <Select value={subStatusFilter} onValueChange={setSubStatusFilter}>
           <SelectTrigger className="text-sm lg:text-md lg:min-w-[120px]">
             <SelectValue placeholder="Submission Status" />
           </SelectTrigger>
@@ -165,61 +170,66 @@ const Filters = ({ projectNumber, projectName }: any) => {
           </SelectContent>
         </Select> */}
 
-        {/* Status Filter */}
-        <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="text-sm lg:text-md lg:min-w-[120px]">
-            <SelectValue placeholder="Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectItem value={"all"}>All</SelectItem>
-              {uniqueStatuses.map((value: any) => (
-                <SelectItem key={value} value={value}>
-                  {value}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-      </div>
+          {/* Status Filter */}
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="text-sm lg:text-md lg:min-w-[120px]">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value={"all"}>All</SelectItem>
+                {uniqueStatuses.map((value: any) => (
+                  <SelectItem key={value} value={value}>
+                    {value}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
 
-      {/* Search and Clear Filters */}
-      <div className="flex items-center gap-4 w-full">
-        <p className="text-sm text-gray-600 font-medium whitespace-nowrap ">
-          N: {projectNumber}
-        </p>
-        <Input
-          type="text"
-          value={searchText}
-          onChange={(e) => setSearchText(e.target.value)}
-          placeholder="Search by Title or Document No."
-          className="p-2 border rounded text-sm w-full"
-        />
-        <Button
-          variant="outline"
-          onClick={clearFilters}
-          className="bg-purple-200 hover:bg-purple-100"
-        >
-          Clear
-        </Button>
+        {/* Search and Clear Filters */}
+        <div className="flex items-center gap-4 w-full">
+          <p className="text-sm text-gray-600 font-medium whitespace-nowrap ">
+            N: {projectNumber}
+          </p>
+          <Input
+            type="text"
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            placeholder="Search by Title or Document No."
+            className="p-2 border rounded text-sm w-full"
+          />
+          <Button
+            variant="outline"
+            onClick={clearFilters}
+            className="bg-purple-200 hover:bg-purple-100"
+          >
+            Clear
+          </Button>
 
-        <button
-          onClick={downloadPdf}
-          className=" p-1 text-sky-800 ring-1 ring-sky-600 rounded-sm"
-        >
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                {!loading ? <Download /> : <Loader className="animate-spin" />}
-              </TooltipTrigger>
-              <TooltipContent className="bg-white shadow-md ring-1 ring-slate-200 p-2.5 text-slate-700">
-                <p>
-                  Download 1<sup>st</sup> and 2<sup>nd</sup> pages
-                </p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </button>
+          <button
+            onClick={downloadPdf}
+            className=" p-1 text-sky-800 ring-1 ring-sky-600 rounded-sm"
+          >
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  {!loading ? (
+                    <Download />
+                  ) : (
+                    <Loader className="animate-spin" />
+                  )}
+                </TooltipTrigger>
+                <TooltipContent className="bg-white shadow-md ring-1 ring-slate-200 p-2.5 text-slate-700">
+                  <p>
+                    Download 1<sup>st</sup> and 2<sup>nd</sup> pages
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </button>
+        </div>
       </div>
     </div>
   );
