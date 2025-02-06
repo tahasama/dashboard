@@ -28,13 +28,15 @@ export default function ProjectForm() {
       // Display error message
       setMessage(response.message || "Unknown error");
     }
-
     setIsPending(false);
   };
 
   return (
     <>
-      <div className="flex justify-start items-center p-5 mt-2 relative">
+      <form
+        className="flex justify-start items-center p-5 mt-2 relative"
+        // onSubmit={handleSubmit}
+      >
         <Label className="min-w-28 text-sm -ml-1 mr-1">
           Find your project:
         </Label>
@@ -70,7 +72,7 @@ export default function ProjectForm() {
             </Alert>
           </div>
         )}
-      </div>
+      </form>
     </>
   );
 }

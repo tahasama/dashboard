@@ -95,11 +95,17 @@ const Filters = ({ projectNumber, projectName }: any) => {
 
   return (
     <div className="sticky top-0 z-50  bg-white shadow-md w-full h-full flex justify-between items-center gap-2">
-      <p
-        className={`font-medium min-w-28 text-center text-base text-black bg-gray-100 rounded-sm  h-full py-[13px] px-2 `}
-      >
-        {projectName}
-      </p>
+      <div className="flex py-[13px] px-2 gap-5 items-center">
+        <p
+          className={`font-medium min-w-28 text-center text-base text-black bg-gray-00 rounded-sm`}
+        >
+          {projectName}
+        </p>
+        <p className="text-sm text-gray-600 font-medium whitespace-nowrap ">
+          N: {projectNumber}
+        </p>
+      </div>
+
       <div className="flex justify-between items-center gap-2 xl:gap-4 flex-1 p-[7px]">
         {/* Filters for large screens */}
         <div className="hidden md:flex gap-2 xl:gap-4 w-full">
@@ -190,9 +196,6 @@ const Filters = ({ projectNumber, projectName }: any) => {
 
         {/* Search and Clear Filters */}
         <div className="flex items-center gap-4 w-full">
-          <p className="text-sm text-gray-600 font-medium whitespace-nowrap ">
-            N: {projectNumber}
-          </p>
           <Input
             type="text"
             value={searchText}

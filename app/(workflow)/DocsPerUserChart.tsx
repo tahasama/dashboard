@@ -24,16 +24,16 @@ const DocsPerUserChart: React.FC<Data> = memo(({ data }) => {
     datasets: [
       {
         label: "Overdue",
-        backgroundColor: "#ff708e", // Red for Overdue eb5b79 ed5574 eb4d6d de4765
-        borderColor: lightColors[1],
+        backgroundColor: "#ff4669", // Red for Overdue eb5b79 ed5574 eb4d6d de4765 EE204D #FF004F
+        borderColor: "#ff4669",
         borderWidth: 1,
         data: [] as number[],
         barThickness: 16, // Controls bar height
       },
       {
         label: "Current",
-        backgroundColor: "#86d19d", // Green for Current
-        borderColor: "#388e3c",
+        backgroundColor: "#caf1d0", // Green for Current
+        borderColor: "#abedb5",
         borderWidth: 1,
         data: [] as number[],
         barThickness: 16, // Controls bar height
