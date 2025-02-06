@@ -96,7 +96,7 @@ const Filters = ({ projectNumber, projectName }: any) => {
   return (
     <div className="sticky top-0 z-50  bg-white shadow-md w-full h-full flex justify-between items-center gap-2">
       <p
-        className={`font-medium  text- text-black bg-gray-100 border-r-2 border-gray-50  h-full py-[13px] px-2 `}
+        className={`font-medium min-w-28 text-center text-base text-black bg-gray-100 rounded-sm  h-full py-[13px] px-2 `}
       >
         {projectName}
       </p>
