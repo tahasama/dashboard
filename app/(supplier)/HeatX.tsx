@@ -114,6 +114,23 @@ const HeatX: React.FC<Data> = memo(({ data }) => {
     }
   }, [data]);
 
+  const combinedData = actualSubmissionData.map(([timestamp, actualCount]) => {
+    const plannedCount =
+      plannedSubmissionData.find(
+        ([plannedTimestamp]) => plannedTimestamp === timestamp
+      )?.[1] || 0;
+
+    const combinedValue = (actualCount + plannedCount) / 2; // This is the combined value
+
+    return {
+      date: new Date(timestamp).toISOString().split("T")[0],
+      actualCount,
+      plannedCount,
+      combinedValue, // Ensure this is being used for coloring
+      isOverlap: actualCount > 0 && plannedCount > 0,
+    };
+  });
+
   useEffect(() => {
     if (!chartRef.current || !actualSubmissionData || !plannedSubmissionData)
       return;
@@ -130,24 +147,56 @@ const HeatX: React.FC<Data> = memo(({ data }) => {
         top: "7%",
         textStyle: { fontSize: 14, fontWeight: "bold" },
       },
-      legend: { show: false },
+      legend: {
+        show: true,
+        orient: "vertical",
+        left: "90.8%",
+        top: "42%",
+        align: "left",
+        icon: "rect",
+        textStyle: {
+          fontSize: 11.5,
+          color: "#333",
+          // fontWeight: "bold" , // Optional: Adjust font weight
+        },
+        formatter: (name: string) => {
+          if (name === "Actual Submission") return "Actual";
+          if (name === "Planned Submission") return "Planned";
+          if (name === "Overlap Submission") return "Overlaps";
+          return name;
+        },
+      },
       tooltip: {
         trigger: "item",
-        borderColor: "#dcdbdb",
-
+        textStyle: {
+          fontSize: 12,
+        },
         formatter: (params: any) => {
-          const date = new Date(params.data[0]);
-          const count = params.data[1];
-          return (
-            `${params.seriesName} on ${
-              date.toISOString().split("T")[0]
-            }: ${count}` || 0
-          );
+          const date = new Date(params.data[0]).toISOString().split("T")[0];
+          const actualCount =
+            actualSubmissionData.find(
+              (d) => new Date(d[0]).toISOString().split("T")[0] === date
+            )?.[1] || 0;
+          const plannedCount =
+            plannedSubmissionData.find(
+              (d) => new Date(d[0]).toISOString().split("T")[0] === date
+            )?.[1] || 0;
+
+          let tooltipContent = `Date: ${date}<br/>`;
+
+          if (actualCount > 0) {
+            tooltipContent += `Actual Submissions: ${actualCount}<br/>`;
+          }
+          if (plannedCount > 0) {
+            tooltipContent += `Planned Submissions: ${plannedCount}<br/>`;
+          }
+
+          return tooltipContent.trim(); // Ensures no empty tooltip is shown
         },
       },
       visualMap: [
         {
-          seriesIndex: 0,
+          seriesIndex: 1,
           type: "piecewise",
           calculable: true,
           show: false,
@@ -163,7 +212,7 @@ const HeatX: React.FC<Data> = memo(({ data }) => {
           ],
         },
         {
-          seriesIndex: 1,
+          seriesIndex: 0,
           type: "piecewise",
           calculable: true,
           show: false,
@@ -178,10 +227,28 @@ const HeatX: React.FC<Data> = memo(({ data }) => {
             { min: 181, color: "#000000" },
           ],
         },
+        {
+          seriesIndex: 2, // Overlap series
+          type: "piecewise",
+          calculable: true,
+          show: false,
+          pieces: [
+            { min: 0, max: 0, color: "#FAE1A3" }, // Lightest Shade
+            { min: 1, max: 5, color: "#FAC858" }, // Light Shade
+            { min: 6, max: 15, color: "#F79C00" }, // Medium Shade
+            { min: 16, max: 30, color: "#D87B00" }, // Dark Shade
+            { min: 31, max: 60, color: "#B96A00" }, // Darker Shade
+            { min: 61, max: 120, color: "#9E5700" }, // Very Dark
+            { min: 121, max: 180, color: "#7F4700" }, // Almost Black
+            { min: 181, color: "#663F00" }, // Deepest Dark
+          ],
+        },
       ],
       calendar: {
         range: selectedYear,
         cellSize: ["auto", "auto"],
+        left: "5%",
+        right: "10%",
         top: "32.5%",
         itemStyle: {
           borderWidth: 1.2,
@@ -221,6 +288,17 @@ const HeatX: React.FC<Data> = memo(({ data }) => {
             count || 0,
           ]),
         },
+        {
+          name: "Overlap Submission", // Add this series for overlap
+          type: "heatmap",
+          coordinateSystem: "calendar",
+          data: combinedData
+            .filter(({ isOverlap }) => isOverlap)
+            .map(({ date, combinedValue }) => [
+              date,
+              combinedValue, // Use combinedValue for coloring
+            ]),
+        },
       ],
     };
 
@@ -253,14 +331,14 @@ const HeatX: React.FC<Data> = memo(({ data }) => {
       <div
         ref={chartRef}
         style={{
-          width: "95.5%",
+          width: "100%",
           height: "100%",
           maxHeight: "350px",
           minHeight: "100px",
         }}
-        className=" bg-cyan-00 -ml-4"
+        className=" bg-cyan-00 ml-5"
       />
-      <div className="flex flex-col items-center justify-center ml-10 absolute -right-6 m-1 ">
+      <div className="flex flex-col items-center justify-center absolute -right-3 m-1 ">
         <Select value={selectedYear} onValueChange={setSelectedYear}>
           <SelectTrigger className="scale-75 lg:scale-90">
             <SelectValue placeholder="Years" />
@@ -277,12 +355,12 @@ const HeatX: React.FC<Data> = memo(({ data }) => {
             </SelectGroup>
           </SelectContent>
         </Select>
-        <div className="flex flex-col items-center justify-center my-5">
+        {/* <div className="flex flex-col items-center justify-center my-5">
           <span className="text-xs">Planned</span>
           <span className="w-10 lg:w-16 h-3 bg-gradient-to-r from-[#b3e0ff] to-[#0047b3] block"></span>
           <span className="text-xs">Actual</span>
           <span className="w-10 lg:w-16 h-3 bg-gradient-to-r from-[#99e699] to-[#006600] block"></span>
-        </div>
+        </div> */}
       </div>
     </div>
   );
