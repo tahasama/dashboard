@@ -42,11 +42,21 @@ self.onmessage = (e) => {
     );
   }
   if (statusFilter && statusFilter !== "all") {
-    filteredData = filteredData.filter(
-      (item) => item.reviewStatus === statusFilter
+    const matchingDocuments = new Set(
+      filteredData
+        .filter(
+          (item) =>
+            item.reviewStatus === statusFilter || item.stepOutcome === statusFilter
+        )
+        .map((item) => item.documentNo) // Collect document numbers that match
+    );
+  
+    // Keep all revisions of matching documents
+    filteredData = filteredData.filter((item) =>
+      matchingDocuments.has(item.documentNo)
     );
   }
-
+  
   // Send filtered data back to the main thread
   self.postMessage(filteredData);
 };

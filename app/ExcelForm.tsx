@@ -264,28 +264,37 @@ const ExcelForm = ({}: any) => {
   };
 
   // Helper function to merge the data from both files
-  const mergeFileData = (file1Data: any[], file2Data: any[]) => {
+  const mergeFileData = (file1Data: any, file2Data: any) => {
     const mergedData: any[] = [];
     const seenRevisions = new Set(); // Track unique revisions for each document
 
-    // Step 1: Preprocess file2Data into a lookup object
-    const file2Lookup = file2Data.reduce((acc, record) => {
+    // Step 1: Create a lookup table for file1Data
+    const file1Lookup = file1Data.reduce((acc: any, record: any) => {
+      acc[record["Document No"]] = {
+        selectList1: record["Select List 1"] || "",
+        selectList3: record["Select List 3"] || "",
+        selectList5: record["Select List 5"] || "",
+      };
+      return acc;
+    }, {});
+
+    // Step 2: Preprocess file2Data into a lookup object
+    const file2Lookup = file2Data.reduce((acc: any, record: any) => {
       const docNo = record["Document No."];
       const revision = record["Document Revision"] || 0;
       if (!acc[docNo]) acc[docNo] = {};
       if (!acc[docNo][revision]) acc[docNo][revision] = [];
       acc[docNo][revision].push(record);
       return acc;
-    }, {} as Record<string, Record<number, any[]>>);
+    }, {});
 
-    // Step 2: Merge file1Data with file2Lookup
-    file1Data.forEach((file1Record) => {
+    // Step 3: Merge file1Data with file2Lookup
+    file1Data.forEach((file1Record: any) => {
       const docNo = file1Record["Document No"];
       const revision = file1Record["Revision"] || 0;
       const uniqueKey = `${docNo}-${revision}`;
 
       let matchingRecords = file2Lookup[docNo]?.[revision] || [];
-
       let rowToMerge =
         matchingRecords.find((rec: any) => !rec["Date Completed"]) ||
         matchingRecords[0];
@@ -327,7 +336,7 @@ const ExcelForm = ({}: any) => {
       }
     });
 
-    // Step 3: Handle file2Data records that don't exist in file1Data
+    // Step 4: Handle file2Data records that don't exist in file1Data
     Object.keys(file2Lookup).forEach((docNo) => {
       Object.keys(file2Lookup[docNo]).forEach((revisionKey) => {
         const revision = revisionKey;
@@ -366,9 +375,9 @@ const ExcelForm = ({}: any) => {
             plannedSubmissionDate,
             dateIn: rowToMerge?.["Date In"] || "",
             dateCompleted: rowToMerge?.["Date Completed"] || "",
-            selectList1: "",
-            selectList3: "",
-            selectList5: "",
+            selectList1: file1Lookup[docNo]?.selectList1 || "",
+            selectList3: file1Lookup[docNo]?.selectList3 || "",
+            selectList5: file1Lookup[docNo]?.selectList5 || "",
             status: "",
             workflowStatus: rowToMerge?.["Workflow Status"] || "",
             revision,
@@ -384,7 +393,6 @@ const ExcelForm = ({}: any) => {
         record.stepStatus !== "Terminated" &&
         record.reviewStatus !== "Terminated"
     );
-    // return mergedData;
   };
 
   const labels: { [key: number]: string } = {

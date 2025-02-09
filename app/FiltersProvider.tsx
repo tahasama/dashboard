@@ -76,7 +76,9 @@ export const FiltersProvider = ({
     [originalData]
   );
   const uniqueStatuses = useMemo(
-    () => getUniqueValues(originalData, "reviewStatus"),
+    () =>
+      getUniqueValues(originalData, "reviewStatus") &&
+      getUniqueValues(originalData, "stepOutcome"),
     [originalData]
   );
   // const uniqueSubStatuses = useMemo(
