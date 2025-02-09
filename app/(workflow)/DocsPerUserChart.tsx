@@ -32,8 +32,8 @@ const DocsPerUserChart: React.FC<Data> = memo(({ data }) => {
       },
       {
         label: "Current",
-        backgroundColor: "#caf1d0", // Green for Current
-        borderColor: "#abedb5",
+        backgroundColor: "#b9edc1", // Green for Current
+        borderColor: "#76db84",
         borderWidth: 1,
         data: [] as number[],
         barThickness: 16, // Controls bar height

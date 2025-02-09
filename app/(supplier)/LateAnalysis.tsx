@@ -15,6 +15,18 @@ const LateAnalysis: React.FC<Data> = memo(({ data }) => {
   const [chartValuesdocs, setChartValuesdocs] = useState<any>();
   const [chartValuesRealReceivedDocs, setChartValuesRealReceivedDocs] =
     useState<any>();
+
+  // const [hide, setHide] = useState(false);
+
+  // useEffect(() => {
+  //   const timer = setTimeout(() => {
+  //     setHide((prevHide) => !prevHide);
+  //   }, 3000);
+  //   return () => {
+  //     clearTimeout(timer);
+  //   };
+  // }, []);
+
   const chartRef = useRef<HTMLDivElement | null>(null);
 
   const excelDateToJSDate = (serial: number): string => {
@@ -292,12 +304,22 @@ const LateAnalysis: React.FC<Data> = memo(({ data }) => {
 
   return (
     <div className="w-full h-full flex">
+      <div className="absolute right-5 mb-2 text-xs text-slate-950 bg-indigo-200/55 shadow-md rounded-[2px] py-1 px-1.5 mx-0.5">
+        <b>Tip:</b> Click on any legend of any chart to show/hide.
+      </div>
       <div className="w-9/12 h-full flex flex-col mt-0.5 relative">
         <div className="flex justify-between mr-10 ml-4">
           <h2>Documents Submissions Analysis </h2>
-          <div className="text-xs text-slate-950 bg-indigo-200/55 shadow-md rounded-[2px] py-1 px-1.5">
+          {/* <div
+            className={`transition-opacity duration-1000 ease-in-out ${
+              hide ? "opacity-0" : "opacity-100"
+            }`}
+            style={{ transition: "opacity 1s ease-in-out" }}
+          > */}
+          {/* <div className="text-xs text-slate-950 bg-indigo-200/55 shadow-md rounded-[2px] py-1 px-1.5">
             <b>Tip:</b> Click on any legend of any chart to show/hide.
-          </div>
+          </div> */}
+          {/* </div> */}
         </div>
         <div
           ref={chartRef}
