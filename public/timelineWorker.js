@@ -95,6 +95,16 @@ const endOfDay = (date) => {
   return date;
 };
 
+const getDuration = (startDate, endDate) => {
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+
+  const diffTime = end - start; // Difference in milliseconds
+  const diffDays = diffTime / (1000 * 3600 * 24); // Convert to days
+
+  return `${diffDays.toFixed(0)} days`; // Or format however you like
+};
+
 self.onmessage = function (event) {
   const { filtered, currentPage, rowsPerPage } = event.data;
 
@@ -188,6 +198,10 @@ self.onmessage = function (event) {
       }
     }
 
+    const submissionDuration = getDuration(validSubmissionStartDate, validSubmissionEndDate);
+    const ReviewDuration = getDuration(validReviewStartDate, validReviewEndDate);
+
+
     // Add submission row
     rowSet.push({
       id: `${documentNo}.submission.${revision}`,
@@ -195,8 +209,8 @@ self.onmessage = function (event) {
       title: `${submissionStatus} - rev ${revision} 
 Title: ${title}
 Doc: ${documentNo}
-Start: ${formatDate(validSubmissionStartDate)} 
-End: ${formatDate(validSubmissionEndDate)}`,
+Start: ${formatDate(validSubmissionStartDate)} ➡️ End: ${formatDate(validSubmissionEndDate)}
+Duration: ${submissionDuration}`,
 
       start_time: validSubmissionStartDate,
       end_time: validSubmissionEndDate,
@@ -211,8 +225,8 @@ End: ${formatDate(validSubmissionEndDate)}`,
         title: `${reviewStatus || stepOutcome} - rev ${revision} 
 Title: ${title}
 Doc: ${documentNo}
-Start: ${formatDate(validReviewStartDate)} 
-End: ${formatDate(validReviewEndDate)}`,
+Start: ${formatDate(validReviewStartDate)} ➡️ End: ${formatDate(validReviewEndDate)}
+Duration: ${ReviewDuration}`,
 
         start_time: validReviewStartDate,
         end_time: validReviewEndDate,
