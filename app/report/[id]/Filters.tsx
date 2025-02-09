@@ -111,7 +111,7 @@ const Filters = ({ projectNumber, projectName }: any) => {
         <div className="hidden md:flex gap-2 xl:gap-4 w-full">
           {/* Subproject Filter */}
           <Select value={subProjectFilter} onValueChange={setSubProjectFilter}>
-            <SelectTrigger className="text-sm xl:text-md w-min-w-[100px] lg:min-w-[120px]">
+            <SelectTrigger className="text-sm xl:text-md w-min-w-[100px] lg:min-w-[120px] w-[120px]">
               <SelectValue placeholder="Subproject" />
             </SelectTrigger>
             <SelectContent>
@@ -128,7 +128,7 @@ const Filters = ({ projectNumber, projectName }: any) => {
 
           {/* Supplier Filter */}
           <Select value={createdByFilter} onValueChange={setCreatedByFilter}>
-            <SelectTrigger className="text-sm lg:text-md lg:min-w-[120px]">
+            <SelectTrigger className="text-sm lg:text-md lg:min-w-[120px] w-[120px]">
               <SelectValue placeholder="Supplier" />
             </SelectTrigger>
             <SelectContent>
@@ -145,7 +145,7 @@ const Filters = ({ projectNumber, projectName }: any) => {
 
           {/* Discipline Filter */}
           <Select value={disciplineFilter} onValueChange={setDisciplineFilter}>
-            <SelectTrigger className="text-sm lg:text-md lg:min-w-[120px]">
+            <SelectTrigger className="text-sm lg:text-md lg:min-w-[120px] w-[120px]">
               <SelectValue placeholder="Discipline" />
             </SelectTrigger>
             <SelectContent>
@@ -178,7 +178,7 @@ const Filters = ({ projectNumber, projectName }: any) => {
 
           {/* Status Filter */}
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="text-sm lg:text-md lg:min-w-[120px]">
+            <SelectTrigger className="text-sm lg:text-md min-w-[120px] w-[120px]">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>

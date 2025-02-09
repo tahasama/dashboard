@@ -295,6 +295,9 @@ const LateAnalysis: React.FC<Data> = memo(({ data }) => {
       <div className="w-9/12 h-full flex flex-col mt-0.5 relative">
         <div className="flex justify-between mr-10 ml-4">
           <h2>Documents Submissions Analysis </h2>
+          <div className="text-xs text-slate-950 bg-indigo-200/55 shadow-md rounded-[2px] py-1 px-1.5">
+            <b>Tip:</b> Click on any legend of any chart to show/hide.
+          </div>
         </div>
         <div
           ref={chartRef}

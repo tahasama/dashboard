@@ -53,7 +53,7 @@ const Legend = () => {
         ))}
       </div>
 
-      <div className="text-xs place-self-end text-slate-950 bg-indigo-200/55 shadow-md rounded-[2px] py-1 px-1.5">
+      <div className="text-xs text-slate-950 bg-indigo-200/55 shadow-md rounded-[2px] py-1 px-1.5">
         <b>Tip:</b> Click on a bar to copy doc number
       </div>
     </div>
