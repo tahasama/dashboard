@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Data, MergedData } from "../types";
+import { getDurations, parseDates } from "@/lib/utils";
 
 const LateAnalysisReviewConclusion: React.FC<{
   chartValuesRealReceivedDocs: number[]; // Cumulative real received review documents count
@@ -12,64 +13,103 @@ const LateAnalysisReviewConclusion: React.FC<{
 }) => {
   const formatNumber = (num: number) => num.toLocaleString();
 
-  // Total Planned and Real review reviews based on the last value in the cumulative arrays
-  const totalPlannedReview = chartValuesdocs.length
-    ? chartValuesdocs[chartValuesdocs.length - 1]
-    : 0;
-  const totalRealReview = chartValuesRealReceivedDocs.length
-    ? chartValuesRealReceivedDocs[chartValuesRealReceivedDocs.length - 1]
-    : 0;
+  // Total Planned and Real review counts
+  const totalPlannedReview = chartValuesdocs.at(-1) || 0;
+  const totalRealReview = chartValuesRealReceivedDocs.at(-1) || 0;
 
-  // Correct calculation for differences (real review reviews vs planned review reviews for each time point)
+  // Calculate review differences
   const reviewDifferences = chartValuesRealReceivedDocs.map((real, index) =>
     chartValuesdocs[index] ? real - chartValuesdocs[index] : 0
   );
 
-  // Calculate stats for the review differences
-  const calculateStats = (
-    arr: number[]
-  ): { min: number; max: number; average: number } => {
-    if (arr.length === 0) return { min: 0, max: 0, average: 0 };
-
-    const min = Math.min(...arr);
-    const max = Math.max(...arr);
-    const average = arr.reduce((sum, value) => sum + value, 0) / arr.length;
-
-    return { min, max, average };
+  // Function to calculate min, max, and average of an array
+  const calculateStats = (arr: number[]) => {
+    if (!arr.length) return { min: 0, max: 0, average: 0 };
+    return {
+      min: Math.min(...arr),
+      max: Math.max(...arr),
+      average: arr.reduce((sum, val) => sum + val, 0) / arr.length,
+    };
   };
 
-  const differences = chartValuesRealReceivedDocs.map((real, index) =>
-    chartValuesdocs[index] ? real - chartValuesdocs[index] : 0
-  );
-  const { min, max, average } = calculateStats(differences);
+  // Calculate lateness of reviews still "Under Review"
+  const calculateLateReviews = () => {
+    let totalLateDays = 0;
+    let lateDocuments = 0;
+    const today = new Date();
 
+    data.forEach((doc) => {
+      if (doc.stepStatus === "Overdue" && !doc.dateCompleted) {
+        const reviewStartDate: any = parseDates(doc.dateIn as string); // Convert Excel date
+        if (!reviewStartDate) return;
+
+        const delayDays = getDurations(reviewStartDate, today); // Calculate days delayed
+        const delayDaysNumber = parseInt(delayDays as any, 10);
+
+        if (delayDaysNumber > 0) {
+          totalLateDays += delayDaysNumber;
+          lateDocuments += 1;
+        }
+      }
+    });
+
+    return {
+      totalLateDays,
+      lateDocuments,
+      avgLateDays: lateDocuments ? totalLateDays / lateDocuments : 0,
+    };
+  };
+
+  // Get late review stats
+  const { totalLateDays, lateDocuments, avgLateDays } = calculateLateReviews();
+
+  const completion = useMemo(
+    () =>
+      (
+        (chartValuesRealReceivedDocs[chartValuesRealReceivedDocs.length - 1] /
+          data.length) *
+        100
+      ).toFixed(1),
+    [totalRealReview, totalPlannedReview]
+  );
+
+  // Compute statistics for review differences
   const {
-    min: minReviewDifference,
-    max: maxReviewDifference,
+    min,
+    max,
     average: avgReviewDifference,
   } = calculateStats(reviewDifferences);
 
-  // Impact Insight for review process
-  const reviewImpactInsight =
-    avgReviewDifference === 0
-      ? {
-          color: "bg-blue-100 ring-blue-200/90",
-          message:
-            "🔵 Perfect Alignment: Real reviews matched the planned review timeline.",
-        }
-      : avgReviewDifference < -5
-      ? {
-          color: "bg-red-100 ring-red-200/90",
-          message: `🔴 Behind Schedule: On average, real reviews lagged behind the plan by ${Math.abs(
-            avgReviewDifference + 5
-          ).toFixed(0)} reviews per time point.`,
-        }
-      : {
-          color: "bg-green-100 ring-green-200/90",
-          message: "🟢 On Track: Reviews are within the planned schedule.",
-        };
+  // **Merged Review & Late Insights**
+  let reviewImpactInsight;
+  if (lateDocuments > 0) {
+    reviewImpactInsight = {
+      color: "bg-red-100 ring-red-200/90",
+      message: `🔴 Critical Delayed Reviews: Completion rate is ${completion}%, with an average delay of ${avgLateDays.toFixed(
+        0
+      )} days per document.`,
+    };
+  } else if (avgReviewDifference === 0) {
+    reviewImpactInsight = {
+      color: "bg-blue-100 ring-blue-200/90",
+      message:
+        "🔵 Perfect Alignment: Real reviews matched the planned timeline.",
+    };
+  } else if (avgReviewDifference < -5) {
+    reviewImpactInsight = {
+      color: "bg-red-100 ring-red-200/90",
+      message: `🔴 Behind Schedule: On average, real reviews lagged by ${Math.abs(
+        avgReviewDifference + 5
+      ).toFixed(0)} reviews per time point.`,
+    };
+  } else {
+    reviewImpactInsight = {
+      color: "bg-green-100 ring-green-200/90",
+      message: "🟢 On Track: Reviews are within the planned schedule.",
+    };
+  }
 
-  // Progression Summary for review process
+  // Progression Summary
   const reviewProgressionInsight =
     totalRealReview >= totalPlannedReview
       ? {
@@ -78,35 +118,26 @@ const LateAnalysisReviewConclusion: React.FC<{
         }
       : {
           color: "bg-orange-100 ring-orange-200/90",
-          message: `🟠 Needs Improvement: Real reviews did not meet the planned reviews${
-            totalPlannedReview - totalRealReview !== 0
-              ? ` by ${Math.abs(
-                  totalPlannedReview - totalRealReview
-                )} document${
-                  Math.abs(totalPlannedReview - totalRealReview) > 1 ? "s" : ""
-                }`
-              : ""
-          }.`,
+          message: `🟠 Needs Improvement: Real reviews fell short by ${Math.abs(
+            totalPlannedReview - totalRealReview
+          )} document(s).`,
         };
 
   return (
-    <div className="w-3/12 font-thin text-black lg:text-slate-800 mb-2 pt-40 lg:pt-0 lg:mt-0 text-xs grid content-center scrollbar-thin  scrollbar-thumb-slate-600 scrollbar-track-slate-300 rounded-md scrollbar-corner-transparent overflow-y-scroll">
-      {/* <div className="w-3/12 font-thin text-black lg:text-slate-800 mb-2  lg:pt-0 lg:mt-0 text-xs grid content-center mr-1"> */}
-
+    <div className="w-3/12 font-thin text-black lg:text-slate-800 mb-2 pt-40 lg:pt-0 lg:mt-0 text-xs grid content-center scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-slate-300 rounded-md scrollbar-corner-transparent overflow-y-scroll">
       {/* Impact Insights for Review */}
-      <p
-        className={`p-2 rounded-md mb-2 mx-0.5 ring- ${reviewImpactInsight.color}`}
-      >
+      <p className={`p-2 rounded-md mb-2 mx-0.5 ${reviewImpactInsight.color}`}>
         {reviewImpactInsight.message}
       </p>
 
       {/* Progression Insights for Review */}
       <p
-        className={`p-2 rounded-md mb-2 mx-0.5 ring- ${reviewProgressionInsight.color}`}
+        className={`p-2 rounded-md mb-2 mx-0.5 ${reviewProgressionInsight.color}`}
       >
         {reviewProgressionInsight.message}
       </p>
 
+      {/* Review Statistics */}
       <br />
       <ul className="space-y-1 ml-0.5">
         <li>

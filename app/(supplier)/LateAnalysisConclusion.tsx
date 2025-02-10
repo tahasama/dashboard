@@ -12,19 +12,56 @@ const LateAnalysisConclusion: React.FC<{
 }) => {
   const formatNumber = (num: number) => num.toLocaleString();
 
-  const totalPlanned = chartValuesdocs.length
-    ? chartValuesdocs[chartValuesdocs.length - 1]
-    : 0;
-  const totalReal = chartValuesRealReceivedDocs.length
-    ? chartValuesRealReceivedDocs[chartValuesRealReceivedDocs.length - 1]
-    : 0;
+  const totalPlanned = chartValuesdocs.at(-1) || 0;
+  const totalReal = chartValuesRealReceivedDocs.at(-1) || 0;
 
-  // Correct calculation for differences (real submissions vs planned submissions for each time point)
+  // Calculate differences (real - planned submissions per time point)
   const differences = chartValuesRealReceivedDocs.map((real, index) =>
     chartValuesdocs[index] ? real - chartValuesdocs[index] : 0
   );
 
-  // Calculate stats for differences
+  // Extract delays (negative differences)
+  const delays = differences.filter((diff) => diff < 0).map(Math.abs);
+  const avgDelay = delays.length
+    ? delays.reduce((sum, d) => sum + d, 0) / delays.length
+    : 0;
+
+  // Count how many documents are late
+  const lateDocuments = delays.length;
+
+  // Completion Rate Calculation (for display)
+  const completionRate = totalPlanned ? (totalReal / totalPlanned) * 100 : 100; // Avoid division by zero
+  console.log("🚀 ~ lateDocuments:", lateDocuments);
+
+  // **Submission Impact Insight**
+  let submissionImpactInsight;
+  if (lateDocuments > 0 && totalPlanned > totalReal) {
+    submissionImpactInsight = {
+      color: "bg-red-100 ring-red-200/90",
+      message: `🔴 Critical Delayed Submissions: Completion rate is ${completionRate.toFixed(
+        1
+      )}%, with an average delay of ${avgDelay.toFixed(0)} days per document.`,
+    };
+  } else if (differences.every((diff) => diff === 0)) {
+    submissionImpactInsight = {
+      color: "bg-blue-100 ring-blue-200/90",
+      message:
+        "🔵 Perfect Alignment: Real submissions matched the planned timeline.",
+    };
+  } else if (differences.reduce((sum, val) => sum + val, 0) < -5) {
+    submissionImpactInsight = {
+      color: "bg-red-100 ring-red-200/90",
+      message: `🔴 Behind Schedule: On average, real submissions lagged by ${Math.abs(
+        avgDelay
+      ).toFixed(0)} submissions per time point.`,
+    };
+  } else {
+    submissionImpactInsight = {
+      color: "bg-green-100 ring-green-200/90",
+      message: "🟢 On Track: Submissions are within the planned schedule.",
+    };
+  }
+
   const calculateStats = (
     arr: number[]
   ): { min: number; max: number; average: number } => {
@@ -38,28 +75,6 @@ const LateAnalysisConclusion: React.FC<{
   };
 
   const { min, max, average } = calculateStats(differences);
-
-  // Impact Insight
-  const impactInsight =
-    average > -10 && average < 0
-      ? {
-          color: "bg-blue-100 ring-blue-200/90",
-          message:
-            "🔵 Perfect Alignment: Real submissions matched the planned timeline.",
-        }
-      : average > 0
-      ? {
-          color: "bg-green-100 ring-green-200/90",
-          message: `🟢 Ahead of Schedule: On average, real submissions exceeded the plan by ${average.toFixed(
-            2
-          )} documents per time point.`,
-        }
-      : {
-          color: "bg-red-100 ring-red-200/90",
-          message: `🔴 Behind Schedule: On average, real submissions lagged behind the plan by ${Math.abs(
-            average
-          ).toFixed(0)} documents per time point.`,
-        };
 
   // Progression Insight
   const progressionInsight =
@@ -82,11 +97,11 @@ const LateAnalysisConclusion: React.FC<{
         };
 
   return (
-    <div className="w-3/12 font-thin text-black lg:text-slate-800 mb-2 pt-40 lg:pt-0 lg:mt-0 text-xs grid content-center scrollbar-thin  scrollbar-thumb-slate-600 scrollbar-track-slate-300 rounded-md scrollbar-corner-transparent overflow-y-scroll">
-      {/* <div className="w-3/12 font-thin text-black lg:text-slate-800 mb-2 lg:pt-0 lg:mt-0 text-xs grid content-center mr-1"> */}
-
-      <p className={`p-2 rounded-md mb-2 ring- mx-0.5 ${impactInsight.color}`}>
-        {impactInsight.message}
+    <div className="w-3/12 font-thin text-black lg:text-slate-800 mb-2 pt-40 lg:pt-0 lg:mt-0 text-xs grid content-center scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-slate-300 rounded-md scrollbar-corner-transparent overflow-y-scroll">
+      <p
+        className={`p-2 rounded-md mb-2 ring- mx-0.5 ${submissionImpactInsight.color}`}
+      >
+        {submissionImpactInsight.message}
       </p>
 
       <p
