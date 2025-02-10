@@ -26,4 +26,5 @@ export type MergedData = {
   status?: string; // Status
   workflowStatus?: string; // Workflow Status
   dateCompleted?: string; // Date Completed
+  revision: any;
 };

@@ -5,8 +5,10 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import * as echarts from "echarts";
 import { Data, MergedData } from "../types";
+import { useFilters } from "../FiltersProvider";
 
-const LateAnalysis: React.FC<Data> = memo(({ data }) => {
+const LateAnalysis: React.FC<Data> = memo(() => {
+  const { filtered } = useFilters();
   const [chartData, setChartData] = useState<any>({
     labels: [],
     datasets: [],
@@ -15,17 +17,6 @@ const LateAnalysis: React.FC<Data> = memo(({ data }) => {
   const [chartValuesdocs, setChartValuesdocs] = useState<any>();
   const [chartValuesRealReceivedDocs, setChartValuesRealReceivedDocs] =
     useState<any>();
-
-  // const [hide, setHide] = useState(false);
-
-  // useEffect(() => {
-  //   const timer = setTimeout(() => {
-  //     setHide((prevHide) => !prevHide);
-  //   }, 3000);
-  //   return () => {
-  //     clearTimeout(timer);
-  //   };
-  // }, []);
 
   const chartRef = useRef<HTMLDivElement | null>(null);
 
@@ -45,16 +36,16 @@ const LateAnalysis: React.FC<Data> = memo(({ data }) => {
       }
     > = {};
 
-    data
-      .filter(
-        (x: MergedData) => x.submissionStatus !== "Canceled"
-        // x.documentNo === "QB230601-00-JET-QB230601A-CI-F999-00070"
-      )
+    filtered
+      // .filter(
+      //   (x: MergedData) => x.submissionStatus !== "Canceled"
+      //   // x.documentNo === "QB230601-00-JET-QB230601A-CI-F999-00070"
+      // )
       .forEach((row: MergedData) => {
         let dateKey: string | null = null;
         const rawDate =
           row.plannedSubmissionDate === "" &&
-          row.submissionStatus === "Submitted"
+          (row.submissionStatus === "Submitted" || row.stepOutcome !== "")
             ? row.dateIn
             : row.plannedSubmissionDate;
         const rawDateW = row.dateIn;
@@ -159,7 +150,7 @@ const LateAnalysis: React.FC<Data> = memo(({ data }) => {
         },
       ],
     });
-  }, [data]);
+  }, [filtered]);
 
   useEffect(() => {
     if (chartRef.current) {
@@ -217,9 +208,10 @@ const LateAnalysis: React.FC<Data> = memo(({ data }) => {
               0
             )}</i>
             </br>
-            <i>Total Completion: ${((actualValue / data.length) * 100).toFixed(
-              1
-            )}%</i>
+            <i>Total Completion: ${(
+              (actualValue / filtered.length) *
+              100
+            ).toFixed(1)}%</i>
             `;
 
             return tooltipContent;
@@ -289,7 +281,7 @@ const LateAnalysis: React.FC<Data> = memo(({ data }) => {
     }
   }, [chartData]);
 
-  if (data.length === 0) {
+  if (filtered.length === 0) {
     return (
       <span className="grid place-content-center h-full">
         <Alert variant="destructive" className="gap-0 mt-4 w-fit">
@@ -328,7 +320,7 @@ const LateAnalysis: React.FC<Data> = memo(({ data }) => {
         />
       </div>
       <LateAnalysisConclusion
-        data={data}
+        data={filtered}
         chartValuesRealReceivedDocs={chartValuesRealReceivedDocs}
         chartValuesdocs={chartValuesdocs}
       />
