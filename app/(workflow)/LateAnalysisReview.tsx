@@ -248,10 +248,10 @@ const LateAnalysisReview: React.FC<Data> = memo(({ data }) => {
             )}</i>
             </br>
             <i>Completion / step: ${
-              // (actualValue / plannedValue) * 100 <= 100
-              //   ? ((actualValue / plannedValue) * 100).toFixed(1)
-              //   : 100
-              ((actualValue / data.length) * 100).toFixed(1)
+              (actualValue / plannedValue) * 100 <= 100
+                ? ((actualValue / plannedValue) * 100).toFixed(1)
+                : 100
+              // ((actualValue / plannedValue) * 100).toFixed(1)
             }%</i>
             `;
 

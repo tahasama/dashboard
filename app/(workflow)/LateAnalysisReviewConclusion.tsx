@@ -67,7 +67,7 @@ const LateAnalysisReviewConclusion: React.FC<{
     () =>
       (
         (chartValuesRealReceivedDocs[chartValuesRealReceivedDocs.length - 1] /
-          data.length) *
+          chartValuesdocs[chartValuesdocs.length - 1]) *
         100
       ).toFixed(1),
     [totalRealReview, totalPlannedReview]
