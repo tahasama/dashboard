@@ -5,8 +5,11 @@ import { nightColors } from "../colors";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { Data, MergedData } from "../types";
+import { useFilters } from "../FiltersProvider";
 
-const SubmissionStatus: React.FC<Data> = memo(({ data }) => {
+const SubmissionStatus: React.FC<Data> = memo(() => {
+  const { filtered } = useFilters(); // Get filtered data
+
   const [chartData, setChartData] = useState<
     { label: string; value: number }[]
   >([]);
@@ -18,12 +21,12 @@ const SubmissionStatus: React.FC<Data> = memo(({ data }) => {
   useEffect(() => {
     const statusCounts: { [key: string]: number } = {};
 
-    data
-      .filter(
-        (row: MergedData) =>
-          row.submissionStatus !== "Canceled" &&
-          row.submissionStatus !== "Cancelled"
-      )
+    filtered
+      // .filter(
+      //   (row: MergedData) =>
+      //     row.submissionStatus !== "Canceled" &&
+      //     row.submissionStatus !== "Cancelled"
+      // )
       .forEach((row: any) => {
         let status = row.submissionStatus;
         if (status === "Marked As Submitted") {
@@ -40,7 +43,7 @@ const SubmissionStatus: React.FC<Data> = memo(({ data }) => {
     }));
 
     setChartData(formattedData);
-  }, [data]);
+  }, [filtered]);
 
   // Initialize and render the chart when the data is ready
   useEffect(() => {

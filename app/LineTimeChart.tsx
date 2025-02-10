@@ -39,7 +39,7 @@ import Legend from "./TimeLineLegend";
 import { Toaster } from "@/components/ui/sonner";
 import { toast } from "sonner";
 
-const LineTimeChart: React.FC<{ data: MergedData[] }> = memo(() => {
+const LineTimeChart: React.FC = memo(() => {
   const { filtered } = useFilters(); // Get filtered data
   const { currentPage, setCurrentPage, rowsPerPage, setRowsPerPage } =
     usePagination();

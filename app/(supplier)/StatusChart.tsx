@@ -6,8 +6,11 @@ import { nightColors } from "../colors";
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Data, MergedData } from "../types";
+import { useFilters } from "../FiltersProvider";
 
-const StatusChart: React.FC<Data> = memo(({ data }) => {
+const StatusChart: React.FC<Data> = memo(() => {
+  const { filtered } = useFilters(); // Get filtered data
+
   const [chartData, setChartData] = useState<
     { label: string; value: number }[]
   >([]);
@@ -18,12 +21,12 @@ const StatusChart: React.FC<Data> = memo(({ data }) => {
     // Combine data from all files and generate chart data
     const statusCounts: { [key: string]: number } = {};
 
-    data
-      .filter(
-        (row: MergedData) =>
-          row.submissionStatus !== "Canceled" &&
-          row.submissionStatus !== "Cancelled"
-      )
+    filtered
+      // .filter(
+      //   (row: MergedData) =>
+      //     row.submissionStatus !== "Canceled" &&
+      //     row.submissionStatus !== "Cancelled"
+      // )
       .forEach((row: MergedData) => {
         const status = row.status; // Adjust to match your column name
         if (status) {
@@ -37,7 +40,7 @@ const StatusChart: React.FC<Data> = memo(({ data }) => {
     }));
 
     setChartData(formattedData);
-  }, [data]);
+  }, [filtered]);
 
   useEffect(() => {
     if (!chartRef.current || chartData.length === 0) return;

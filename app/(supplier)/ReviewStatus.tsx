@@ -5,32 +5,61 @@ import { nightColors } from "../colors";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { Data, MergedData } from "../types";
+import { useFilters } from "../FiltersProvider";
 
-const ReviewStatus: React.FC<Data> = memo(({ data }) => {
+const ReviewStatus: React.FC<Data> = memo(() => {
+  const { filtered } = useFilters();
+  console.log("🚀 ~ filtered:", filtered);
   const [chartData, setChartData] = useState<
     { label: string; value: number }[]
   >([]);
   const chartRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Process the data
-    const statusCounts: { [key: string]: number } = {};
-    data
-      .filter((row: MergedData) => row.reviewStatus !== "Terminated")
-      .forEach((row: any) => {
-        const status = row.reviewStatus;
-        if (status) {
-          statusCounts[status] = (statusCounts[status] || 0) + 1;
-        }
-      });
+    if (!filtered || filtered.length === 0) return;
 
+    const latestRevisions: { [key: string]: any } = {};
+
+    filtered.forEach((row: any) => {
+      const docNo = row.documentNo;
+
+      // If revision > 0, track the latest revision per documentNo
+      if (row.revision > 0 || row.revision === "A") {
+        if (
+          !latestRevisions[docNo] ||
+          row.revision > latestRevisions[docNo].revision
+        ) {
+          latestRevisions[docNo] = row;
+        }
+      }
+
+      // If revision = 0, keep it as is (only if not already overwritten by a newer revision)
+      else if (!latestRevisions[docNo]) {
+        latestRevisions[docNo] = row;
+      }
+    });
+
+    // Count occurrences based on stepOutcome (if revision > 0) or reviewStatus (if revision = 0)
+    const statusCounts: { [key: string]: number } = {};
+
+    Object.values(latestRevisions).forEach((row: any) => {
+      const status =
+        row.revision > 0 || row.revision === "A"
+          ? row.stepOutcome
+          : row.reviewStatus; // Choose status based on revision
+      if (status) {
+        statusCounts[status] = (statusCounts[status] || 0) + 1;
+      }
+    });
+
+    // Format data for the chart
     const formattedData = Object.keys(statusCounts).map((key) => ({
-      label: key.startsWith("C") ? key.slice(0, 9) : key,
+      label: key.startsWith("C") ? key.slice(0, 9) : key, // Trim if needed
       value: statusCounts[key],
     }));
 
     setChartData(formattedData);
-  }, [data]);
+  }, [filtered]);
 
   useEffect(() => {
     if (!chartRef.current || chartData.length === 0) return;

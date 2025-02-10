@@ -157,7 +157,7 @@ const FiltersAndCharts = () => {
           </div>
         }
       >
-        <LineTimeChart data={filtered} />
+        <LineTimeChart />
       </Suspense>
     </div>
   );
