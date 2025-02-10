@@ -7,8 +7,13 @@ import * as echarts from "echarts";
 import { Data, MergedData } from "../types";
 import { useFilters } from "../FiltersProvider";
 
-const LateAnalysis: React.FC<Data> = memo(() => {
+const LateAnalysis: React.FC<Data> = memo(({ data }) => {
+  console.log("🚀 ~ constLateAnalysis:React.FC<Data>=memo ~ data:", data);
   const { filtered } = useFilters();
+  console.log(
+    "🚀 ~ constLateAnalysis:React.FC<Data>=memo ~ filtered:",
+    filtered
+  );
   const [chartData, setChartData] = useState<any>({
     labels: [],
     datasets: [],
@@ -35,56 +40,55 @@ const LateAnalysis: React.FC<Data> = memo(() => {
         realReceivedDocs: number;
       }
     > = {};
+    console.log(
+      "Checking duplicates:",
+      data.filter((row) => row.plannedSubmissionDate === "31/07/2023")
+    );
 
-    filtered
-      // .filter(
-      //   (x: MergedData) => x.submissionStatus !== "Canceled"
-      //   // x.documentNo === "QB230601-00-JET-QB230601A-CI-F999-00070"
-      // )
-      .forEach((row: MergedData) => {
-        let dateKey: string | null = null;
-        const rawDate =
-          row.plannedSubmissionDate === "" &&
-          (row.submissionStatus === "Submitted" || row.stepOutcome !== "")
-            ? row.dateIn
-            : row.plannedSubmissionDate;
-        const rawDateW = row.dateIn;
+    (data.length > 1 ? data : filtered).forEach((row: MergedData) => {
+      let dateKey: string | null = null;
+      const rawDate =
+        row.plannedSubmissionDate && row.plannedSubmissionDate !== ""
+          ? row.plannedSubmissionDate
+          : row.dateIn;
 
-        if (typeof rawDate === "number") {
-          dateKey = excelDateToJSDate(rawDate);
-        } else if (typeof rawDate === "string") {
-          dateKey = rawDate;
+      const rawDateW = row.dateIn;
+
+      if (typeof rawDate === "number") {
+        dateKey = excelDateToJSDate(rawDate);
+      } else if (typeof rawDate === "string") {
+        dateKey = rawDate;
+      }
+
+      if (dateKey) {
+        if (!groupedData[dateKey]) {
+          groupedData[dateKey] = {
+            docs: 0,
+            receivedDocs: 0,
+            realReceivedDocs: 0,
+          };
         }
 
-        if (dateKey) {
-          if (!groupedData[dateKey]) {
-            groupedData[dateKey] = {
+        groupedData[dateKey].docs += 1;
+
+        if (rawDateW) {
+          const receivedDate =
+            typeof rawDateW === "string"
+              ? rawDateW
+              : excelDateToJSDate(rawDateW);
+
+          if (!groupedData[receivedDate]) {
+            groupedData[receivedDate] = {
               docs: 0,
               receivedDocs: 0,
               realReceivedDocs: 0,
             };
           }
-
-          groupedData[dateKey].docs += 1;
-
-          if (rawDateW) {
-            const receivedDate =
-              typeof rawDateW === "string"
-                ? rawDateW
-                : excelDateToJSDate(rawDateW);
-
-            if (!groupedData[receivedDate]) {
-              groupedData[receivedDate] = {
-                docs: 0,
-                receivedDocs: 0,
-                realReceivedDocs: 0,
-              };
-            }
-            groupedData[receivedDate].receivedDocs += 1;
-            groupedData[receivedDate].realReceivedDocs += 1;
-          }
+          groupedData[receivedDate].receivedDocs += 1;
+          groupedData[receivedDate].realReceivedDocs += 1;
         }
-      });
+      }
+    });
 
     return groupedData;
   };
@@ -130,6 +134,7 @@ const LateAnalysis: React.FC<Data> = memo(() => {
 
   useEffect(() => {
     const groupedData = processData();
+    console.log("🚀 ~ useEffect ~ groupedData:", groupedData);
     const { chartLabels, chartValuesdocs, chartValuesRealReceivedDocs } =
       calculateChartValues(groupedData);
 
@@ -150,7 +155,7 @@ const LateAnalysis: React.FC<Data> = memo(() => {
         },
       ],
     });
-  }, [filtered]);
+  }, [data]);
 
   useEffect(() => {
     if (chartRef.current) {
@@ -208,10 +213,9 @@ const LateAnalysis: React.FC<Data> = memo(() => {
               0
             )}</i>
             </br>
-            <i>Total Completion: ${(
-              (actualValue / filtered.length) *
-              100
-            ).toFixed(1)}%</i>
+            <i>Total Completion: ${((actualValue / data.length) * 100).toFixed(
+              1
+            )}%</i>
             `;
 
             return tooltipContent;
@@ -281,7 +285,7 @@ const LateAnalysis: React.FC<Data> = memo(() => {
     }
   }, [chartData]);
 
-  if (filtered.length === 0) {
+  if (data.length === 0) {
     return (
       <span className="grid place-content-center h-full">
         <Alert variant="destructive" className="gap-0 mt-4 w-fit">
@@ -320,7 +324,7 @@ const LateAnalysis: React.FC<Data> = memo(() => {
         />
       </div>
       <LateAnalysisConclusion
-        data={filtered}
+        data={data}
         chartValuesRealReceivedDocs={chartValuesRealReceivedDocs}
         chartValuesdocs={chartValuesdocs}
       />

@@ -372,7 +372,7 @@ const ExcelForm = ({}: any) => {
             submissionStatus: "",
             reviewStatus: "",
             createdBy: "",
-            plannedSubmissionDate,
+            plannedSubmissionDate: "",
             dateIn: rowToMerge?.["Date In"] || "",
             dateCompleted: rowToMerge?.["Date Completed"] || "",
             selectList1: file1Lookup[docNo]?.selectList1 || "",
@@ -388,10 +388,10 @@ const ExcelForm = ({}: any) => {
     });
 
     return mergedData.filter(
-      (record) =>
-        record.submissionStatus !== "Canceled" &&
-        record.stepStatus !== "Terminated" &&
-        record.reviewStatus !== "Terminated"
+      (record) => record.submissionStatus !== "Canceled"
+      // &&
+      // record.stepStatus !== "Terminated" &&
+      // record.reviewStatus !== "Terminated"
     );
   };
 

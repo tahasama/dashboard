@@ -38,15 +38,6 @@ const FiltersAndCharts = () => {
     );
   }, [filtered]); // Only recompute when `filtered` changes
 
-  // Memoize uniqueFiltered to prevent unnecessary recalculations
-  // const uniqueDocuments = useMemo(() => {
-  //   return Array.from(
-  //     new Map(
-  //       filtered.map((doc) => [doc.documentNo, doc]) // Map by documentNo
-  //     ).values()
-  //   );
-  // }, [filtered]); // Only recompute when `filtered` changes
-
   const { setCurrentPage } = usePagination();
 
   useEffect(() => {
