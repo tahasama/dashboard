@@ -15,14 +15,14 @@ type FiltersContextType = {
   subProjectFilter: string;
   disciplineFilter: string;
   statusFilter: string;
-  // subStatusFilter: string;
+  subStatusFilter: string;
   searchText: string;
   setCreatedByFilter: React.Dispatch<React.SetStateAction<string>>;
   setSubProjectFilter: React.Dispatch<React.SetStateAction<string>>;
   setDisciplineFilter: React.Dispatch<React.SetStateAction<string>>;
   setStatusFilter: React.Dispatch<React.SetStateAction<string>>;
   setSearchText: React.Dispatch<React.SetStateAction<string>>;
-  // setSubStatusFilter: React.Dispatch<React.SetStateAction<string>>;
+  setSubStatusFilter: React.Dispatch<React.SetStateAction<string>>;
   clearFilters: () => void;
   filtered: any[];
   originalData: any[];
@@ -30,7 +30,7 @@ type FiltersContextType = {
   uniqueCreatedBy: string[];
   uniqueDisciplines: string[];
   uniqueStatuses: string[];
-  // uniqueSubStatuses: string[];
+  uniqueSubStatuses: string[];
   contentRef: any;
   content2Ref: any;
 };
@@ -51,7 +51,7 @@ export const FiltersProvider = ({
   const [subProjectFilter, setSubProjectFilter] = useState<string>("");
   const [disciplineFilter, setDisciplineFilter] = useState<string>("");
   const [statusFilter, setStatusFilter] = useState<string>("");
-  // const [subStatusFilter, setSubStatusFilter] = useState<string>("");
+  const [subStatusFilter, setSubStatusFilter] = useState<string>("");
   const [searchText, setSearchText] = useState<string>("");
   const [debouncedSearchText, setDebouncedSearchText] = useState<string>("");
 
@@ -81,10 +81,10 @@ export const FiltersProvider = ({
       getUniqueValues(originalData, "stepOutcome"),
     [originalData]
   );
-  // const uniqueSubStatuses = useMemo(
-  //   () => getUniqueValues(originalData, "submissionStatus"),
-  //   [originalData]
-  // );
+  const uniqueSubStatuses = useMemo(
+    () => getUniqueValues(originalData, "submissionStatus"),
+    [originalData]
+  );
 
   const clearFilters = () => {
     setCreatedByFilter("");
@@ -92,7 +92,7 @@ export const FiltersProvider = ({
     setDisciplineFilter("");
     setStatusFilter("");
     setSearchText(""); // Clear the searchText as well
-    // setSubStatusFilter("");
+    setSubStatusFilter("");
   };
 
   // Debounce the search text
@@ -117,7 +117,7 @@ export const FiltersProvider = ({
         subProjectFilter,
         disciplineFilter,
         statusFilter,
-        // subStatusFilter,
+        subStatusFilter,
       },
     });
 
@@ -135,7 +135,7 @@ export const FiltersProvider = ({
     subProjectFilter,
     disciplineFilter,
     statusFilter,
-    // subStatusFilter,
+    subStatusFilter,
     originalData,
   ]);
 
@@ -146,13 +146,13 @@ export const FiltersProvider = ({
       disciplineFilter,
       statusFilter,
       searchText,
-      // subStatusFilter,
+      subStatusFilter,
       setCreatedByFilter,
       setSubProjectFilter,
       setDisciplineFilter,
       setStatusFilter,
       setSearchText,
-      // setSubStatusFilter,
+      setSubStatusFilter,
       clearFilters,
       filtered: filteredData,
       originalData,
@@ -160,7 +160,7 @@ export const FiltersProvider = ({
       uniqueCreatedBy, // Add uniqueCreatedBy here
       uniqueDisciplines, // Add uniqueDisciplines here
       uniqueStatuses, // Add uniqueStatuses here
-      // uniqueSubStatuses,
+      uniqueSubStatuses,
       contentRef,
       content2Ref,
     }),
@@ -178,7 +178,7 @@ export const FiltersProvider = ({
       uniqueStatuses,
       contentRef,
       content2Ref,
-      // uniqueSubStatuses,
+      uniqueSubStatuses,
     ]
   );
 
