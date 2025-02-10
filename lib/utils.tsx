@@ -116,9 +116,9 @@ export const excelDateToJSDate = (serial: number): string => {
   });
 };
 
-export const getDurations = (startDate, endDate) => {
-  const start = new Date(startDate);
-  const end = new Date(endDate);
+export const getDurations = (startDate: any, endDate: any) => {
+  const start: any = new Date(startDate);
+  const end: any = new Date(endDate);
 
   const diffTime = end - start; // Difference in milliseconds
   const diffDays = diffTime / (1000 * 3600 * 24); // Convert to days
