@@ -10,10 +10,16 @@ import React, {
 } from "react";
 import LateAnalysisReviewConclusion from "./LateAnalysisReviewConclusion";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, HelpCircle } from "lucide-react";
 
 import * as echarts from "echarts";
 import { Data, MergedData } from "../types";
+import { Button } from "@/components/ui/button";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@radix-ui/react-popover";
 
 // Define the data structure for the input `data` prop
 interface DataRow {
@@ -337,6 +343,20 @@ const LateAnalysisReview: React.FC<Data> = memo(({ data }) => {
 
   return (
     <div className="w-full h-full flex">
+      <div className="absolute right-7 top-2 text-xs ">
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="outline">
+              <HelpCircle />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="text-xs grid p-2 gap-2 bg-white">
+            <p className="text-slate-950 bg-indigo-200/40 shadow-md rounded-[2px] py-1 px-1.5">
+              <b>Tip:</b> Click on any legend of any chart to show/hide.
+            </p>
+          </PopoverContent>
+        </Popover>
+      </div>
       <div className="w-9/12 h-full flex flex-col mt-0.5">
         <div className="flex justify-between mr-10 ml-4">
           <h2>Documents Reviews Analysis </h2>

@@ -2,18 +2,20 @@
 import React, { useState, useEffect, useRef, memo } from "react";
 import LateAnalysisConclusion from "./LateAnalysisConclusion";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, HelpCircle } from "lucide-react";
 import * as echarts from "echarts";
 import { Data, MergedData } from "../types";
 import { useFilters } from "../FiltersProvider";
+import { Button } from "@/components/ui/button";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@radix-ui/react-popover";
 
 const LateAnalysis: React.FC<Data> = memo(({ data }) => {
-  console.log("🚀 ~ constLateAnalysis:React.FC<Data>=memo ~ data:", data);
   const { filtered } = useFilters();
-  console.log(
-    "🚀 ~ constLateAnalysis:React.FC<Data>=memo ~ filtered:",
-    filtered
-  );
+
   const [chartData, setChartData] = useState<any>({
     labels: [],
     datasets: [],
@@ -300,8 +302,19 @@ const LateAnalysis: React.FC<Data> = memo(({ data }) => {
 
   return (
     <div className="w-full h-full flex">
-      <div className="absolute right-5 mb-2 text-xs text-slate-950 bg-indigo-200/55 shadow-md rounded-[2px] py-1 px-1.5 mx-0.5">
-        <b>Tip:</b> Click on any legend of any chart to show/hide.
+      <div className="absolute right-7 top-0 text-xs ">
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="outline">
+              <HelpCircle />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="text-xs grid p-2 gap-2 bg-white">
+            <p className="text-slate-950 bg-indigo-200/40 shadow-md rounded-[2px] py-1 px-1.5">
+              <b>Tip:</b> Click on any legend of any chart to show/hide.
+            </p>
+          </PopoverContent>
+        </Popover>
       </div>
       <div className="w-9/12 h-full flex flex-col mt-0.5 relative">
         <div className="flex justify-between mr-10 ml-4">

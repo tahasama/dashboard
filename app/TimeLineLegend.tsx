@@ -1,4 +1,20 @@
-import React from "react";
+import { Button } from "@/components/ui/button";
+import {
+  BookOpenTextIcon,
+  FileQuestion,
+  HelpCircle,
+  Option,
+  OptionIcon,
+  Star,
+  TicketsPlane,
+} from "lucide-react";
+import React, { useState } from "react";
+
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 const statusColorsSubmission = [
   { label: "Submission Required", color: "#b0e0e6" },
@@ -20,6 +36,7 @@ const statusColorsReview = [
 ];
 
 const Legend = () => {
+  const [show, setShow] = useState(false);
   return (
     <div className="flex justify-between items-center text-xs -mt-1 mb-1 p-2 bg-white shadow-lg rounded-lg">
       <div className="flex flex-wrap gap-y-1 gap-x-4">
@@ -53,9 +70,21 @@ const Legend = () => {
         ))}
       </div>
 
-      <div className="text-xs text-slate-950 bg-indigo-200/55 shadow-md rounded-[2px] py-1 px-1.5">
-        <b>Tip:</b> Click on a bar to copy doc number
-      </div>
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button variant="outline">
+            <HelpCircle />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="text-xs grid p-2 gap-2 ">
+          <p className="text-slate-950 bg-indigo-200/40 shadow-md rounded-[2px] py-1 px-1.5">
+            <b>Tip:</b> Click on a bar to copy doc number
+          </p>{" "}
+          <p className="text-slate-950 bg-indigo-200/40 shadow-md rounded-[2px] py-1 px-1.5">
+            <b>Tip:</b> Pinch to zoom in / zoom out
+          </p>
+        </PopoverContent>
+      </Popover>
     </div>
   );
 };
