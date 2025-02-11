@@ -44,13 +44,13 @@ self.onmessage = (e) => {
   if (statusFilter && statusFilter !== "all") {
     const matchingDocuments = new Set(
       filteredData
-        .filter(
-          (item) =>
-            item.reviewStatus === statusFilter || item.stepOutcome === statusFilter
-        )
-        .map((item) => item.documentNo) // Collect document numbers that match
+        .filter((item) => {
+          const isReviewMatch = item.reviewStatus === statusFilter || item.stepOutcome === statusFilter;
+          const isSubmissionMatch = item.submissionStatus === statusFilter;
+          return isReviewMatch || isSubmissionMatch;
+        })
+        .map((item) => item.documentNo) // Collect matching document numbers
     );
-  
     // Keep all revisions of matching documents
     filteredData = filteredData.filter((item) =>
       matchingDocuments.has(item.documentNo)

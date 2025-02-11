@@ -15,22 +15,24 @@ type FiltersContextType = {
   subProjectFilter: string;
   disciplineFilter: string;
   statusFilter: string;
-  subStatusFilter: string;
+  // subStatusFilter: string;
   searchText: string;
   setCreatedByFilter: React.Dispatch<React.SetStateAction<string>>;
   setSubProjectFilter: React.Dispatch<React.SetStateAction<string>>;
   setDisciplineFilter: React.Dispatch<React.SetStateAction<string>>;
   setStatusFilter: React.Dispatch<React.SetStateAction<string>>;
   setSearchText: React.Dispatch<React.SetStateAction<string>>;
-  setSubStatusFilter: React.Dispatch<React.SetStateAction<string>>;
+  // setSubStatusFilter: React.Dispatch<React.SetStateAction<string>>;
   clearFilters: () => void;
   filtered: any[];
   originalData: any[];
   uniqueSubProjects: string[];
   uniqueCreatedBy: string[];
   uniqueDisciplines: string[];
-  uniqueStatuses: string[];
-  uniqueSubStatuses: string[];
+  // uniqueStatuses: string[];
+  // uniqueSubStatuses: string[];
+  uniqueReviewStatuses: string[];
+  uniqueSubmissionStatuses: string[];
   contentRef: any;
   content2Ref: any;
 };
@@ -75,16 +77,40 @@ export const FiltersProvider = ({
     () => getUniqueValues(originalData, "selectList1"),
     [originalData]
   );
-  const uniqueStatuses = useMemo(
-    () =>
-      getUniqueValues(originalData, "reviewStatus") &&
-      getUniqueValues(originalData, "stepOutcome"),
-    [originalData]
-  );
-  const uniqueSubStatuses = useMemo(
-    () => getUniqueValues(originalData, "submissionStatus"),
-    [originalData]
-  );
+  // const uniqueStatuses = useMemo(() => {
+  //   const reviewStatuses = new Set(
+  //     getUniqueValues(originalData, "reviewStatus")
+  //   );
+  //   const stepStatuses = new Set(getUniqueValues(originalData, "stepOutcome"));
+  //   const submissionStatuses = new Set(
+  //     getUniqueValues(originalData, "submissionStatus")
+  //   );
+
+  //   return Array.from(
+  //     new Set([...reviewStatuses, ...stepStatuses, ...submissionStatuses])
+  //   );
+  // }, [originalData]);
+
+  // const uniqueSubStatuses = useMemo(
+  //   () => getUniqueValues(originalData, "submissionStatus"),
+  //   [originalData]
+  // );
+
+  const uniqueReviewStatuses = useMemo(() => {
+    return Array.from(
+      new Set(
+        getUniqueValues(originalData, "reviewStatus").concat(
+          getUniqueValues(originalData, "stepOutcome")
+        )
+      )
+    ).filter((value) => value !== "None"); // Exclude "None"
+  }, [originalData]);
+
+  const uniqueSubmissionStatuses = useMemo(() => {
+    return getUniqueValues(originalData, "submissionStatus").filter(
+      (value) => value !== "None"
+    );
+  }, [originalData]);
 
   const clearFilters = () => {
     setCreatedByFilter("");
@@ -117,7 +143,7 @@ export const FiltersProvider = ({
         subProjectFilter,
         disciplineFilter,
         statusFilter,
-        subStatusFilter,
+        // subStatusFilter,
       },
     });
 
@@ -159,8 +185,10 @@ export const FiltersProvider = ({
       uniqueSubProjects, // Add uniqueSubProjects here
       uniqueCreatedBy, // Add uniqueCreatedBy here
       uniqueDisciplines, // Add uniqueDisciplines here
-      uniqueStatuses, // Add uniqueStatuses here
-      uniqueSubStatuses,
+      // uniqueStatuses, // Add uniqueStatuses here
+      // uniqueSubStatuses,
+      uniqueReviewStatuses,
+      uniqueSubmissionStatuses,
       contentRef,
       content2Ref,
     }),
@@ -175,10 +203,12 @@ export const FiltersProvider = ({
       uniqueSubProjects,
       uniqueCreatedBy,
       uniqueDisciplines,
-      uniqueStatuses,
+      // uniqueStatuses,
+      uniqueReviewStatuses,
+      uniqueSubmissionStatuses,
       contentRef,
       content2Ref,
-      uniqueSubStatuses,
+      // uniqueSubStatuses,
     ]
   );
 

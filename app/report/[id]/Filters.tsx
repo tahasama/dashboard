@@ -6,6 +6,7 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -44,20 +45,22 @@ const Filters = ({ projectNumber, projectName }: any) => {
     subProjectFilter,
     disciplineFilter,
     statusFilter,
-    subStatusFilter,
+    // subStatusFilter,
     searchText,
     setCreatedByFilter,
     setSubProjectFilter,
     setDisciplineFilter,
     setStatusFilter,
-    setSubStatusFilter,
+    // setSubStatusFilter,
     setSearchText,
     clearFilters,
     uniqueSubProjects,
     uniqueCreatedBy,
     uniqueDisciplines,
-    uniqueStatuses,
-    uniqueSubStatuses,
+    // uniqueStatuses,
+    // uniqueSubStatuses,
+    uniqueReviewStatuses,
+    uniqueSubmissionStatuses,
     contentRef,
     content2Ref,
   } = useFilters();
@@ -117,9 +120,11 @@ const Filters = ({ projectNumber, projectName }: any) => {
               </SelectTrigger>
               <SelectContent side="right">
                 <SelectGroup>
-                  <SelectItem value={"all"}>All</SelectItem>
+                  <SelectItem value={"all"} className="text-xs font-semibold">
+                    All
+                  </SelectItem>
                   {uniqueSubProjects.map((value: any) => (
-                    <SelectItem key={value} value={value}>
+                    <SelectItem key={value} value={value} className="text-xs">
                       {value}
                     </SelectItem>
                   ))}
@@ -134,9 +139,11 @@ const Filters = ({ projectNumber, projectName }: any) => {
               </SelectTrigger>
               <SelectContent side="right">
                 <SelectGroup>
-                  <SelectItem value={"all"}>All</SelectItem>
+                  <SelectItem value={"all"} className="text-xs font-semibold">
+                    All
+                  </SelectItem>
                   {uniqueCreatedBy.map((value: any) => (
-                    <SelectItem key={value} value={value}>
+                    <SelectItem key={value} value={value} className="text-xs">
                       {value}
                     </SelectItem>
                   ))}
@@ -154,25 +161,11 @@ const Filters = ({ projectNumber, projectName }: any) => {
               </SelectTrigger>
               <SelectContent side="right">
                 <SelectGroup>
-                  <SelectItem value={"all"}>All</SelectItem>
+                  <SelectItem value={"all"} className="text-xs font-semibold">
+                    All
+                  </SelectItem>
                   {uniqueDisciplines.map((value: any) => (
-                    <SelectItem key={value} value={value}>
-                      {value}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-
-            <Select value={subStatusFilter} onValueChange={setSubStatusFilter}>
-              <SelectTrigger className="text-sm lg:text-md lg:min-w-[120px]">
-                <SelectValue placeholder="Submission Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectItem value={"all"}>All</SelectItem>
-                  {uniqueSubStatuses.map((value: any) => (
-                    <SelectItem key={value} value={value}>
+                    <SelectItem key={value} value={value} className="text-xs">
                       {value}
                     </SelectItem>
                   ))}
@@ -187,12 +180,36 @@ const Filters = ({ projectNumber, projectName }: any) => {
               </SelectTrigger>
               <SelectContent side="right">
                 <SelectGroup>
-                  <SelectItem value={"all"}>All</SelectItem>
-                  {uniqueStatuses.map((value: any) => (
-                    <SelectItem key={value} value={value}>
-                      {value}
-                    </SelectItem>
-                  ))}
+                  {/* All Option */}
+                  <SelectItem value="all" className="text-xs font-semibold">
+                    All
+                  </SelectItem>
+
+                  {/* Review Statuses Group */}
+                  <SelectLabel className="text-slate-500 text-xs">
+                    Review Status
+                  </SelectLabel>
+                  {uniqueReviewStatuses
+                    .toSorted()
+                    .filter((value) => value !== "None")
+                    .map((value) => (
+                      <SelectItem key={value} value={value} className="text-xs">
+                        {value}
+                      </SelectItem>
+                    ))}
+
+                  {/* Submission Statuses Group */}
+                  <SelectLabel className="text-slate-500 text-xs">
+                    Submission Status
+                  </SelectLabel>
+                  {uniqueSubmissionStatuses
+                    .toSorted()
+                    .filter((value) => value !== "None")
+                    .map((value) => (
+                      <SelectItem key={value} value={value} className="text-xs">
+                        {value}
+                      </SelectItem>
+                    ))}
                 </SelectGroup>
               </SelectContent>
             </Select>
@@ -216,14 +233,16 @@ const Filters = ({ projectNumber, projectName }: any) => {
         <div className="hidden lg:flex gap-2 xl:gap-2.5 w-full">
           {/* Subproject Filter */}
           <Select value={subProjectFilter} onValueChange={setSubProjectFilter}>
-            <SelectTrigger className="text-sm lg:text-md w-min-w-[107px] lg:min-w-[107px] w-[107px]">
+            <SelectTrigger className="max-w-[125px] text-xs lg:text-sm">
               <SelectValue placeholder="Subproject" />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectItem value={"all"}>All</SelectItem>
+                <SelectItem value={"all"} className="text-xs font-semibold">
+                  All
+                </SelectItem>
                 {uniqueSubProjects.map((value: any) => (
-                  <SelectItem key={value} value={value}>
+                  <SelectItem key={value} value={value} className="text-xs">
                     {value}
                   </SelectItem>
                 ))}
@@ -233,14 +252,16 @@ const Filters = ({ projectNumber, projectName }: any) => {
 
           {/* Supplier Filter */}
           <Select value={createdByFilter} onValueChange={setCreatedByFilter}>
-            <SelectTrigger className="text-sm lg:text-md w-min-w-[107px] lg:min-w-[107px] w-[107px]">
+            <SelectTrigger className="max-w-[125px] text-xs lg:text-sm">
               <SelectValue placeholder="Supplier" />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectItem value={"all"}>All</SelectItem>
+                <SelectItem value={"all"} className="text-xs font-semibold">
+                  All
+                </SelectItem>
                 {uniqueCreatedBy.map((value: any) => (
-                  <SelectItem key={value} value={value}>
+                  <SelectItem key={value} value={value} className="text-xs">
                     {value}
                   </SelectItem>
                 ))}
@@ -250,30 +271,16 @@ const Filters = ({ projectNumber, projectName }: any) => {
 
           {/* Discipline Filter */}
           <Select value={disciplineFilter} onValueChange={setDisciplineFilter}>
-            <SelectTrigger className="text-sm lg:text-md w-min-w-[107px] lg:min-w-[107px] w-[107px]">
+            <SelectTrigger className="max-w-[125px] text-xs lg:text-sm">
               <SelectValue placeholder="Discipline" />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectItem value={"all"}>All</SelectItem>
+                <SelectItem value={"all"} className="text-xs font-semibold">
+                  All
+                </SelectItem>
                 {uniqueDisciplines.map((value: any) => (
-                  <SelectItem key={value} value={value}>
-                    {value}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-
-          <Select value={subStatusFilter} onValueChange={setSubStatusFilter}>
-            <SelectTrigger className="text-sm lg:text-md w-min-w-[107px] lg:min-w-[107px] w-[107px]">
-              <SelectValue placeholder="Submission" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value={"all"}>All</SelectItem>
-                {uniqueSubStatuses.map((value: any) => (
-                  <SelectItem key={value} value={value}>
+                  <SelectItem key={value} value={value} className="text-xs">
                     {value}
                   </SelectItem>
                 ))}
@@ -283,17 +290,41 @@ const Filters = ({ projectNumber, projectName }: any) => {
 
           {/* Status Filter */}
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="text-sm lg:text-md w-min-w-[107px] lg:min-w-[107px] w-[107px]">
-              <SelectValue placeholder="Review" />
+            <SelectTrigger className="max-w-[125px] text-xs lg:text-sm">
+              <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectItem value={"all"}>All</SelectItem>
-                {uniqueStatuses.map((value: any) => (
-                  <SelectItem key={value} value={value}>
-                    {value}
-                  </SelectItem>
-                ))}
+                {/* All Option */}
+                <SelectItem value="all" className="text-xs font-semibold">
+                  All
+                </SelectItem>
+
+                {/* Review Statuses Group */}
+                <SelectLabel className="text-slate-500 text-xs">
+                  Review Status
+                </SelectLabel>
+                {uniqueReviewStatuses
+                  .toSorted()
+                  .filter((value) => value !== "None")
+                  .map((value) => (
+                    <SelectItem key={value} value={value} className="text-xs">
+                      {value}
+                    </SelectItem>
+                  ))}
+
+                {/* Submission Statuses Group */}
+                <SelectLabel className="text-slate-500 text-xs">
+                  Submission Status
+                </SelectLabel>
+                {uniqueSubmissionStatuses
+                  .toSorted()
+                  .filter((value) => value !== "None")
+                  .map((value) => (
+                    <SelectItem key={value} value={value} className="text-xs">
+                      {value}
+                    </SelectItem>
+                  ))}
               </SelectGroup>
             </SelectContent>
           </Select>
