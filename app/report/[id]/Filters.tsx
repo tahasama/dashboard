@@ -175,12 +175,11 @@ const Filters = ({ projectNumber, projectName }: any) => {
 
             {/* Status Filter */}
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="min-w-[120px]">
+              <SelectTrigger className="min-w-[150px]">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent side="right">
                 <SelectGroup>
-                  {/* All Option */}
                   <SelectItem value="all" className="text-xs font-semibold">
                     All
                   </SelectItem>
@@ -189,27 +188,29 @@ const Filters = ({ projectNumber, projectName }: any) => {
                   <SelectLabel className="text-slate-500 text-xs">
                     Review Status
                   </SelectLabel>
-                  {uniqueReviewStatuses
-                    .toSorted()
-                    .filter((value) => value !== "None")
-                    .map((value) => (
-                      <SelectItem key={value} value={value} className="text-xs">
-                        {value}
-                      </SelectItem>
-                    ))}
+                  {uniqueReviewStatuses.map((value) => (
+                    <SelectItem
+                      key={value}
+                      value={`review:${value}`} // Prefix to distinguish categories
+                      className="text-xs"
+                    >
+                      {value}
+                    </SelectItem>
+                  ))}
 
                   {/* Submission Statuses Group */}
                   <SelectLabel className="text-slate-500 text-xs">
                     Submission Status
                   </SelectLabel>
-                  {uniqueSubmissionStatuses
-                    .toSorted()
-                    .filter((value) => value !== "None")
-                    .map((value) => (
-                      <SelectItem key={value} value={value} className="text-xs">
-                        {value}
-                      </SelectItem>
-                    ))}
+                  {uniqueSubmissionStatuses.map((value) => (
+                    <SelectItem
+                      key={value}
+                      value={`submission:${value}`} // Prefix to distinguish categories
+                      className="text-xs"
+                    >
+                      {value}
+                    </SelectItem>
+                  ))}
                 </SelectGroup>
               </SelectContent>
             </Select>

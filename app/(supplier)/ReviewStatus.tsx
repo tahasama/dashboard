@@ -20,26 +20,24 @@ const ReviewStatus: React.FC<Data> = memo(() => {
 
     const latestRevisions: { [key: string]: any } = {};
 
-    filtered
-      .filter((x: MergedData) => x.reviewStatus !== "Terminated")
-      .forEach((row: any) => {
-        const docNo = row.documentNo;
+    filtered.forEach((row: any) => {
+      const docNo = row.documentNo;
 
-        // If revision > 0, track the latest revision per documentNo
-        if (row.revision > 0 || row.revision === "A") {
-          if (
-            !latestRevisions[docNo] ||
-            row.revision > latestRevisions[docNo].revision
-          ) {
-            latestRevisions[docNo] = row;
-          }
-        }
-
-        // If revision = 0, keep it as is (only if not already overwritten by a newer revision)
-        else if (!latestRevisions[docNo]) {
+      // If revision > 0, track the latest revision per documentNo
+      if (row.revision > 0 || row.revision === "A") {
+        if (
+          !latestRevisions[docNo] ||
+          row.revision > latestRevisions[docNo].revision
+        ) {
           latestRevisions[docNo] = row;
         }
-      });
+      }
+
+      // If revision = 0, keep it as is (only if not already overwritten by a newer revision)
+      else if (!latestRevisions[docNo]) {
+        latestRevisions[docNo] = row;
+      }
+    });
 
     // Count occurrences based on stepOutcome (if revision > 0) or reviewStatus (if revision = 0)
     const statusCounts: { [key: string]: number } = {};
