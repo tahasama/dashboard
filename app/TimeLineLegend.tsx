@@ -38,7 +38,7 @@ const statusColorsReview = [
 const Legend = () => {
   const [show, setShow] = useState(false);
   return (
-    <div className="flex justify-between items-center text-xs -mt-1 mb-1 p-2 bg-white shadow-lg rounded-lg">
+    <div className="flex justify-between items-center text-xs -mt-1 mb-0.5 p-1 bg-white shadow-lg rounded-lg">
       <div className="flex flex-wrap gap-y-1 gap-x-4">
         Submissions:
         {statusColorsSubmission.map((status) => (
