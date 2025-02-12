@@ -327,7 +327,11 @@ const Filters = ({ projectNumber, projectName }: any) => {
                 variant="outline"
                 className="text-xs lg:text-sm w-[125px] flex justify-between"
               >
-                <p>Status</p>
+                <p className="overflow-hidden">
+                  {selectedStatus.review ||
+                    selectedStatus.submission ||
+                    "Status"}
+                </p>
                 <ChevronDown />
               </Button>
             </PopoverTrigger>
