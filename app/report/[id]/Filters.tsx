@@ -43,6 +43,7 @@ import {
 } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 
 const inter = Work_Sans({ subsets: ["latin"], weight: ["400"] });
 
@@ -83,6 +84,7 @@ const Filters = ({ projectNumber, projectName }: any) => {
       .filter((v) => v !== "None"),
   };
   const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState(false);
 
   const handleSelect = (category: string, value: string) => {
     const updatedStatus = {
@@ -92,6 +94,9 @@ const Filters = ({ projectNumber, projectName }: any) => {
 
     setSelectedStatus(updatedStatus);
     setStatusFilter(updatedStatus); // Instantly update filtering
+    setTimeout(() => {
+      setOpen(!open);
+    }, 250);
   };
 
   // const applyFilter = () => setStatusFilter(selectedStatus);
@@ -265,7 +270,7 @@ const Filters = ({ projectNumber, projectName }: any) => {
         <div className="hidden lg:flex gap-2 xl:gap-2.5 w-full">
           {/* Subproject Filter */}
           <Select value={subProjectFilter} onValueChange={setSubProjectFilter}>
-            <SelectTrigger className="max-w-[125px] text-xs lg:text-sm">
+            <SelectTrigger className="max-w-[115px] text-xs lg:text-sm">
               <SelectValue placeholder="Subproject" />
             </SelectTrigger>
             <SelectContent>
@@ -284,7 +289,7 @@ const Filters = ({ projectNumber, projectName }: any) => {
 
           {/* Supplier Filter */}
           <Select value={createdByFilter} onValueChange={setCreatedByFilter}>
-            <SelectTrigger className="max-w-[125px] text-xs lg:text-sm">
+            <SelectTrigger className="max-w-[115px] text-xs lg:text-sm">
               <SelectValue placeholder="Supplier" />
             </SelectTrigger>
             <SelectContent>
@@ -303,7 +308,7 @@ const Filters = ({ projectNumber, projectName }: any) => {
 
           {/* Discipline Filter */}
           <Select value={disciplineFilter} onValueChange={setDisciplineFilter}>
-            <SelectTrigger className="max-w-[125px] text-xs lg:text-sm">
+            <SelectTrigger className="max-w-[115px] text-xs lg:text-sm">
               <SelectValue placeholder="Discipline" />
             </SelectTrigger>
             <SelectContent>
@@ -321,13 +326,13 @@ const Filters = ({ projectNumber, projectName }: any) => {
           </Select>
 
           {/* Status Filter */}
-          <Popover>
+          <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
-                className="text-xs lg:text-sm w-[125px] flex justify-between"
+                className="text-xs lg:text-sm w-[115px] flex justify-between"
               >
-                <p className="overflow-hidden">
+                <p className="overflow-hidden text-start w-[115px]">
                   {selectedStatus.review ||
                     selectedStatus.submission ||
                     "Status"}
@@ -340,15 +345,18 @@ const Filters = ({ projectNumber, projectName }: any) => {
                 <div className="flex flex-col gap-2">
                   {/* ALL Option */}
                   <div className="flex items-center gap-2">
-                    <Checkbox
-                      checked={
-                        !selectedStatus.review && !selectedStatus.submission
-                      }
-                      onCheckedChange={() =>
-                        setSelectedStatus({ review: "", submission: "" })
-                      }
-                    />
-                    <span className="text-xs font-semibold">All</span>
+                    <Label className="flex items-center gap-2 cursor-pointer">
+                      <Checkbox
+                        checked={
+                          !selectedStatus.review && !selectedStatus.submission
+                        }
+                        onCheckedChange={() => {
+                          setSelectedStatus({ review: "", submission: "" });
+                          setOpen(false); // Close popover after selection
+                        }}
+                      />
+                      <span className="text-xs font-semibold">All</span>
+                    </Label>
                   </div>
                   <p className="text-xs mt-1 bg-gray-100 p-1 rounded-sm">
                     <b>Tip: </b>
@@ -363,7 +371,10 @@ const Filters = ({ projectNumber, projectName }: any) => {
                           {category}
                         </div>
                         {options.map((value) => (
-                          <div key={value} className="flex items-center gap-2">
+                          <Label
+                            key={value}
+                            className="flex items-center gap-2 cursor-pointer"
+                          >
                             <Checkbox
                               checked={
                                 selectedStatus[
@@ -382,7 +393,7 @@ const Filters = ({ projectNumber, projectName }: any) => {
                               }
                             />
                             <span className="text-xs">{value}</span>
-                          </div>
+                          </Label>
                         ))}
                       </div>
                     ))}
