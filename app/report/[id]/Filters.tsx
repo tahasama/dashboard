@@ -17,7 +17,7 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Download, Loader, Menu } from "lucide-react";
+import { ChevronDown, Download, Loader, Menu } from "lucide-react";
 import { toBlob } from "html-to-image";
 import download from "downloadjs";
 import { useRef, useState } from "react";
@@ -36,6 +36,13 @@ import {
   Playfair_Display,
   Work_Sans,
 } from "next/font/google";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const inter = Work_Sans({ subsets: ["latin"], weight: ["400"] });
 
@@ -54,6 +61,8 @@ const Filters = ({ projectNumber, projectName }: any) => {
     // setSubStatusFilter,
     setSearchText,
     clearFilters,
+    selectedStatus,
+    setSelectedStatus,
     uniqueSubProjects,
     uniqueCreatedBy,
     uniqueDisciplines,
@@ -64,7 +73,29 @@ const Filters = ({ projectNumber, projectName }: any) => {
     contentRef,
     content2Ref,
   } = useFilters();
+
+  const statusCategories = {
+    "Review Status": uniqueReviewStatuses
+      .toSorted()
+      .filter((v) => v !== "None"),
+    "Submission Status": uniqueSubmissionStatuses
+      .toSorted()
+      .filter((v) => v !== "None"),
+  };
   const [loading, setLoading] = useState(false);
+
+  const handleSelect = (category: string, value: string) => {
+    const updatedStatus = {
+      ...selectedStatus,
+      [category]: selectedStatus[category] === value ? "" : value, // Toggle selection (only one per category)
+    };
+
+    setSelectedStatus(updatedStatus);
+    setStatusFilter(updatedStatus); // Instantly update filtering
+  };
+
+  // const applyFilter = () => setStatusFilter(selectedStatus);
+
   const downloadPdf = async () => {
     setLoading(true);
     if (contentRef.current) {
@@ -290,45 +321,73 @@ const Filters = ({ projectNumber, projectName }: any) => {
           </Select>
 
           {/* Status Filter */}
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="max-w-[125px] text-xs lg:text-sm">
-              <SelectValue placeholder="Status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                {/* All Option */}
-                <SelectItem value="all" className="text-xs font-semibold">
-                  All
-                </SelectItem>
-
-                {/* Review Statuses Group */}
-                <SelectLabel className="text-slate-500 text-xs">
-                  Review Status
-                </SelectLabel>
-                {uniqueReviewStatuses
-                  .toSorted()
-                  .filter((value) => value !== "None")
-                  .map((value) => (
-                    <SelectItem key={value} value={value} className="text-xs">
-                      {value}
-                    </SelectItem>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className="text-xs lg:text-sm w-[125px] flex justify-between"
+              >
+                <p>Status</p>
+                <ChevronDown />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-full p-2" side="bottom" align="start">
+              <div className="flex flex-col gap-2">
+                {/* ALL Option */}
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    checked={
+                      !selectedStatus.review && !selectedStatus.submission
+                    }
+                    onCheckedChange={() =>
+                      setSelectedStatus({ review: "", submission: "" })
+                    }
+                  />
+                  <span className="text-xs font-semibold">All</span>
+                </div>
+                <p className="text-xs mt-1 bg-gray-100 p-1 rounded-sm">
+                  <b>Tip: </b>
+                  You can combine submission and review status
+                </p>
+                {/* Categories */}
+                {Object.entries(statusCategories)
+                  .reverse()
+                  .map(([category, options]) => (
+                    <div key={category} className="flex flex-col gap-3">
+                      <div className="text-slate-500 text-xs mt-1">
+                        {category}
+                      </div>
+                      {options.map((value) => (
+                        <div key={value} className="flex items-center gap-2">
+                          <Checkbox
+                            checked={
+                              selectedStatus[
+                                category === "Review Status"
+                                  ? "review"
+                                  : "submission"
+                              ] === value
+                            }
+                            onCheckedChange={() =>
+                              handleSelect(
+                                category === "Review Status"
+                                  ? "review"
+                                  : "submission",
+                                value
+                              )
+                            }
+                          />
+                          <span className="text-xs">{value}</span>
+                        </div>
+                      ))}
+                    </div>
                   ))}
+              </div>
 
-                {/* Submission Statuses Group */}
-                <SelectLabel className="text-slate-500 text-xs">
-                  Submission Status
-                </SelectLabel>
-                {uniqueSubmissionStatuses
-                  .toSorted()
-                  .filter((value) => value !== "None")
-                  .map((value) => (
-                    <SelectItem key={value} value={value} className="text-xs">
-                      {value}
-                    </SelectItem>
-                  ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+              {/* <Button onClick={applyFilter} className="mt-2 w-full text-xs">
+                Apply
+              </Button> */}
+            </PopoverContent>
+          </Popover>
         </div>
 
         {/* Search and Clear Filters */}

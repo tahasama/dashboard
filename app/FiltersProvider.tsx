@@ -17,6 +17,8 @@ type FiltersContextType = {
   statusFilter: string;
   // subStatusFilter: string;
   searchText: string;
+  selectedStatus: any;
+  setSelectedStatus: any;
   setCreatedByFilter: React.Dispatch<React.SetStateAction<string>>;
   setSubProjectFilter: React.Dispatch<React.SetStateAction<string>>;
   setDisciplineFilter: React.Dispatch<React.SetStateAction<string>>;
@@ -56,6 +58,10 @@ export const FiltersProvider = ({
   const [subStatusFilter, setSubStatusFilter] = useState<string>("");
   const [searchText, setSearchText] = useState<string>("");
   const [debouncedSearchText, setDebouncedSearchText] = useState<string>("");
+
+  const [selectedStatus, setSelectedStatus] = useState<any>(
+    statusFilter || { review: "", submission: "" }
+  );
 
   const [filteredData, setFilteredData] = useState<any[]>(originalData);
 
@@ -119,6 +125,7 @@ export const FiltersProvider = ({
     setStatusFilter("");
     setSearchText(""); // Clear the searchText as well
     setSubStatusFilter("");
+    setSelectedStatus({ review: "", submission: "" });
   };
 
   // Debounce the search text
@@ -143,6 +150,7 @@ export const FiltersProvider = ({
         subProjectFilter,
         disciplineFilter,
         statusFilter,
+        selectedStatus,
         // subStatusFilter,
       },
     });
@@ -163,6 +171,7 @@ export const FiltersProvider = ({
     statusFilter,
     subStatusFilter,
     originalData,
+    selectedStatus,
   ]);
 
   const filters = useMemo(
@@ -173,12 +182,14 @@ export const FiltersProvider = ({
       statusFilter,
       searchText,
       subStatusFilter,
+      selectedStatus,
       setCreatedByFilter,
       setSubProjectFilter,
       setDisciplineFilter,
       setStatusFilter,
       setSearchText,
       setSubStatusFilter,
+      setSelectedStatus,
       clearFilters,
       filtered: filteredData,
       originalData,

@@ -41,21 +41,29 @@ self.onmessage = (e) => {
       (item) => item.selectList1 === disciplineFilter
     );
   }
-  if (statusFilter && statusFilter !== "all") {
+  if (statusFilter && (statusFilter.review || statusFilter.submission)) {
     const matchingDocuments = new Set(
       filteredData
         .filter((item) => {
-          const isReviewMatch = item.reviewStatus === statusFilter || item.stepOutcome === statusFilter;
-          const isSubmissionMatch = item.submissionStatus === statusFilter;
+          const isReviewMatch = statusFilter.review && (item.reviewStatus === statusFilter.review || item.stepOutcome === statusFilter.review);
+          const isSubmissionMatch = statusFilter.submission && item.submissionStatus === statusFilter.submission;
+  
+          // If both are selected, match only documents that satisfy BOTH
+          if (statusFilter.review && statusFilter.submission) {
+            return isReviewMatch && isSubmissionMatch;
+          }
+  
+          // Otherwise, match documents satisfying at least one condition
           return isReviewMatch || isSubmissionMatch;
         })
-        .map((item) => item.documentNo) // Collect matching document numbers
+        .map((item) => item.documentNo)
     );
+  
     // Keep all revisions of matching documents
-    filteredData = filteredData.filter((item) =>
-      matchingDocuments.has(item.documentNo)
-    );
+    filteredData = filteredData.filter((item) => matchingDocuments.has(item.documentNo));
   }
+  
+  
   
   // Send filtered data back to the main thread
   self.postMessage(filteredData);
