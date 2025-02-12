@@ -9,9 +9,11 @@ import { useFilters } from "../FiltersProvider";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
-  PopoverTrigger,
   PopoverContent,
-} from "@radix-ui/react-popover";
+  PopoverTrigger,
+} from "@/components/ui/popover";
+
+import tip1 from "../../public/tips/tip1.gif";
 
 const LateAnalysis: React.FC<Data> = memo(({ data }) => {
   const { filtered } = useFilters();
@@ -304,10 +306,11 @@ const LateAnalysis: React.FC<Data> = memo(({ data }) => {
               <HelpCircle />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="text-xs grid p-2 gap-2 bg-white">
-            <p className="text-slate-950 bg-indigo-200/40 shadow-md rounded-[2px] py-1 px-1.5">
+          <PopoverContent className="text-xs grid p-2 gap-2 bg-white  w-[400px]">
+            <p className="text-slate-950 bg-indigo-200/40 shadow-md rounded-[2px] py-1 px-1.5 ">
               <b>Tip:</b> Click on any legend of any chart to show/hide.
             </p>
+            <img src="/tips/tip1.gif" alt="Demo GIF" className="" />
           </PopoverContent>
         </Popover>
       </div>

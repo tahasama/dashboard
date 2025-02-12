@@ -343,17 +343,18 @@ const LateAnalysisReview: React.FC<Data> = memo(({ data }) => {
 
   return (
     <div className="w-full h-full flex">
-      <div className="absolute right-7 top-2 text-xs ">
+      <div className="absolute right-7 top-1.5 text-xs z-50">
         <Popover>
           <PopoverTrigger asChild>
             <Button variant="outline">
               <HelpCircle />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="text-xs grid p-2 gap-2 bg-white">
-            <p className="text-slate-950 bg-indigo-200/40 shadow-md rounded-[2px] py-1 px-1.5">
+          <PopoverContent className="text-xs grid p-2 gap-2 bg-white  w-[400px]">
+            <p className="text-slate-950 bg-indigo-200/40 shadow-md rounded-[2px] py-1 px-1.5 ">
               <b>Tip:</b> Click on any legend of any chart to show/hide.
             </p>
+            <img src="/tips/tip1.gif" alt="Demo GIF" className="" />
           </PopoverContent>
         </Popover>
       </div>
