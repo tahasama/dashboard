@@ -336,56 +336,58 @@ const Filters = ({ projectNumber, projectName }: any) => {
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-full p-2" side="bottom" align="start">
-              <div className="flex flex-col gap-2">
-                {/* ALL Option */}
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    checked={
-                      !selectedStatus.review && !selectedStatus.submission
-                    }
-                    onCheckedChange={() =>
-                      setSelectedStatus({ review: "", submission: "" })
-                    }
-                  />
-                  <span className="text-xs font-semibold">All</span>
-                </div>
-                <p className="text-xs mt-1 bg-gray-100 p-1 rounded-sm">
-                  <b>Tip: </b>
-                  You can combine submission and review status
-                </p>
-                {/* Categories */}
-                {Object.entries(statusCategories)
-                  .reverse()
-                  .map(([category, options]) => (
-                    <div key={category} className="flex flex-col gap-3">
-                      <div className="text-slate-500 text-xs mt-1">
-                        {category}
-                      </div>
-                      {options.map((value) => (
-                        <div key={value} className="flex items-center gap-2">
-                          <Checkbox
-                            checked={
-                              selectedStatus[
-                                category === "Review Status"
-                                  ? "review"
-                                  : "submission"
-                              ] === value
-                            }
-                            onCheckedChange={() =>
-                              handleSelect(
-                                category === "Review Status"
-                                  ? "review"
-                                  : "submission",
-                                value
-                              )
-                            }
-                          />
-                          <span className="text-xs">{value}</span>
+              <ScrollArea className="h-[380px]">
+                <div className="flex flex-col gap-2">
+                  {/* ALL Option */}
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      checked={
+                        !selectedStatus.review && !selectedStatus.submission
+                      }
+                      onCheckedChange={() =>
+                        setSelectedStatus({ review: "", submission: "" })
+                      }
+                    />
+                    <span className="text-xs font-semibold">All</span>
+                  </div>
+                  <p className="text-xs mt-1 bg-gray-100 p-1 rounded-sm">
+                    <b>Tip: </b>
+                    You can combine submission and review status
+                  </p>
+                  {/* Categories */}
+                  {Object.entries(statusCategories)
+                    .reverse()
+                    .map(([category, options]) => (
+                      <div key={category} className="flex flex-col gap-3">
+                        <div className="text-slate-500 text-xs mt-1">
+                          {category}
                         </div>
-                      ))}
-                    </div>
-                  ))}
-              </div>
+                        {options.map((value) => (
+                          <div key={value} className="flex items-center gap-2">
+                            <Checkbox
+                              checked={
+                                selectedStatus[
+                                  category === "Review Status"
+                                    ? "review"
+                                    : "submission"
+                                ] === value
+                              }
+                              onCheckedChange={() =>
+                                handleSelect(
+                                  category === "Review Status"
+                                    ? "review"
+                                    : "submission",
+                                  value
+                                )
+                              }
+                            />
+                            <span className="text-xs">{value}</span>
+                          </div>
+                        ))}
+                      </div>
+                    ))}
+                </div>
+              </ScrollArea>
 
               {/* <Button onClick={applyFilter} className="mt-2 w-full text-xs">
                 Apply
