@@ -9,7 +9,6 @@ import { useFilters } from "../FiltersProvider";
 
 const ReviewStatus: React.FC<Data> = memo(() => {
   const { filtered } = useFilters();
-  console.log("🚀 ~ filtered:", filtered);
   const [chartData, setChartData] = useState<
     { label: string; value: number }[]
   >([]);

@@ -42,10 +42,6 @@ const LateAnalysis: React.FC<Data> = memo(({ data }) => {
         realReceivedDocs: number;
       }
     > = {};
-    console.log(
-      "Checking duplicates:",
-      data.filter((row) => row.plannedSubmissionDate === "31/07/2023")
-    );
 
     (data.length > 1 ? data : filtered).forEach((row: MergedData) => {
       let dateKey: string | null = null;
@@ -136,7 +132,6 @@ const LateAnalysis: React.FC<Data> = memo(({ data }) => {
 
   useEffect(() => {
     const groupedData = processData();
-    console.log("🚀 ~ useEffect ~ groupedData:", groupedData);
     const { chartLabels, chartValuesdocs, chartValuesRealReceivedDocs } =
       calculateChartValues(groupedData);
 

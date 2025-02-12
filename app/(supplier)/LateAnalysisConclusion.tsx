@@ -31,7 +31,6 @@ const LateAnalysisConclusion: React.FC<{
 
   // Completion Rate Calculation (for display)
   const completionRate = totalPlanned ? (totalReal / totalPlanned) * 100 : 100; // Avoid division by zero
-  console.log("🚀 ~ lateDocuments:", lateDocuments);
 
   // **Submission Impact Insight**
   let submissionImpactInsight;

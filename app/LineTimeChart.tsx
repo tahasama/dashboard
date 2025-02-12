@@ -128,13 +128,11 @@ const LineTimeChart: React.FC = memo(() => {
 
     // Extract the document number from itemId
     const documentNo = itemId.split(".")[0];
-    console.log("Item clicked:", documentNo);
 
     // Copy document number to clipboard
     navigator.clipboard
       .writeText(documentNo)
       .then(() => {
-        console.log("Document number copied to clipboard:", documentNo);
         toast("", {
           description: `${documentNo} Copied!`,
         });
