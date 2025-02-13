@@ -76,13 +76,20 @@ const Legend = () => {
             <HelpCircle />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="text-xs grid p-2 gap-2 ">
-          <p className="text-slate-950 bg-indigo-200/40 shadow-md rounded-[2px] py-1 px-1.5">
-            <b>Tip:</b> Click on a bar to copy doc number
-          </p>{" "}
-          <p className="text-slate-950 bg-indigo-200/40 shadow-md rounded-[2px] py-1 px-1.5">
-            <b>Tip:</b> Pinch to zoom in / zoom out
-          </p>
+        {/* <PopoverContent className="text-xs grid p-2 gap-2 "></PopoverContent> */}
+        <PopoverContent className="text-xs p-2 gap-2 bg-white  w-[700px] flex">
+          <div>
+            <p className="text-slate-950 bg-indigo-200/40 shadow-md rounded-[2px] py-1 px-1.5">
+              <b>Tip:</b> Click on a bar to copy doc number
+            </p>{" "}
+            <img src="/tips/tip3.gif" alt="Demo GIF" className="" />
+          </div>
+          <div>
+            <p className="text-slate-950 bg-indigo-200/40 shadow-md rounded-[2px] py-1 px-1.5">
+              <b>Tip:</b> Pinch to zoom in / zoom out
+            </p>
+            <img src="/tips/tip2.gif" alt="Demo GIF" className="" />
+          </div>
         </PopoverContent>
       </Popover>
     </div>
