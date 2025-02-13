@@ -20,6 +20,12 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "@radix-ui/react-popover";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 // Define the data structure for the input `data` prop
 interface DataRow {
@@ -351,10 +357,18 @@ const LateAnalysisReview: React.FC<Data> = memo(({ data }) => {
             </Button>
           </PopoverTrigger>
           <PopoverContent className="text-xs grid p-2 gap-2 bg-white  w-[400px]">
-            <p className="text-slate-950 bg-indigo-200/40 shadow-md rounded-[2px] py-1 px-1.5 ">
-              <b>Tip:</b> Click on any legend of any chart to show/hide.
-            </p>
-            <img src="/tips/tip1.gif" alt="Demo GIF" className="" />
+            <Accordion type="single" collapsible className="w-full">
+              <AccordionItem value="item-1">
+                <AccordionTrigger className="text-slate-950 bg-indigo-200/40 p-2 mb-2 rounded-sm">
+                  <p className="">
+                    <b>Tip:</b> Click on any legend of any chart to show/hide.
+                  </p>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <img src="/tips/tip1.gif" alt="Demo GIF" className="" />
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
           </PopoverContent>
         </Popover>
       </div>

@@ -15,6 +15,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 const statusColorsSubmission = [
   { label: "Submission Required", color: "#b0e0e6" },
@@ -77,19 +83,29 @@ const Legend = () => {
           </Button>
         </PopoverTrigger>
         {/* <PopoverContent className="text-xs grid p-2 gap-2 "></PopoverContent> */}
-        <PopoverContent className="text-xs p-2 gap-2 bg-white  w-[700px] flex">
-          <div>
-            <p className="text-slate-950 bg-indigo-200/40 shadow-md rounded-[2px] py-1 px-1.5">
-              <b>Tip:</b> Click on a bar to copy doc number
-            </p>{" "}
-            <img src="/tips/tip3.gif" alt="Demo GIF" className="" />
-          </div>
-          <div>
-            <p className="text-slate-950 bg-indigo-200/40 shadow-md rounded-[2px] py-1 px-1.5">
-              <b>Tip:</b> Pinch to zoom in / zoom out
-            </p>
-            <img src="/tips/tip2.gif" alt="Demo GIF" className="" />
-          </div>
+        <PopoverContent className="text-xs  p-2 gap-2 bg-white w-[375px]">
+          <Accordion type="single" collapsible className="w-full">
+            <AccordionItem value="item-1">
+              <AccordionTrigger className="text-slate-950 bg-indigo-200/40 p-2 mb-2 rounded-sm">
+                <p className="">
+                  <b>Tip:</b> Click on a bar to copy doc number
+                </p>
+              </AccordionTrigger>
+              <AccordionContent>
+                <img src="/tips/tip3.gif" alt="Demo GIF" className="" />
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-2">
+              <AccordionTrigger className="text-slate-950 bg-indigo-200/40 p-2">
+                <p className="text-slate-950">
+                  <b>Tip:</b> Pinch to zoom in / zoom out
+                </p>
+              </AccordionTrigger>
+              <AccordionContent>
+                <img src="/tips/tip2.gif" alt="Demo GIF" className="" />
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
         </PopoverContent>
       </Popover>
     </div>
