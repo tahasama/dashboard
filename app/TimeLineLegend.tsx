@@ -83,10 +83,10 @@ const Legend = () => {
           </Button>
         </PopoverTrigger>
         {/* <PopoverContent className="text-xs grid p-2 gap-2 "></PopoverContent> */}
-        <PopoverContent className="text-xs  p-2 gap-2 bg-white w-[375px]">
+        <PopoverContent className="grid p-0 gap-2 bg-white w-[400px]">
           <Accordion type="single" collapsible className="w-full">
-            <AccordionItem value="item-1">
-              <AccordionTrigger className="text-slate-950 bg-indigo-200/40 p-2 mb-2 rounded-sm">
+            <AccordionItem value="item-1" className="border-b-0 px-1 pt-1">
+              <AccordionTrigger className="text-slate-950 bg-indigo-200/40 p-1.5 rounded-sm  text-xs">
                 <p className="">
                   <b>Tip:</b> Click on a bar to copy doc number
                 </p>
@@ -95,9 +95,9 @@ const Legend = () => {
                 <img src="/tips/tip3.gif" alt="Demo GIF" className="" />
               </AccordionContent>
             </AccordionItem>
-            <AccordionItem value="item-2">
-              <AccordionTrigger className="text-slate-950 bg-indigo-200/40 p-2">
-                <p className="text-slate-950">
+            <AccordionItem value="item-2" className="border-b-0 p-1 ">
+              <AccordionTrigger className="text-slate-950 bg-indigo-200/40 p-1.5 rounded-sm  text-xs">
+                <p className="">
                   <b>Tip:</b> Pinch to zoom in / zoom out
                 </p>
               </AccordionTrigger>

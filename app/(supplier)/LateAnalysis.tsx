@@ -312,16 +312,16 @@ const LateAnalysis: React.FC<Data> = memo(({ data }) => {
               <HelpCircle />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="text-xs grid p-2 gap-2 bg-white  w-[400px]">
+          <PopoverContent className="grid p-0 gap-2 bg-white w-[400px]">
             <Accordion type="single" collapsible className="w-full">
-              <AccordionItem value="item-1">
-                <AccordionTrigger className="text-slate-950 bg-indigo-200/40 p-2 mb-2 rounded-sm">
+              <AccordionItem value="item-1" className="border-b-0 p-1 ">
+                <AccordionTrigger className="text-slate-950 bg-indigo-200/40 p-1.5 rounded-sm  text-xs">
                   <p className="">
                     <b>Tip:</b> Click on any legend of any chart to show/hide.
                   </p>
                 </AccordionTrigger>
                 <AccordionContent>
-                  <img src="/tips/tip1.gif" alt="Demo GIF" className="" />
+                  <img src="/tips/tip2.gif" alt="Demo GIF" className="" />
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
