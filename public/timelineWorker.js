@@ -102,7 +102,8 @@ const getDuration = (startDate, endDate) => {
   const diffTime = end - start; // Difference in milliseconds
   const diffDays = diffTime / (1000 * 3600 * 24); // Convert to days
 
-  return `${diffDays.toFixed(0)} days`; // Or format however you like
+  console.log("🚀 ~ getDuration ~ diffDays:", diffDays)
+  return `${diffDays>0?diffDays.toFixed(0) +"days":Math.abs(diffDays).toFixed(0)+'days ahead of planning'} `; // Or format however you like
 };
 
 self.onmessage = function (event) {
@@ -174,7 +175,7 @@ self.onmessage = function (event) {
       }
     } else {
       // CASE 3: Default logic when dateIn/dateCompleted exist
-      if (revisionNumber === 0|| revisionNumber==="A") {
+      if (revisionNumber === '0'|| revisionNumber === 0 || revisionNumber==="A") {
         validSubmissionStartDate =
           parseDate(plannedSubmissionDate) || new Date();
         validSubmissionEndDate = parseDate(dateIn) || new Date();
@@ -198,7 +199,7 @@ self.onmessage = function (event) {
       }
     }
 
-    const submissionDuration = getDuration(validSubmissionStartDate, validSubmissionEndDate);
+    const submissionDuration = getDuration(parseDate(plannedSubmissionDate)||parseDate(dateIn), validSubmissionEndDate);
     const ReviewDuration = getDuration(validReviewStartDate, validReviewEndDate);
 
 
