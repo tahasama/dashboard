@@ -351,7 +351,7 @@ const Filters = ({ projectNumber, projectName }: any) => {
                           !selectedStatus.review && !selectedStatus.submission
                         }
                         onCheckedChange={() => {
-                          setSelectedStatus({ review: "", submission: "" });
+                          setStatusFilter("");
                           setOpen(false); // Close popover after selection
                         }}
                       />
