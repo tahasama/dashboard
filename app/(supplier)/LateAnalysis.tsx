@@ -321,7 +321,7 @@ const LateAnalysis: React.FC<Data> = memo(({ data }) => {
                   </p>
                 </AccordionTrigger>
                 <AccordionContent>
-                  <img src="/tips/tip2.gif" alt="Demo GIF" className="" />
+                  <img src="/tips/tip1.gif" alt="Demo GIF" className="" />
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
