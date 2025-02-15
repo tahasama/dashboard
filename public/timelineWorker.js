@@ -105,7 +105,7 @@ const getDuration = (startDate, endDate) => {
   return `${
     diffDays > 0
       ? diffDays.toFixed(0) + "days"
-      : Math.abs(diffDays).toFixed(0) + "days ahead of planning"
+      : Math.abs(diffDays).toFixed(0) + " days ahead of planning"
   } `; // Or format however you like
 };
 
