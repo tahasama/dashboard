@@ -20,9 +20,12 @@ import {
 // import html2pdf from "html2pdf.js";
 import { toBlob, toPng } from "html-to-image";
 import download from "downloadjs";
-import { Download, Loader2 } from "lucide-react";
+import { ArrowDownUp, Download, Loader2 } from "lucide-react";
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
 const LineTimeChart = lazy(() => import("../../LineTimeChart"));
+
+type switchState = "vertical" | "horizontal";
 
 const FiltersAndCharts = () => {
   const { filtered, contentRef, content2Ref } = useFilters();
@@ -44,6 +47,17 @@ const FiltersAndCharts = () => {
     setCurrentPage(0);
   }, [filtered, setCurrentPage]);
 
+  // const [switchSubmissions, setSwitchSubmissions] =
+  //   useState<switchState>("horizontal");
+
+  // const [size1, setSize1] = useState(24); // Initial sizes
+  // const [size2, setSize2] = useState(76);
+
+  // useEffect(() => {
+  //   setSize1(switchSubmissions === "vertical" ? 24 : 40);
+  //   setSize2(switchSubmissions === "vertical" ? 76 : 60);
+  // }, [switchSubmissions]);
+
   return (
     <div className="w-full  mt-4">
       {/* Filters */}
@@ -52,9 +66,26 @@ const FiltersAndCharts = () => {
         ref={contentRef}
         className="relative bg-slate- p-2 mx-1 rounded-md flex h-[120vh] lg:h-[calc(100vh-60px)] w- shadow-md"
       >
-        <ResizablePanelGroup direction="horizontal">
+        {/* <Button
+          onClick={() =>
+            setSwitchSubmissions((prev) =>
+              prev === "vertical" ? "horizontal" : "vertical"
+            )
+          }
+        >
+          <ArrowDownUp />
+        </Button> */}
+        <ResizablePanelGroup
+          direction={"horizontal"}
+          // key={switchSubmissions}
+        >
           <ResizablePanel defaultSize={24}>
-            <ResizablePanelGroup direction="vertical">
+            <ResizablePanelGroup
+              direction={
+                // switchSubmissions === "vertical" ? "horizontal" : "vertical"
+                "vertical"
+              }
+            >
               <ResizablePanel defaultSize={33}>
                 <Suspense fallback={"Loading..."}>
                   <ReviewStatus data={uniqueFiltered} />
@@ -83,11 +114,13 @@ const FiltersAndCharts = () => {
                 </Suspense>
               </ResizablePanel>
               <ResizableHandle withHandle />
+              {/* {switchSubmissions !== "vertical" && ( */}
               <ResizablePanel defaultSize={30}>
                 <Suspense fallback={"Loading..."}>
                   <HeatX data={uniqueFiltered} />
                 </Suspense>
               </ResizablePanel>
+              {/* )} */}
             </ResizablePanelGroup>
           </ResizablePanel>
         </ResizablePanelGroup>

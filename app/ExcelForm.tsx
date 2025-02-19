@@ -440,7 +440,7 @@ const ExcelForm = ({}: any) => {
                   accept=".xlsx, .xls"
                   id={`file-input-${fileIndex}`}
                   onChange={(e) => handleFileUpload(e, fileIndex)}
-                  className="border border-input bg-background p-2 rounded-md w-full"
+                  className="border border-input p-2 rounded-md w-full"
                 />
               </div>
 
@@ -458,7 +458,7 @@ const ExcelForm = ({}: any) => {
                   value={indexRows[fileIndex]}
                   onChange={(e) => handleIndexRowChange(e, fileIndex)}
                   placeholder="Enter number of rows"
-                  className="border border-input bg-background p-2 rounded-md w-full"
+                  className="border border-input p-2 rounded-md w-full"
                 />
               </div>
             </div>

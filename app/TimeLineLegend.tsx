@@ -78,8 +78,8 @@ const Legend = () => {
 
       <Popover>
         <PopoverTrigger asChild>
-          <Button variant="outline">
-            <HelpCircle />
+          <Button variant="outline" className="scale-75">
+            <HelpCircle className="scale-110" />
           </Button>
         </PopoverTrigger>
         {/* <PopoverContent className="text-xs grid p-2 gap-2 "></PopoverContent> */}
