@@ -1,78 +1,160 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getProject } from "./action/actions"; // Adjust path to your getProject function
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle, Loader2 } from "lucide-react";
+import { AlertCircle, ChevronsUpDown, Loader2 } from "lucide-react";
 
-export default function ProjectForm() {
-  const [projectNumber, setProjectNumber] = useState("");
-  const [message, setMessage] = useState("");
-  const [isPending, setIsPending] = useState(false);
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Command,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+
+// Define a project interface
+interface Project {
+  project_number: string;
+  project_name: string;
+}
+
+interface ProjectFormProps {
+  projects: Project[];
+}
+
+// Define a project interface
+interface Project {
+  project_number: string;
+  project_name: string;
+}
+
+interface ProjectFormProps {
+  projects: Project[];
+}
+
+export default function ProjectForm({ projects }: ProjectFormProps) {
+  // Holds the selected project's display string, e.g. "P001 - Project Name"
+  const [selectedProject, setSelectedProject] = useState<string>("");
+  console.log("🚀 ~ ProjectForm ~ selectedProject:", selectedProject);
+  // Holds the query for filtering the projects list
+  const [query, setQuery] = useState<string>("");
+  console.log("🚀 ~ ProjectForm ~ query:", query);
+  // Controls whether the dropdown is open
+  const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
+  // For submission state and error messages
+  const [isPending, setIsPending] = useState<boolean>(false);
+  const [message, setMessage] = useState<string>("");
+  console.log("🚀 ~ ProjectForm ~ message:", message);
   const router = useRouter();
 
+  useEffect(() => {
+    handleSubmit();
+  }, [selectedProject]);
+
+  // Filter projects based on the query input
+  const filteredProjects =
+    query === ""
+      ? projects
+      : projects.filter((proj) =>
+          `${proj.project_number} - ${proj.project_name}`
+            .toLowerCase()
+            .includes(query.toLowerCase())
+        );
+
   const handleSubmit = async () => {
+    if (!selectedProject) return; // safeguard
     setIsPending(true);
-
-    // Call the getProject function
-    const response = await getProject(projectNumber);
-
-    if (response.project) {
-      // Redirect to the project report
-      router.push(`/report/${response.project.project_number}`);
-    } else {
-      // Display error message
-      setMessage(response.message || "Unknown error");
-    }
+    // Extract project number from selectedProject
+    const projectNumber = selectedProject.split(" - ")[0];
+    router.push(`/report/${projectNumber}`);
     setIsPending(false);
   };
 
   return (
-    <>
-      <form
-        className="flex justify-start items-center p-5 mt-2 relative"
-        // onSubmit={handleSubmit}
-      >
-        <Label className="min-w-28 text-sm -ml-1 mr-1">
-          Find your project:
-        </Label>
-        <Input
-          type="text"
-          placeholder={"Enter project number"}
-          value={projectNumber}
-          onChange={(e) => {
-            setProjectNumber(e.target.value);
-            setMessage(""); // Reset message when the input changes
-          }}
-        />
+    <form className="flex flex-col sm:flex-row justify-start items-center p-5 mt-2 relative">
+      <Label className="min-w-28 text-sm -ml-2.5 mr-1">
+        Find your project:
+      </Label>
 
-        <Button
-          disabled={isPending}
-          variant="outline"
-          onClick={handleSubmit}
-          className="bg-purple-200 outline-1 hover:bg-purple-300 m-1"
-        >
-          {!isPending ? "Go" : <Loader2 className="animate-spin" />}
-        </Button>
+      <div className="relative">
+        <div className="flex items-center border p-2 w-fit rounded-md">
+          <input
+            type="text"
+            placeholder="Search project..."
+            value={query || selectedProject}
+            onChange={(e) => {
+              setQuery(e.target.value);
+              setMessage(""); // Clear any error message
+            }}
+            onFocus={() => setIsDropdownOpen(true)}
+            className="flex-1 outline-none text-sm max-w-44"
+          />
+          <button
+            type="button"
+            onClick={() => setIsDropdownOpen((prev) => !prev)}
+            className="ml-1"
+          >
+            <ChevronsUpDown className="w-4 h-4 opacity-50" />
+          </button>
+        </div>
 
-        {message && (
-          <div className="absolute  -right-1.5 -bottom-6 w-full grid place-content-center">
-            <Alert
-              variant="destructive"
-              className="flex justify-start items-center py-2 px-4"
-            >
-              <AlertCircle className="h-5 w-5 text-red-500 -mt-2.5 " />
-              <AlertDescription className="text-xs ml-2  text-red-600 mt-1">
-                {message}
-              </AlertDescription>
-            </Alert>
+        {isDropdownOpen && (
+          <div
+            className="absolute mt-1 w-auto text-sm bg-white whitespace-nowrap text-ellipsis border rounded-md shadow-lg max-h-60 overflow-auto z-10"
+            // className="absolute z-20 p-2 hover:bg-gray-100 cursor-pointer text-sm whitespace-nowrap overflow-hiden text-ellipsis"
+          >
+            {filteredProjects.length > 0 ? (
+              filteredProjects.map((proj) => {
+                const displayValue = `${proj.project_number} - ${proj.project_name}`;
+                return (
+                  <div
+                    key={proj.project_number}
+                    onClick={() => {
+                      setSelectedProject(displayValue);
+                      setIsDropdownOpen(false);
+                      setQuery(""); // reset query if needed
+                    }}
+                    className="p-2 hover:bg-gray-100 cursor-pointer text-sm"
+                  >
+                    {displayValue}
+                  </div>
+                );
+              })
+            ) : (
+              <div className="  w-auto grid place-content-center">
+                <Alert
+                  variant="destructive"
+                  className="flex justify-start items-center py-2 px-11"
+                >
+                  <AlertCircle className="h-5 w-5 text-red-500 -mt-2.5" />
+                  <AlertDescription className="text-xs ml-2 text-red-600 mt-1">
+                    No project found
+                  </AlertDescription>
+                </Alert>
+              </div>
+            )}
           </div>
         )}
-      </form>
-    </>
+      </div>
+
+      <Button
+        disabled={isPending || !selectedProject}
+        variant="outline"
+        onClick={handleSubmit}
+        className="bg-purple-200 outline-1 hover:bg-purple-300 m-1"
+      >
+        {!isPending ? "Go" : <Loader2 className="animate-spin" />}
+      </Button>
+    </form>
   );
 }

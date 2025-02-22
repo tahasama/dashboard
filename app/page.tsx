@@ -4,9 +4,8 @@ import Charts from "./HomePageCharts/page";
 import Search from "./Search";
 import { getProjects } from "./action/actions";
 
-export default function Home() {
-  // const projetcs = await getProjects();
-  // console.log("🚀 ~ Home ~ projetcs:", projetcs);
+export default async function Home() {
+  const { projects } = await getProjects();
   return (
     <div className="flex flex-col items-center h-screen">
       <h1 className="font-bold text-center mt-4 mb-4">
@@ -16,7 +15,7 @@ export default function Home() {
         Create your reports, and generate insightful charts
       </h2>
       <ExcelForm />
-      <Search />
+      <Search projects={projects} />
       <Charts />
     </div>
   );
