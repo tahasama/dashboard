@@ -118,16 +118,8 @@ export default function ProjectForm({ projects }: ProjectFormProps) {
                 );
               })
             ) : (
-              <div className="  w-auto grid place-content-center">
-                <Alert
-                  variant="destructive"
-                  className="flex justify-start items-center py-2 px-11"
-                >
-                  <AlertCircle className="h-5 w-5 text-red-500 -mt-2.5" />
-                  <AlertDescription className="text-xs ml-2 text-red-600 mt-1">
-                    No project found
-                  </AlertDescription>
-                </Alert>
+              <div className="p-2 text-sm text-muted-foreground">
+                No projects found
               </div>
             )}
           </div>
@@ -142,6 +134,20 @@ export default function ProjectForm({ projects }: ProjectFormProps) {
       >
         {!isPending ? "Go" : <Loader2 className="animate-spin" />}
       </Button>
+
+      {message && (
+        <div className="absolute -right-1.5 -bottom-6 w-full grid place-content-center">
+          <Alert
+            variant="destructive"
+            className="flex justify-start items-center py-2 px-4"
+          >
+            <AlertCircle className="h-5 w-5 text-red-500 -mt-2.5" />
+            <AlertDescription className="text-xs ml-2 text-red-600 mt-1">
+              {message}
+            </AlertDescription>
+          </Alert>
+        </div>
+      )}
     </form>
   );
 }
