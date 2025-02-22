@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { getProject } from "./action/actions"; // Adjust path to your getProject function
-import { Input } from "@/components/ui/input";
+
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -32,10 +31,8 @@ interface ProjectFormProps {
 export default function ProjectForm({ projects }: ProjectFormProps) {
   // Holds the selected project's display string, e.g. "P001 - Project Name"
   const [selectedProject, setSelectedProject] = useState<string>("");
-  console.log("🚀 ~ ProjectForm ~ selectedProject:", selectedProject);
   // Holds the query for filtering the projects list
   const [query, setQuery] = useState<string>("");
-  console.log("🚀 ~ ProjectForm ~ query:", query);
   // Controls whether the dropdown is open
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
   // For submission state and error messages
@@ -63,7 +60,10 @@ export default function ProjectForm({ projects }: ProjectFormProps) {
     setIsPending(true);
     // Extract project number from selectedProject
     const projectNumber = selectedProject.split(" - ")[0];
+    console.log("🚀 ~ handleSubmit ~ projectNumber:", projectNumber);
     router.push(`/report/${projectNumber}`);
+    console.log("🚀 ~ ~ projectNumber pushed:");
+
     setIsPending(false);
   };
 
