@@ -372,7 +372,7 @@ const LateAnalysisReview: React.FC<Data> = memo(({ data }) => {
           </PopoverContent>
         </Popover>
       </div>
-      <div className="w-9/12 h-full flex flex-col mt-0.5">
+      <div className="w-9/12 h-full flex flex-col mt-2">
         <div className="flex justify-between mr-10 ml-4">
           <h2>Documents Reviews Analysis </h2>
         </div>
