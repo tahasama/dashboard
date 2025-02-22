@@ -44,9 +44,9 @@ export default function ProjectForm({ projects }: ProjectFormProps) {
   console.log("🚀 ~ ProjectForm ~ message:", message);
   const router = useRouter();
 
-  useEffect(() => {
-    handleSubmit();
-  }, [selectedProject]);
+  // useEffect(() => {
+  //   handleSubmit();
+  // }, [selectedProject]);
 
   // Filter projects based on the query input
   const filteredProjects =
