@@ -48,7 +48,15 @@ const LineTimeChart: React.FC = memo(() => {
   const [loading, setLoading] = useState(true); // ✅ New loading state
 
   const [timelineItems, setTimelineItems] = useState([]);
+  console.log(
+    "🚀 ~ constLineTimeChart:React.FC=memo ~ timelineItems:",
+    timelineItems
+  );
   const [timelineGroups, setTimelineGroups] = useState([]);
+  console.log(
+    "🚀 ~ constLineTimeChart:React.FC=memo ~ timelineGroups:",
+    timelineGroups
+  );
   const [defaultTimeStart, setDefaultTimeStart] = useState<any>(null); // Change to Date or null
   const [defaultTimeEnd, setDefaultTimeEnd] = useState<any>(null); // Change to Date or null
 

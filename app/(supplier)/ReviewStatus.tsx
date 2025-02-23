@@ -9,6 +9,7 @@ import { useFilters } from "../FiltersProvider";
 
 const ReviewStatus: React.FC<Data> = memo(() => {
   const { filtered } = useFilters();
+  console.log("🚀 ~ 55555555~ filtered:", filtered);
   const [chartData, setChartData] = useState<
     { label: string; value: number }[]
   >([]);
@@ -43,9 +44,10 @@ const ReviewStatus: React.FC<Data> = memo(() => {
 
     Object.values(latestRevisions).forEach((row: any) => {
       const status =
-        row.revision > 0 || row.revision === "A"
-          ? row.stepOutcome
+        row.revision > 0 || row.revision !== "0" || row.revision !== "A"
+          ? row.stepOutcome || row.reviewStatus
           : row.reviewStatus; // Choose status based on revision
+      console.log("🚀 ~ Object.values ~ status:", row.stepOutcome);
       if (status) {
         statusCounts[status] = (statusCounts[status] || 0) + 1;
       }
