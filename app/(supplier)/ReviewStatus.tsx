@@ -44,10 +44,10 @@ const ReviewStatus: React.FC<Data> = memo(() => {
 
     Object.values(latestRevisions).forEach((row: any) => {
       const status =
-        row.revision > 0 || row.revision !== "0" || row.revision !== "A"
-          ? row.stepOutcome || row.reviewStatus
+        (row.revision > 0 || row.revision !== "0" || row.revision === "A") &&
+        row.stepOutcome !== ""
+          ? row.stepOutcome
           : row.reviewStatus; // Choose status based on revision
-      console.log("🚀 ~ Object.values ~ status:", row.stepOutcome);
       if (status) {
         statusCounts[status] = (statusCounts[status] || 0) + 1;
       }
