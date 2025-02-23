@@ -187,7 +187,7 @@ self.onmessage = function (event) {
           parseDate(plannedSubmissionDate) || new Date();
         validSubmissionEndDate = parseDate(dateIn) || new Date();
       } else {
-        validSubmissionStartDate = parseDate(dateIn) || new Date();
+        validSubmissionStartDate = parseDate(dateIn - 1) || new Date();
         validSubmissionEndDate = parseDate(dateIn) || new Date();
       }
 
