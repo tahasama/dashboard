@@ -26,6 +26,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { useFilters } from "../FiltersProvider";
 
 // Define the data structure for the input `data` prop
 interface DataRow {
@@ -34,6 +35,7 @@ interface DataRow {
 }
 
 const LateAnalysisReview: React.FC<Data> = memo(({ data }) => {
+  const { filtered } = useFilters();
   const [chartData, setChartData] = useState<any>({
     labels: [],
     datasets: [],
@@ -42,6 +44,7 @@ const LateAnalysisReview: React.FC<Data> = memo(({ data }) => {
   const [chartValuesdocs, setChartValuesdocs] = useState<any>();
   const [chartValuesRealReceivedDocs, setChartValuesRealReceivedDocs] =
     useState<any>();
+
   const chartRef = useRef<HTMLDivElement | null>(null);
 
   const excelDateToJSDate = (serial: number): string => {
@@ -57,78 +60,53 @@ const LateAnalysisReview: React.FC<Data> = memo(({ data }) => {
         docs: number;
         receivedDocs: number;
         realReceivedDocs: number;
-        realReceivedDocNumbers: Set<string>; // Add this to track Document Nos
       }
     > = {};
 
-    // Array to collect documents with null or undefined dates
-    const nullDateDocs: {
-      docNumber: string;
-      dateIn: any;
-      dateCompleted: any;
-    }[] = [];
+    (data.length > 1 ? data : filtered).forEach((row: MergedData) => {
+      let dateKey: string | null = null;
+      const rawDate =
+        row.originalDueDate && row.originalDueDate !== ""
+          ? row.originalDueDate
+          : row.dateIn;
 
-    data
-      .filter(
-        (row: MergedData) =>
-          row.reviewStatus !== "Canceled" &&
-          row.reviewStatus !== "Cancelled" &&
-          row.stepStatus !== "Terminated" &&
-          row.workflowStatus !== "Terminated"
-      )
-      .forEach((row: MergedData) => {
-        let dateKey: string | null = null;
-        const rawDate = row.originalDueDate;
-        const rawDateW = row.dateCompleted;
+      const rawDateW = row.dateCompleted;
 
-        // Check for null or undefined dates
-        if (!rawDate || !rawDateW) {
-          nullDateDocs.push({
-            docNumber: row.documentNo,
-            dateIn: rawDate,
-            dateCompleted: rawDateW,
-          });
+      if (typeof rawDate === "number") {
+        dateKey = excelDateToJSDate(rawDate);
+      } else if (typeof rawDate === "string") {
+        dateKey = rawDate;
+      }
+
+      if (dateKey) {
+        if (!groupedData[dateKey]) {
+          groupedData[dateKey] = {
+            docs: 0,
+            receivedDocs: 0,
+            realReceivedDocs: 0,
+          };
         }
 
-        if (typeof rawDate === "number") {
-          dateKey = excelDateToJSDate(rawDate);
-        } else if (typeof rawDate === "string") {
-          dateKey = rawDate;
-        }
+        groupedData[dateKey].docs += 1;
 
-        if (dateKey) {
-          if (!groupedData[dateKey]) {
-            groupedData[dateKey] = {
+        if (rawDateW) {
+          const receivedDate =
+            typeof rawDateW === "string"
+              ? rawDateW
+              : excelDateToJSDate(rawDateW);
+
+          if (!groupedData[receivedDate]) {
+            groupedData[receivedDate] = {
               docs: 0,
               receivedDocs: 0,
               realReceivedDocs: 0,
-              realReceivedDocNumbers: new Set(),
             };
           }
-
-          groupedData[dateKey].docs += 1;
-
-          if (rawDateW) {
-            const receivedDate =
-              typeof rawDateW === "string"
-                ? rawDateW
-                : excelDateToJSDate(rawDateW);
-            if (!groupedData[receivedDate]) {
-              groupedData[receivedDate] = {
-                docs: 0,
-                receivedDocs: 0,
-                realReceivedDocs: 0,
-                realReceivedDocNumbers: new Set(),
-              };
-            }
-            groupedData[receivedDate].receivedDocs += 1;
-            groupedData[receivedDate].realReceivedDocs += 1;
-            groupedData[receivedDate].realReceivedDocNumbers.add(
-              row.documentNo
-            ); // Track the Document No
-          }
+          groupedData[receivedDate].receivedDocs += 1;
+          groupedData[receivedDate].realReceivedDocs += 1;
         }
-      });
+      }
+    });
 
     return groupedData;
   };
@@ -151,26 +129,20 @@ const LateAnalysisReview: React.FC<Data> = memo(({ data }) => {
 
       return parseDate(a).getTime() - parseDate(b).getTime();
     });
-
-    // Shift the planned reviews (docs) two steps forward
     const chartValuesdocs = chartLabels.map((_, index) => {
       return chartLabels
-        .slice(0, index + 1) //might change to 2 to be correctted!!!!!!!!!!!!!!!!!!!!!
-        .reduce((sum, label) => sum + groupedData[label]?.docs || 0, 0);
+        .slice(0, index + 1)
+        .reduce((sum, label) => sum + groupedData[label].docs, 0);
     });
+    setChartValuesdocs(chartValuesdocs);
 
     const chartValuesRealReceivedDocs = chartLabels.map((_, index) => {
       return chartLabels
-        .slice(0, index + 1) // Regular cumulative logic for realReceivedDocs
-        .reduce(
-          (sum, label) => sum + groupedData[label]?.realReceivedDocs || 0,
-          0
-        );
+        .slice(0, index + 1) // Include the current index
+        .reduce((sum, label) => sum + groupedData[label].realReceivedDocs, 0);
     });
 
-    setChartValuesdocs(chartValuesdocs);
     setChartValuesRealReceivedDocs(chartValuesRealReceivedDocs);
-
     return {
       chartLabels,
       chartValuesdocs,
@@ -253,18 +225,14 @@ const LateAnalysisReview: React.FC<Data> = memo(({ data }) => {
             });
 
             // Compute Delta Difference
-            let delta = plannedValue - actualValue;
             tooltipContent += `
-            <i>Δ (planned - actual): ${(plannedValue - actualValue).toFixed(
+            <i>Δ (planned - actual) : ${(plannedValue - actualValue).toFixed(
               0
             )}</i>
             </br>
-            <i>Completion / step: ${
-              (actualValue / plannedValue) * 100 <= 100
-                ? ((actualValue / plannedValue) * 100).toFixed(1)
-                : 100
-              // ((actualValue / plannedValue) * 100).toFixed(1)
-            }%</i>
+            <i>Total Completion: ${((actualValue / data.length) * 100).toFixed(
+              1
+            )}%</i>
             `;
 
             return tooltipContent;
@@ -349,7 +317,7 @@ const LateAnalysisReview: React.FC<Data> = memo(({ data }) => {
 
   return (
     <div className="w-full h-full flex">
-      <div className="absolute right-7 top-1.5 text-xs z-30">
+      <div className="absolute right-7 top-0 text-xs ">
         <Popover>
           <PopoverTrigger asChild>
             <Button variant="outline">
@@ -372,9 +340,19 @@ const LateAnalysisReview: React.FC<Data> = memo(({ data }) => {
           </PopoverContent>
         </Popover>
       </div>
-      <div className="w-9/12 h-full flex flex-col mt-2">
+      <div className="w-9/12 h-full flex flex-col mt-0.5 relative">
         <div className="flex justify-between mr-10 ml-4">
           <h2>Documents Reviews Analysis </h2>
+          {/* <div
+            className={`transition-opacity duration-1000 ease-in-out ${
+              hide ? "opacity-0" : "opacity-100"
+            }`}
+            style={{ transition: "opacity 1s ease-in-out" }}
+          > */}
+          {/* <div className="text-xs text-slate-950 bg-indigo-200/55 shadow-md rounded-[2px] py-1 px-1.5">
+            <b>Tip:</b> Click on any legend of any chart to show/hide.
+          </div> */}
+          {/* </div> */}
         </div>
         <div
           ref={chartRef}

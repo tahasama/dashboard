@@ -23,6 +23,7 @@ import {
 
 const LateAnalysis: React.FC<Data> = memo(({ data }) => {
   const { filtered } = useFilters();
+  const dataX = data.length >= 3 ? data : filtered;
 
   const [chartData, setChartData] = useState<any>({
     labels: [],
@@ -51,7 +52,7 @@ const LateAnalysis: React.FC<Data> = memo(({ data }) => {
       }
     > = {};
 
-    (data.length > 1 ? data : filtered).forEach((row: MergedData) => {
+    dataX.forEach((row: MergedData) => {
       let dateKey: string | null = null;
       const rawDate =
         row.plannedSubmissionDate && row.plannedSubmissionDate !== ""
@@ -160,7 +161,7 @@ const LateAnalysis: React.FC<Data> = memo(({ data }) => {
         },
       ],
     });
-  }, [data]);
+  }, [dataX]);
 
   useEffect(() => {
     if (chartRef.current) {
