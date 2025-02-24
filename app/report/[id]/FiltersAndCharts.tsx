@@ -47,24 +47,13 @@ const FiltersAndCharts = () => {
     setCurrentPage(0);
   }, [filtered, setCurrentPage]);
 
-  // const [switchSubmissions, setSwitchSubmissions] =
-  //   useState<switchState>("horizontal");
-
-  // const [size1, setSize1] = useState(24); // Initial sizes
-  // const [size2, setSize2] = useState(76);
-
-  // useEffect(() => {
-  //   setSize1(switchSubmissions === "vertical" ? 24 : 40);
-  //   setSize2(switchSubmissions === "vertical" ? 76 : 60);
-  // }, [switchSubmissions]);
-
   return (
     <div className="w-full  mt-4">
       {/* Filters */}
 
       <div
         ref={contentRef}
-        className="relative bg-slate- p-2 mx-1 rounded-md flex h-[110vh] md:h-[calc(100vh-60px)] w- shadow-md"
+        className="relative bg-slate- p-2 mx-1 rounded-md flex h-[120vh] md:h-[calc(100vh-60px)] w- shadow-md"
       >
         {/* <Button
           onClick={() =>
@@ -175,8 +164,8 @@ const FiltersAndCharts = () => {
       {/* Line Time Chart */}
       <Suspense
         fallback={
-          <div className="w-screen h-screen flex justify-center items-center">
-            &nbsp; <Loader2 className="animate-spin" />{" "}
+          <div>
+            &nbsp; <Loader2 className="animate-spin" />
             <p>Loading LineTimeChart...</p>
           </div>
         }

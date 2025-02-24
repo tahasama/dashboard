@@ -133,9 +133,9 @@ const Filters = ({ projectNumber, projectName }: any) => {
   };
 
   return (
-    <div className="sticky top-0 z-50  bg-white shadow-md w-full h-full flex justify-between items-center gap-2">
+    <div className="sticky top-0 z-50 bg-white shadow-md w-full h-full flex justify-between items-center gap-2">
       {/* Filters for small screens */}
-      <div className="block lg:hidden ml-2.5">
+      <div className="block lg:hidden ml-2.5 scale-75 md:scale-100">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="icon" className="bg-purple-200">
@@ -256,11 +256,11 @@ const Filters = ({ projectNumber, projectName }: any) => {
 
       <div className="flex py-[13px] pl-2 gap-2.5 items-center">
         <p
-          className={`font-medium min-w-24 text-center text-base text-black bg-gray-00 rounded-sm`}
+          className={`font-medium min-w-24 text-center text-xs md:text-base text-black bg-gray-00 rounded-sm`}
         >
           {projectName}
         </p>
-        <p className="text-sm text-gray-600 font-medium whitespace-nowrap ">
+        <p className="text-xs md:text-sm text-gray-600 font-medium whitespace-nowrap ">
           N: {projectNumber}
         </p>
       </div>
@@ -409,25 +409,25 @@ const Filters = ({ projectNumber, projectName }: any) => {
         </div>
 
         {/* Search and Clear Filters */}
-        <div className="flex items-center gap-3 w-full">
+        <div className="flex items-center gap-3 w-full ">
           <Input
             type="text"
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
             placeholder="Search by Title or Document No."
-            className="p-2 border rounded text-sm w-full"
+            className="p-2 border rounded text-xs md:text-sm w-full scale-75 md:scale-100"
           />
           <Button
             variant="outline"
             onClick={clearFilters}
-            className="bg-purple-200 hover:bg-purple-100"
+            className="bg-purple-200 hover:bg-purple-100 text-xs md:text-sm scale-75 md:scale-100"
           >
             Clear
           </Button>
 
           <button
             onClick={downloadPdf}
-            className=" p-1 text-sky-800 ring-1 ring-sky-600 rounded-sm"
+            className=" p-1 text-sky-800 ring-1 ring-sky-600 rounded-sm scale-75 md:scale-100"
           >
             <TooltipProvider>
               <Tooltip>
