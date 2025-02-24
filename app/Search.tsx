@@ -119,9 +119,12 @@ export default function ProjectForm({ projects }: ProjectFormProps) {
                 );
               })
             ) : (
-              <div className="p-2 text-sm text-muted-foreground">
-                No projects found
-              </div>
+              <Alert variant="destructive" className="gap-0  w-auto">
+                <AlertCircle className="h-5 w-5 text-red-500 -mt-1.5" />
+                <AlertDescription className="text-xs text-red-600 mt-1">
+                  Name/No of project not found.
+                </AlertDescription>
+              </Alert>
             )}
           </div>
         )}
