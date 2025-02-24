@@ -159,7 +159,7 @@ const LineTimeChart: React.FC = memo(() => {
 
   return !loading && defaultTimeEnd !== null ? (
     <div className="snap-start h-[calc(100vh-87px)] my-5 mx-3 lg:mx-7 relative -top-2">
-      <div className="gap-3 md:gap-0 flex justify-between items-center text-xs lg:text-sm xl:text-base mb-2 top-4 md:top-0.5 relative">
+      <div className="gap-3 md:gap-0 flex justify-between items-center text-xs lg:text-sm xl:text-base mb-2 top-3   md:top-0 relative">
         <h1 className="md:w-1/3">
           Document&apos;s Timeline: {totalDocs.length}
         </h1>
@@ -201,7 +201,7 @@ const LineTimeChart: React.FC = memo(() => {
       <Toaster />
       <Legend />
 
-      <div className="h-[82vh] relative -top-3 lg:top-0 lg:h-[76vh] overflow-auto ">
+      <div className="h-[80vh] relative -top-3 lg:top-0 lg:h-[76vh] overflow-auto ">
         <Timeline
           ref={timelineRef}
           groups={timelineGroups}

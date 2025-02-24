@@ -43,41 +43,44 @@ const statusColorsReview = [
 
 const Legend = () => {
   return (
-    <div className="flex justify-between items-center text-xs my-1.5 p-1.5">
-      <div className="hidden lg:flex flex-wrap gap-y-1 gap-x-4">
+    <div className="flex justify-between items-center text-xs  pb-4">
+      <div className="flex flex-wrap gap-y-1 gap-x-2 lg:gap-x-3 text-[9px] lg:text-[10px]">
         Submissions:
         {statusColorsSubmission.map((status) => (
           <div
             key={status.label}
-            className="flex items-center justify-center gap-2"
+            className="flex items-center justify-center gap-1 lg:gap-2"
           >
             <span
-              className="w-3 h-3 rounded-full"
+              className="w-1.5 h-1.5 lg:w-3 lg:h-3 rounded-full"
               style={{ backgroundColor: status.color }}
             ></span>
-            <span className="text-xs">{status.label}</span>
+            <span className="">{status.label}</span>
           </div>
         ))}
       </div>
-      <div className="hidden lg:flex flex-wrap gap-y-1 gap-x-4">
+      <div className="flex flex-wrap gap-y-1 gap-x-2 lg:gap-x-3 text-[9px] lg:text-[10px]">
         , Reviews:
         {statusColorsReview.map((status) => (
           <div
             key={status.label}
-            className="flex items-center justify-center gap-2"
+            className="flex items-center justify-center gap-1 lg:gap-2"
           >
             <span
-              className="w-3 h-3 rounded-full"
+              className="w-1.5 h-1.5 lg:w-3 lg:h-3 rounded-full"
               style={{ backgroundColor: status.color }}
             ></span>
-            <span className="text-xs">{status.label}</span>
+            <span className="">{status.label}</span>
           </div>
         ))}
       </div>
 
       <Popover>
-        <PopoverTrigger asChild className="absolute top-0 right-44">
-          <Button variant="outline" className="scale-75">
+        <PopoverTrigger
+          asChild
+          className="absolute top-2 right-32 lg:top-0 lg:right-44"
+        >
+          <Button variant="outline" className="scale-50 lg:scale-75">
             <HelpCircle className="scale-110" />
           </Button>
         </PopoverTrigger>
