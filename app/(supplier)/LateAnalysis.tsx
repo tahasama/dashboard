@@ -309,9 +309,9 @@ const LateAnalysis: React.FC<Data> = memo(({ data }) => {
       <div className="w-9/12 h-full flex flex-col mt-0.5 relative">
         <div className="flex justify-between mr-4 ml-4">
           <h2>Documents Submissions Analysis </h2>
-          <div className="absolute right-0 text-xs scale-75">
+          <div className="absolute right-0 z-40 -top-1.5 text-xs">
             <Popover>
-              <PopoverTrigger asChild className=" -pt-4">
+              <PopoverTrigger asChild className=" -pt-4  scale-75">
                 <Button variant="outline">
                   <HelpCircle />
                 </Button>
