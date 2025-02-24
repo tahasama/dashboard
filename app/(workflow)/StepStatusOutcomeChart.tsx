@@ -260,19 +260,19 @@ const StatusOutcomeHeatMap: React.FC<Data> = memo(({ data }) => {
       },
       series: [
         {
-          name: "Actual Review",
+          name: "Planned Review",
           type: "heatmap",
           coordinateSystem: "calendar",
-          data: actualReviewData.map(([timestamp, count]) => [
+          data: plannedReviewData.map(([timestamp, count]) => [
             new Date(timestamp).toISOString().split("T")[0],
             count || 0,
           ]),
         },
         {
-          name: "Planned Review",
+          name: "Actual Review",
           type: "heatmap",
           coordinateSystem: "calendar",
-          data: plannedReviewData.map(([timestamp, count]) => [
+          data: actualReviewData.map(([timestamp, count]) => [
             new Date(timestamp).toISOString().split("T")[0],
             count || 0,
           ]),

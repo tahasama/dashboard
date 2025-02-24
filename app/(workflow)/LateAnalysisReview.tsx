@@ -189,6 +189,9 @@ const LateAnalysisReview: React.FC<Data> = memo(({ data }) => {
         legend: {
           show: true,
           top: 20,
+          textStyle: {
+            fontSize: 11.5,
+          },
         },
         tooltip: {
           trigger: "axis",
@@ -270,8 +273,8 @@ const LateAnalysisReview: React.FC<Data> = memo(({ data }) => {
             name: "Planned Reviews",
             type: "line",
             data: chartData.datasets[0]?.data || [],
-            smooth: 0.6,
-            lineStyle: { width: 2.5, color: "rgba(102, 153, 204, 1)" },
+            smooth: 0.1,
+            lineStyle: { width: 2.2, color: "rgba(102, 153, 204, 1)" },
             areaStyle: { color: "rgba(102, 153, 204, 0.2)" },
             symbol: "none",
           },
@@ -279,8 +282,8 @@ const LateAnalysisReview: React.FC<Data> = memo(({ data }) => {
             name: "Actual Reviews",
             type: "line",
             data: chartData.datasets[1]?.data || [],
-            smooth: 0.6,
-            lineStyle: { width: 2.5, color: "rgba(102, 153, 102, 1)" },
+            smooth: 0.1,
+            lineStyle: { width: 2.2, color: "rgba(102, 153, 102, 1)" },
             areaStyle: { color: "rgba(102, 153, 102, 0.2)" },
             symbol: "none",
           },

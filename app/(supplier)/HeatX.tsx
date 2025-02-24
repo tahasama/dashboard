@@ -163,8 +163,8 @@ const HeatX: React.FC<Data> = memo(({ data }) => {
           // fontWeight: "bold" , // Optional: Adjust font weight
         },
         formatter: (name: string) => {
-          if (name === "Actual Submission") return "Actual";
           if (name === "Planned Submission") return "Planned";
+          if (name === "Actual Submission") return "Actual";
           if (name === "Overlap Submission") return "Overlaps";
           return name;
         },
@@ -274,19 +274,19 @@ const HeatX: React.FC<Data> = memo(({ data }) => {
       },
       series: [
         {
-          name: "Actual Submission",
+          name: "Planned Submission",
           type: "heatmap",
           coordinateSystem: "calendar",
-          data: actualSubmissionData.map(([timestamp, count]) => [
+          data: plannedSubmissionData.map(([timestamp, count]) => [
             new Date(timestamp).toISOString().split("T")[0],
             count || 0,
           ]),
         },
         {
-          name: "Planned Submission",
+          name: "Actual Submission",
           type: "heatmap",
           coordinateSystem: "calendar",
-          data: plannedSubmissionData.map(([timestamp, count]) => [
+          data: actualSubmissionData.map(([timestamp, count]) => [
             new Date(timestamp).toISOString().split("T")[0],
             count || 0,
           ]),
