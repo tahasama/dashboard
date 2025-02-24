@@ -135,7 +135,6 @@ const LateAnalysisReviewConclusion: React.FC<{
         className={`p-2 rounded-md mb-2 mx-0.5 ${reviewProgressionInsight.color}`}
       >
         {reviewProgressionInsight.message}
-        hwr
       </p>
 
       {/* Review Statistics */}
