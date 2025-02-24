@@ -188,7 +188,7 @@ const LateAnalysisReview: React.FC<Data> = memo(({ data }) => {
         },
         legend: {
           show: true,
-          top: 24,
+          top: 20,
         },
         tooltip: {
           trigger: "axis",
