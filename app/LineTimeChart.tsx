@@ -201,7 +201,7 @@ const LineTimeChart: React.FC = memo(() => {
       <Toaster />
       <Legend />
 
-      <div className="h-[80vh] relative -top-3 lg:top-0 lg:h-[76vh] overflow-auto ">
+      <div className="h-[74vh] relative -top-3 lg:top-0 lg:h-[76vh] overflow-auto ">
         <Timeline
           ref={timelineRef}
           groups={timelineGroups}
