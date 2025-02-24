@@ -306,42 +306,36 @@ const LateAnalysis: React.FC<Data> = memo(({ data }) => {
 
   return (
     <div className="w-full h-full flex">
-      <div className="absolute right-7 top-0 text-xs ">
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button variant="outline">
-              <HelpCircle />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="grid p-0 gap-2 bg-white w-[400px]">
-            <Accordion type="single" collapsible className="w-full">
-              <AccordionItem value="item-1" className="border-b-0 p-1 ">
-                <AccordionTrigger className="text-slate-950 bg-indigo-200/40 p-1.5 rounded-sm  text-xs">
-                  <p className="">
-                    <b>Tip:</b> Click on any legend of any chart to show/hide.
-                  </p>
-                </AccordionTrigger>
-                <AccordionContent>
-                  <img src="/tips/tip1.gif" alt="Demo GIF" className="" />
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-          </PopoverContent>
-        </Popover>
-      </div>
       <div className="w-9/12 h-full flex flex-col mt-0.5 relative">
-        <div className="flex justify-between mr-10 ml-4">
+        <div className="flex justify-between mr-4 ml-4 relative">
           <h2>Documents Submissions Analysis </h2>
-          {/* <div
-            className={`transition-opacity duration-1000 ease-in-out ${
-              hide ? "opacity-0" : "opacity-100"
-            }`}
-            style={{ transition: "opacity 1s ease-in-out" }}
-          > */}
-          {/* <div className="text-xs text-slate-950 bg-indigo-200/55 shadow-md rounded-[2px] py-1 px-1.5">
-            <b>Tip:</b> Click on any legend of any chart to show/hide.
-          </div> */}
-          {/* </div> */}
+          <div className="absolute right-0 z-40 -top-1.5 text-xs scale-75">
+            <Popover>
+              <PopoverTrigger asChild className=" -pt-4">
+                <Button variant="outline">
+                  <HelpCircle />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent
+                className="grid p-0 gap-2 bg-white w-[400px]"
+                align="start"
+              >
+                <Accordion type="single" collapsible className="w-full">
+                  <AccordionItem value="item-1" className="border-b-0 p-1 ">
+                    <AccordionTrigger className="text-slate-950 bg-indigo-200/40 p-1.5 rounded-sm  text-xs">
+                      <p className="">
+                        <b>Tip:</b> Click on any legend of any chart to
+                        show/hide.
+                      </p>
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <img src="/tips/tip1.gif" alt="Demo GIF" className="" />
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+              </PopoverContent>
+            </Popover>
+          </div>
         </div>
         <div
           ref={chartRef}
