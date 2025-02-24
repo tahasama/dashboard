@@ -317,7 +317,7 @@ const LateAnalysisReview: React.FC<Data> = memo(({ data }) => {
 
   return (
     <div className="w-full h-full flex">
-      <div className="absolute right-7 top-0 text-xs ">
+      <div className="absolute right-7 top-2 text-xs ">
         <Popover>
           <PopoverTrigger asChild>
             <Button variant="outline">
