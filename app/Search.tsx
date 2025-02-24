@@ -38,7 +38,6 @@ export default function ProjectForm({ projects }: ProjectFormProps) {
   // For submission state and error messages
   const [isPending, setIsPending] = useState<boolean>(false);
   const [message, setMessage] = useState<string>("");
-  console.log("🚀 ~ ProjectForm ~ message:", message);
   const router = useRouter();
 
   // useEffect(() => {
@@ -61,10 +60,7 @@ export default function ProjectForm({ projects }: ProjectFormProps) {
     setIsPending(true);
     // Extract project number from selectedProject
     const projectNumber = selectedProject.split(" - ")[0];
-    console.log("🚀 ~ handleSubmit ~ projectNumber:", projectNumber);
     router.push(`/report/${projectNumber}`);
-    console.log("🚀 ~ ~ projectNumber pushed:");
-
     setIsPending(false);
   };
 
