@@ -267,10 +267,10 @@ const Filters = ({ projectNumber, projectName }: any) => {
 
       <div className="flex justify-between items-center gap-2 xl:gap-3 flex-1 pl-[7px] pr-[5px]">
         {/* Filters for large screens */}
-        <div className="hidden lg:flex gap-2 xl:gap-2.5 w-full">
+        <div className="hidden lg:flex justify-center gap-2 xl:gap-2.5 w-auto">
           {/* Subproject Filter */}
           <Select value={subProjectFilter} onValueChange={setSubProjectFilter}>
-            <SelectTrigger className="max-w-[115px] text-xs lg:text-sm">
+            <SelectTrigger className="max-w-[110px] xl:min-w-[112px] text-xs lg:text-sm">
               <SelectValue placeholder="Subproject" />
             </SelectTrigger>
             <SelectContent>
@@ -289,7 +289,7 @@ const Filters = ({ projectNumber, projectName }: any) => {
 
           {/* Supplier Filter */}
           <Select value={createdByFilter} onValueChange={setCreatedByFilter}>
-            <SelectTrigger className="max-w-[115px] text-xs lg:text-sm">
+            <SelectTrigger className="max-w-[110px] xl:min-w-[112px] text-xs lg:text-sm">
               <SelectValue placeholder="Supplier" />
             </SelectTrigger>
             <SelectContent>
@@ -308,7 +308,7 @@ const Filters = ({ projectNumber, projectName }: any) => {
 
           {/* Discipline Filter */}
           <Select value={disciplineFilter} onValueChange={setDisciplineFilter}>
-            <SelectTrigger className="max-w-[115px] text-xs lg:text-sm">
+            <SelectTrigger className="max-w-[110px] xl:min-w-[112px] text-xs lg:text-sm">
               <SelectValue placeholder="Discipline" />
             </SelectTrigger>
             <SelectContent>
