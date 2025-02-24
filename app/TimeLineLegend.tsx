@@ -44,7 +44,7 @@ const statusColorsReview = [
 const Legend = () => {
   return (
     <div className="flex justify-between items-center text-xs -mt-1 mb-0.5 p-1 bg-white shadow-lg rounded-lg">
-      <div className="hidden lg:flex flex-wrap gap-y-1 gap-x-4">
+      <div className="hidden md:flex flex-wrap gap-y-1 gap-x-4">
         Submissions:
         {statusColorsSubmission.map((status) => (
           <div
@@ -59,7 +59,7 @@ const Legend = () => {
           </div>
         ))}
       </div>
-      <div className="hidden lg:flex flex-wrap gap-y-1 gap-x-4">
+      <div className="hidden md:flex flex-wrap gap-y-1 gap-x-4">
         , Reviews:
         {statusColorsReview.map((status) => (
           <div
@@ -76,7 +76,7 @@ const Legend = () => {
       </div>
 
       <Popover>
-        <PopoverTrigger asChild className="hidden lg:flex">
+        <PopoverTrigger asChild className="hidden md:block">
           <Button variant="outline" className="scale-75">
             <HelpCircle className="scale-110" />
           </Button>
