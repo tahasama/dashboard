@@ -1,5 +1,18 @@
 import React from "react";
 import { Data, MergedData } from "../types";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "@radix-ui/react-accordion";
+import { HelpCircle } from "lucide-react";
 
 const LateAnalysisConclusion: React.FC<{
   chartValuesRealReceivedDocs: number[];
@@ -96,7 +109,33 @@ const LateAnalysisConclusion: React.FC<{
         };
 
   return (
-    <div className="w-3/12 font-thin text-black lg:text-slate-800 text-xs pt-24 lg:pt-0 grid content-center scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-slate-300 rounded-md scrollbar-corner-transparent overflow-y-scroll">
+    <div className="w-3/12 font-thin text-black lg:text-slate-800 text-[11px] mb-3 lg:text-xs scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-slate-300 scrollbar-corner-transparent overflow-y-scroll">
+      <div className="text-end">
+        <Popover>
+          <PopoverTrigger asChild className=" -pt-4 relative text-end scale-75">
+            <Button variant="outline">
+              <HelpCircle />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent
+            className="grid p-0 gap-2 bg-white w-[400px]"
+            // align="start"
+          >
+            <Accordion type="single" collapsible className="w-full">
+              <AccordionItem value="item-1" className="border-b-0 p-1 ">
+                <AccordionTrigger className="text-slate-950 bg-indigo-200/40 p-1.5 rounded-sm  text-xs">
+                  <p className="">
+                    <b>Tip:</b> Click on any legend of any chart to show/hide.
+                  </p>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <img src="/tips/tip1.gif" alt="Demo GIF" className="" />
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </PopoverContent>
+        </Popover>
+      </div>
       <p
         className={`p-2 rounded-md mb-2 ring- mx-0.5 ${submissionImpactInsight.color}`}
       >
