@@ -48,117 +48,146 @@ const FiltersAndCharts = () => {
   }, [filtered, setCurrentPage]);
 
   return (
-    <div className="w-full  mt-4">
-      {/* Filters */}
-
+    <div className="w-full mt-4">
+      {/* Submission Charts */}
       <div
         ref={contentRef}
-        className="relative bg-slate- p-2 mx-1 rounded-md flex h-[120vh] md:h-[calc(100vh-60px)] w- shadow-md"
+        className="relative  p-2 mx-1 rounded-md flex h-auto md:h-[calc(100vh-60px)] shadow-md"
       >
-        {/* <Button
-          onClick={() =>
-            setSwitchSubmissions((prev) =>
-              prev === "vertical" ? "horizontal" : "vertical"
-            )
-          }
-        >
-          <ArrowDownUp />
-        </Button> */}
-        <ResizablePanelGroup
-          direction={"horizontal"}
-          // key={switchSubmissions}
-        >
-          <ResizablePanel defaultSize={24}>
-            <ResizablePanelGroup
-              direction={
-                // switchSubmissions === "vertical" ? "horizontal" : "vertical"
-                "vertical"
-              }
-            >
-              <ResizablePanel defaultSize={33}>
-                <Suspense fallback={"Loading..."}>
-                  <ReviewStatus data={uniqueFiltered} />
-                </Suspense>
-              </ResizablePanel>
-              <ResizableHandle withHandle />
-              <ResizablePanel defaultSize={34}>
-                <Suspense fallback={"Loading..."}>
-                  <SubmissionStatus data={uniqueFiltered} />
-                </Suspense>
-              </ResizablePanel>
-              <ResizableHandle withHandle />
-              <ResizablePanel defaultSize={33}>
-                <Suspense fallback={"Loading..."}>
-                  <StatusChart data={uniqueFiltered} />
-                </Suspense>
-              </ResizablePanel>
-            </ResizablePanelGroup>
-          </ResizablePanel>
-          <ResizableHandle withHandle />
-          <ResizablePanel defaultSize={76}>
-            <ResizablePanelGroup direction="vertical">
-              <ResizablePanel defaultSize={70}>
-                <Suspense fallback={"Loading..."}>
-                  <LateAnalysis data={uniqueFiltered} />
-                </Suspense>
-              </ResizablePanel>
-              <ResizableHandle withHandle />
-              {/* {switchSubmissions !== "vertical" && ( */}
-              <ResizablePanel defaultSize={30}>
-                <Suspense fallback={"Loading..."}>
-                  <HeatX data={uniqueFiltered} />
-                </Suspense>
-              </ResizablePanel>
-              {/* )} */}
-            </ResizablePanelGroup>
-          </ResizablePanel>
-        </ResizablePanelGroup>
+        {window.innerWidth < 768 ? (
+          // Phone Layout: Landscape-Oriented
+          <div className="flex flex-col w-full gap-2">
+            {/* First Row */}
+            <div className="flex flex-row w-full gap-2">
+              <Suspense fallback={"Loading..."}>
+                <ReviewStatus data={uniqueFiltered} />
+              </Suspense>
+              <Suspense fallback={"Loading..."}>
+                <SubmissionStatus data={uniqueFiltered} />
+              </Suspense>
+              <Suspense fallback={"Loading..."}>
+                <StatusChart data={uniqueFiltered} />
+              </Suspense>
+            </div>
+
+            {/* Second Row (Stacked Below) */}
+            <div className="flex flex-col w-full gap-2 mt-2">
+              <Suspense fallback={"Loading..."}>
+                <LateAnalysis data={uniqueFiltered} />
+              </Suspense>
+              <Suspense fallback={"Loading..."}>
+                <HeatX data={uniqueFiltered} />
+              </Suspense>
+            </div>
+          </div>
+        ) : (
+          // Larger Screen Layout: Keep Resizable Panels
+          <ResizablePanelGroup direction="horizontal">
+            <ResizablePanel defaultSize={24}>
+              <ResizablePanelGroup direction="vertical">
+                <ResizablePanel defaultSize={33}>
+                  <Suspense fallback={"Loading..."}>
+                    <ReviewStatus data={uniqueFiltered} />
+                  </Suspense>
+                </ResizablePanel>
+                <ResizableHandle withHandle />
+                <ResizablePanel defaultSize={34}>
+                  <Suspense fallback={"Loading..."}>
+                    <SubmissionStatus data={uniqueFiltered} />
+                  </Suspense>
+                </ResizablePanel>
+                <ResizableHandle withHandle />
+                <ResizablePanel defaultSize={33}>
+                  <Suspense fallback={"Loading..."}>
+                    <StatusChart data={uniqueFiltered} />
+                  </Suspense>
+                </ResizablePanel>
+              </ResizablePanelGroup>
+            </ResizablePanel>
+            <ResizableHandle withHandle />
+            <ResizablePanel defaultSize={76}>
+              <ResizablePanelGroup direction="vertical">
+                <ResizablePanel defaultSize={70}>
+                  <Suspense fallback={"Loading..."}>
+                    <LateAnalysis data={uniqueFiltered} />
+                  </Suspense>
+                </ResizablePanel>
+                <ResizableHandle withHandle />
+                <ResizablePanel defaultSize={30}>
+                  <Suspense fallback={"Loading..."}>
+                    <HeatX data={uniqueFiltered} />
+                  </Suspense>
+                </ResizablePanel>
+              </ResizablePanelGroup>
+            </ResizablePanel>
+          </ResizablePanelGroup>
+        )}
       </div>
 
       {/* Workflow Charts */}
       <div
         ref={content2Ref}
-        className="relative bg-slate- p-2 mx-1 rounded-md flex h-[120vh] md:h-[calc(100vh-50px)] w- shadow-md"
+        className="relative p-2 mx-1 rounded-md flex h-auto md:h-[calc(100vh-50px)] shadow-md"
       >
-        <ResizablePanelGroup direction="horizontal">
-          <ResizablePanel defaultSize={24}>
-            <ResizablePanelGroup direction="vertical">
-              <ResizablePanel defaultSize={65}>
-                <Suspense fallback={"Loading..."}>
-                  <DocsPerUserChart data={filtered} />
-                </Suspense>
-              </ResizablePanel>
-              <ResizableHandle withHandle />
-              <ResizablePanel defaultSize={35}>
-                {" "}
-                {/* Explicit defaultSize added */}
-                <Suspense fallback={"Loading..."}>
-                  <WorkflowStepStatusChart data={filtered} />
-                </Suspense>
-              </ResizablePanel>
-            </ResizablePanelGroup>
-          </ResizablePanel>
-          <ResizableHandle withHandle />
-          <ResizablePanel defaultSize={70}>
-            {" "}
-            {/* Explicit defaultSize added */}
-            <ResizablePanelGroup direction="vertical">
-              <ResizablePanel defaultSize={70}>
-                <Suspense fallback={"Loading..."}>
-                  <LateAnalysisReview data={filtered} />
-                </Suspense>
-              </ResizablePanel>
-              <ResizableHandle withHandle />
-              <ResizablePanel defaultSize={30}>
-                {" "}
-                {/* Explicit defaultSize added */}
-                <Suspense fallback={"Loading..."}>
-                  <StatusOutcomeHeatMap data={filtered} />
-                </Suspense>
-              </ResizablePanel>
-            </ResizablePanelGroup>
-          </ResizablePanel>
-        </ResizablePanelGroup>
+        {window.innerWidth < 768 ? (
+          // Phone Layout: Landscape-Oriented
+          <div className="flex flex-col w-full gap-2">
+            {/* First Row */}
+            <div className="flex flex-row w-full gap-2">
+              <Suspense fallback={"Loading..."}>
+                <DocsPerUserChart data={filtered} />
+              </Suspense>
+              <Suspense fallback={"Loading..."}>
+                <WorkflowStepStatusChart data={filtered} />
+              </Suspense>
+            </div>
+
+            {/* Second Row (Stacked Below) */}
+            <div className="flex flex-col w-full gap-2 mt-2">
+              <Suspense fallback={"Loading..."}>
+                <LateAnalysisReview data={filtered} />
+              </Suspense>
+              <Suspense fallback={"Loading..."}>
+                <StatusOutcomeHeatMap data={filtered} />
+              </Suspense>
+            </div>
+          </div>
+        ) : (
+          // Larger Screen Layout: Keep Resizable Panels
+          <ResizablePanelGroup direction="horizontal">
+            <ResizablePanel defaultSize={24}>
+              <ResizablePanelGroup direction="vertical">
+                <ResizablePanel defaultSize={65}>
+                  <Suspense fallback={"Loading..."}>
+                    <DocsPerUserChart data={filtered} />
+                  </Suspense>
+                </ResizablePanel>
+                <ResizableHandle withHandle />
+                <ResizablePanel defaultSize={35}>
+                  <Suspense fallback={"Loading..."}>
+                    <WorkflowStepStatusChart data={filtered} />
+                  </Suspense>
+                </ResizablePanel>
+              </ResizablePanelGroup>
+            </ResizablePanel>
+            <ResizableHandle withHandle />
+            <ResizablePanel defaultSize={70}>
+              <ResizablePanelGroup direction="vertical">
+                <ResizablePanel defaultSize={70}>
+                  <Suspense fallback={"Loading..."}>
+                    <LateAnalysisReview data={filtered} />
+                  </Suspense>
+                </ResizablePanel>
+                <ResizableHandle withHandle />
+                <ResizablePanel defaultSize={30}>
+                  <Suspense fallback={"Loading..."}>
+                    <StatusOutcomeHeatMap data={filtered} />
+                  </Suspense>
+                </ResizablePanel>
+              </ResizablePanelGroup>
+            </ResizablePanel>
+          </ResizablePanelGroup>
+        )}
       </div>
 
       {/* Line Time Chart */}
