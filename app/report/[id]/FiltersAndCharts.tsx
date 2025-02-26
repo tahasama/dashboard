@@ -165,8 +165,43 @@ const FiltersAndCharts = () => {
           </div>
         ) : (
           <ResizablePanelGroup direction="horizontal">
-            {/* Keep the original resizable panels for larger screens */}
-            ...
+            <ResizablePanel defaultSize={24}>
+              <ResizablePanelGroup direction="vertical">
+                <ResizablePanel defaultSize={65}>
+                  <Suspense fallback={"Loading..."}>
+                    <DocsPerUserChart data={filtered} />
+                  </Suspense>
+                </ResizablePanel>
+                <ResizableHandle withHandle />
+                <ResizablePanel defaultSize={35}>
+                  {" "}
+                  {/* Explicit defaultSize added */}
+                  <Suspense fallback={"Loading..."}>
+                    <WorkflowStepStatusChart data={filtered} />
+                  </Suspense>
+                </ResizablePanel>
+              </ResizablePanelGroup>
+            </ResizablePanel>
+            <ResizableHandle withHandle />
+            <ResizablePanel defaultSize={70}>
+              {" "}
+              {/* Explicit defaultSize added */}
+              <ResizablePanelGroup direction="vertical">
+                <ResizablePanel defaultSize={70}>
+                  <Suspense fallback={"Loading..."}>
+                    <LateAnalysisReview data={filtered} />
+                  </Suspense>
+                </ResizablePanel>
+                <ResizableHandle withHandle />
+                <ResizablePanel defaultSize={30}>
+                  {" "}
+                  {/* Explicit defaultSize added */}
+                  <Suspense fallback={"Loading..."}>
+                    <StatusOutcomeHeatMap data={filtered} />
+                  </Suspense>
+                </ResizablePanel>
+              </ResizablePanelGroup>
+            </ResizablePanel>
           </ResizablePanelGroup>
         )}
       </div>
