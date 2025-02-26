@@ -160,7 +160,7 @@ const LineTimeChart: React.FC = memo(() => {
   return !loading && defaultTimeEnd !== null ? (
     <div className="snap-start h-[calc(100vh-87px)] my-5 mx-3 lg:mx-7 relative -top-2">
       <div className="gap-3 md:gap-0 flex justify-between items-center text-xs lg:text-sm xl:text-base mb-2 top-3   md:top-0 relative">
-        <h1 className="md:w-1/3">
+        <h1 className="md:w-1/3 text-xs lg:text-base">
           Document&apos;s Timeline: {totalDocs.length}
         </h1>
         <div className="md:w-1/3 flex justify-center">
@@ -173,7 +173,7 @@ const LineTimeChart: React.FC = memo(() => {
         <div className="md:w-1/3 flex items-center justify-end gap-2  scale-75 md:scale-100">
           <Label
             htmlFor="rowsPerPage"
-            className="text-xs lg:text-sm font-medium block"
+            className="text-[10px] lg:text-sm font-medium block"
           >
             Rows per page
           </Label>
@@ -181,18 +181,32 @@ const LineTimeChart: React.FC = memo(() => {
             value={String(rowsPerPage)}
             onValueChange={handleSelectChange}
           >
-            <SelectTrigger className="w-fit px-2 h-8 text-xs lg:text-sm">
+            <SelectTrigger className="w-fit px-2 h-8 text-[10px] lg:text-sm">
               <SelectValue placeholder="Select rows" />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectItem value="10">10</SelectItem>
-                <SelectItem value="25">25</SelectItem>
-                <SelectItem value="50">50</SelectItem>
-                <SelectItem value="100">100</SelectItem>
-                <SelectItem value="150">150</SelectItem>
-                <SelectItem value="200">200</SelectItem>
-                <SelectItem value="350">250</SelectItem>
+                <SelectItem value="10" className="text-[10px] lg:text-sm">
+                  10
+                </SelectItem>
+                <SelectItem value="25" className="text-[10px] lg:text-sm">
+                  25
+                </SelectItem>
+                <SelectItem value="50" className="text-[10px] lg:text-sm">
+                  50
+                </SelectItem>
+                <SelectItem value="100" className="text-[10px] lg:text-sm">
+                  100
+                </SelectItem>
+                <SelectItem value="150" className="text-[10px] lg:text-sm">
+                  150
+                </SelectItem>
+                <SelectItem value="200" className="text-[10px] lg:text-sm">
+                  200
+                </SelectItem>
+                <SelectItem value="350" className="text-[10px] lg:text-sm">
+                  250
+                </SelectItem>
               </SelectGroup>
             </SelectContent>
           </Select>
@@ -201,7 +215,7 @@ const LineTimeChart: React.FC = memo(() => {
       <Toaster />
       <Legend />
 
-      <div className="h-[74vh] relative -top-3 lg:top-0 xl:lg:h-[76vh] overflow-auto ">
+      <div className="h-[74vh] relative -top-8 lg:top-0 xl:lg:h-[76vh] overflow-auto ">
         <Timeline
           ref={timelineRef}
           groups={timelineGroups}

@@ -43,8 +43,8 @@ const statusColorsReview = [
 
 const Legend = () => {
   return (
-    <div className="flex justify-between items-center text-xs  pb-2">
-      <div className="flex flex-wrap gap-y-1 gap-x-2 lg:gap-x-3 text-[9px] lg:text-[10px]">
+    <div className="flex justify-between items-center text-xs -top-4 lg:top-0 relative lg:static pb-2">
+      <div className="flex flex-wrap gap-y-1 gap-x-2 lg:gap-x-3 text-[9px] lg:text-[11px]">
         Submissions:
         {statusColorsSubmission.map((status) => (
           <div
@@ -59,7 +59,7 @@ const Legend = () => {
           </div>
         ))}
       </div>
-      <div className="flex flex-wrap gap-y-1 gap-x-2 lg:gap-x-3 text-[9px] lg:text-[10px]">
+      <div className="flex flex-wrap gap-y-1 gap-x-2 lg:gap-x-3 text-[9px] lg:text-[11px]">
         , Reviews:
         {statusColorsReview.map((status) => (
           <div
@@ -78,7 +78,7 @@ const Legend = () => {
       <Popover>
         <PopoverTrigger
           asChild
-          className="absolute top-2 right-32 lg:top-0 lg:right-44"
+          className="lg:absolute p-0 top-2 right-32 lg:top-0 lg:right-44"
         >
           <Button variant="outline" className="scale-50 lg:scale-75">
             <HelpCircle className="scale-110" />
