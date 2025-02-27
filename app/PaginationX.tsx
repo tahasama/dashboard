@@ -99,7 +99,7 @@ const PaginationX: React.FC<PaginationProps> = memo(
 
     return (
       // className="text-[10px] lg:text-sm"
-      <div className="flex items-center justify-between gap-0 text-[10px] w-[45vw] lg:w-[27vw] mb-0.5 scale-75 md:scale-100 text-xs lg:text-sm">
+      <div className="flex items-center justify-between gap-0 text-[10px] w-[45vw] lg:w-[27vw] mb-0.5 scale-75 lg:scale-100 text-xs lg:text-sm">
         <button
           onClick={handlePreviousPage}
           className={`lg:px-3 lg:py-1.5 rounded-lg border ${
