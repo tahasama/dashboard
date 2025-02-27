@@ -170,7 +170,7 @@ const LineTimeChart: React.FC = memo(() => {
             onPageChange={handlePageChange}
           />
         </div>
-        <div className="md:w-1/3 flex items-center justify-end gap-2  scale-75 md:scale-100">
+        <div className="md:w-1/3 flex items-center justify-end gap-2  scale-75 lg:scale-100">
           <Label
             htmlFor="rowsPerPage"
             className="text-[10px] lg:text-sm font-medium block"
@@ -215,7 +215,7 @@ const LineTimeChart: React.FC = memo(() => {
       <Toaster />
       <Legend />
 
-      <div className="h-[74vh] relative -top-8 lg:top-0 xl:lg:h-[76vh] overflow-auto ">
+      <div className="h-[calc(100vh-100px)] relative -top-8 lg:top-0 xl:lg:h-[76vh] overflow-auto ">
         <Timeline
           ref={timelineRef}
           groups={timelineGroups}
