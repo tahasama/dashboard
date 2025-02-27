@@ -60,7 +60,7 @@ const DocsPerUserChart: React.FC<Data> = memo(({ data }) => {
   const [additionalInsights, setAdditionalInsights] = useState({
     color: "bg-teal-100 ring-teal-400/90",
     message:
-      "Recent workflows demonstrate efficient review processes, indicating steady progress and manageable reviewer workloads.",
+      "Recent workflows demonstrate efficient review processes, and indicates steady progress.",
   });
 
   useEffect(() => {
@@ -124,12 +124,12 @@ const DocsPerUserChart: React.FC<Data> = memo(({ data }) => {
     if (totalOverdue > 100) {
       setAdditionalInsights({
         color: "bg-red-100 ring-red-400/90",
-        message: `🔴 Critical Issue: There are ${totalOverdue} overdue documents, indicating a significant backlog and potential delays in the review process.`,
+        message: `🔴 Critical Issue: ${totalOverdue} overdue documents, indicating a significant review backlog.`,
       });
     } else if (totalOverdue > 0) {
       setAdditionalInsights({
         color: "bg-orange-100 ring-orange-400/90",
-        message: `🟠 Warning: There are ${totalOverdue} overdue documents, indicating potential delays in the review process.`,
+        message: `🟠 Warning: ${totalOverdue} overdue documents, indicating potential review delays.`,
       });
     } else {
       setAdditionalInsights({

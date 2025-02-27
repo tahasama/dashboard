@@ -66,12 +66,12 @@ const FiltersAndCharts = () => {
       {/* Submission Charts */}
       <div
         ref={contentRef}
-        className="relative p-2 mx-1 rounded-md flex h-[125vh] lg:h-[calc(100vh-50px)] shadow-md"
+        className="relative p-2 mx-1 rounded-md flex h-[127vh] lg:h-[calc(100vh-50px)] shadow-md"
       >
         {isPhone ? (
           <ResizablePanelGroup direction="vertical">
             {/* First Row */}
-            <ResizablePanel defaultSize={25}>
+            <ResizablePanel defaultSize={27}>
               <ResizablePanelGroup direction="horizontal">
                 <ResizablePanel defaultSize={33}>
                   <Suspense fallback={"Loading..."}>
@@ -98,7 +98,7 @@ const FiltersAndCharts = () => {
             <ResizableHandle withHandle />
 
             {/* Second Row */}
-            <ResizablePanel defaultSize={75}>
+            <ResizablePanel defaultSize={73}>
               <ResizablePanelGroup direction="vertical">
                 <ResizablePanel defaultSize={65}>
                   <Suspense fallback={"Loading..."}>
