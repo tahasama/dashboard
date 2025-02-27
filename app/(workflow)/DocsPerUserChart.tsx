@@ -115,7 +115,9 @@ const DocsPerUserChart: React.FC<Data> = memo(({ data }) => {
       ],
     }));
 
-    setChartHeight(labels.length > 3 ? labels.length * 50 : 200);
+    setChartHeight(
+      labels.length >= 3 ? labels.length * 50 : isPhone ? 120 : 200
+    );
 
     // Calculate the total number of overdue documents
     const totalOverdue = overdueValues.reduce((sum, value) => sum + value, 0);
