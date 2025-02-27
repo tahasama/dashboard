@@ -66,7 +66,7 @@ export default function ProjectForm({ projects }: ProjectFormProps) {
 
   return (
     <form className="flex flex-col sm:flex-row justify-start items-center p-5 mt-2 relative">
-      <Label className="min-w-28 text-sm -ml-2.5 mr-1">
+      <Label className="min-w-28 text-sm -ml-2.5 mr-1 mb-2">
         Find your project:
       </Label>
 
@@ -130,7 +130,7 @@ export default function ProjectForm({ projects }: ProjectFormProps) {
         disabled={isPending || !selectedProject}
         variant="outline"
         onClick={handleSubmit}
-        className="bg-purple-200 outline-1 hover:bg-purple-300 m-1"
+        className="bg-purple-200 outline-1 hover:bg-purple-300 lg:m-1 w-full mt-2"
       >
         {!isPending ? "Go" : <Loader2 className="animate-spin" />}
       </Button>

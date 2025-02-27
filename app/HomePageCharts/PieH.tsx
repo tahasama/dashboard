@@ -50,7 +50,7 @@ const chartConfig = {
 
 export function PieH() {
   return (
-    <Card className="w-1/3">
+    <Card className="hidden lg:block lg:w-1/3">
       <CardHeader className="items-center pb-0">
         <CardTitle>Data Discipline</CardTitle>
         <CardDescription>January - June</CardDescription>
