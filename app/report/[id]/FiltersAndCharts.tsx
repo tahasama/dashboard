@@ -116,7 +116,7 @@ const FiltersAndCharts = () => {
           </ResizablePanelGroup>
         ) : (
           <ResizablePanelGroup direction="horizontal">
-            <ResizablePanel defaultSize={24}>
+            <ResizablePanel defaultSize={26}>
               <ResizablePanelGroup direction="vertical">
                 <ResizablePanel defaultSize={33}>
                   <Suspense fallback={"Loading..."}>
@@ -138,7 +138,7 @@ const FiltersAndCharts = () => {
               </ResizablePanelGroup>
             </ResizablePanel>
             <ResizableHandle withHandle />
-            <ResizablePanel defaultSize={76}>
+            <ResizablePanel defaultSize={74}>
               <ResizablePanelGroup direction="vertical">
                 <ResizablePanel defaultSize={70}>
                   <Suspense fallback={"Loading..."}>
