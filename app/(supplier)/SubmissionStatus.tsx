@@ -96,7 +96,7 @@ const SubmissionStatus: React.FC<Data> = memo(() => {
         {
           type: "pie",
           // radius: ["40%", "65%"],
-          radius: ["34%", "58%"],
+          radius: isPhone ? ["26%", "45%"] : ["34%", "58%"],
           center: ["50%", "60%"], // Position of the pie chart
           data: chartData.map((item, index) => ({
             value: item.value,
