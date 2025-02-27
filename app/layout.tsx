@@ -28,10 +28,10 @@ export default function RootLayout({
       <body
       // className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <div className="hidden sm:block">{children}</div>
-        <div className="sm:hidden flex w-full justify-center items-center">
+        <div className="">{children}</div>
+        {/* <div className="sm:hidden flex w-full justify-center items-center">
           <RotationMessage />
-        </div>
+        </div> */}
       </body>
     </html>
   );
