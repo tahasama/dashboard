@@ -160,7 +160,7 @@ const FiltersAndCharts = () => {
       {/* Workflow Charts */}
       <div
         ref={content2Ref}
-        className="relative p-2 mx-1 rounded-md flex h-[calc(100vh-30px)] shadow-md"
+        className="relative p-2 mx-1 rounded-md flex h-[125vh] md:h-[calc(100vh-50px)] shadow-md"
       >
         {isPhone ? (
           <ResizablePanelGroup direction="vertical">
