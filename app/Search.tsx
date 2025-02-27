@@ -130,7 +130,7 @@ export default function ProjectForm({ projects }: ProjectFormProps) {
         disabled={isPending || !selectedProject}
         variant="outline"
         onClick={handleSubmit}
-        className="bg-purple-200 outline-1 hover:bg-purple-300 lg:m-1 w-full mt-2"
+        className="bg-purple-200 outline-1 hover:bg-purple-300 md:mx-1 md:mt-0 w-full mt-2"
       >
         {!isPending ? "Go" : <Loader2 className="animate-spin" />}
       </Button>

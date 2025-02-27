@@ -36,7 +36,7 @@ const chartConfig = {
 
 export function AreaH() {
   return (
-    <Card className="lg:w-1/3">
+    <Card className="md:w-1/3">
       <CardHeader>
         <CardTitle>Visualize Data</CardTitle>
         <CardDescription>Get immediate insights</CardDescription>

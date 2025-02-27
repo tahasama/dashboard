@@ -36,7 +36,7 @@ const chartConfig = {
 
 export function BarH() {
   return (
-    <Card className="hidden lg:block lg:w-1/3">
+    <Card className="hidden md:block md:w-1/3">
       <CardHeader>
         <CardTitle>Multiple Data</CardTitle>
         <CardDescription>January - June</CardDescription>
