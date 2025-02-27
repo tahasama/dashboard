@@ -62,7 +62,7 @@ const FiltersAndCharts = () => {
   }, [filtered, setCurrentPage]);
 
   return (
-    <div className="w-full mt-4">
+    <div className="w-full mt-2">
       {/* Submission Charts */}
       <div
         ref={contentRef}
@@ -160,12 +160,12 @@ const FiltersAndCharts = () => {
       {/* Workflow Charts */}
       <div
         ref={content2Ref}
-        className="relative p-2 mx-1 rounded-md flex h-[125vh] lg:h-[calc(100vh-50px)] shadow-md"
+        className="relative p-2 mx-1 rounded-md flex h-[127vh] lg:h-[calc(100vh-50px)] shadow-md"
       >
         {isPhone ? (
           <ResizablePanelGroup direction="vertical">
             {/* First Row */}
-            <ResizablePanel defaultSize={30}>
+            <ResizablePanel defaultSize={27}>
               <ResizablePanelGroup direction="horizontal">
                 <ResizablePanel defaultSize={50}>
                   <Suspense fallback={"Loading..."}>
@@ -184,7 +184,7 @@ const FiltersAndCharts = () => {
             <ResizableHandle withHandle />
 
             {/* Second Row */}
-            <ResizablePanel defaultSize={70}>
+            <ResizablePanel defaultSize={73}>
               <ResizablePanelGroup direction="vertical">
                 <ResizablePanel defaultSize={65}>
                   <Suspense fallback={"Loading..."}>
@@ -202,7 +202,7 @@ const FiltersAndCharts = () => {
           </ResizablePanelGroup>
         ) : (
           <ResizablePanelGroup direction="horizontal">
-            <ResizablePanel defaultSize={24}>
+            <ResizablePanel defaultSize={26}>
               <ResizablePanelGroup direction="vertical">
                 <ResizablePanel defaultSize={65}>
                   <Suspense fallback={"Loading..."}>
@@ -218,7 +218,7 @@ const FiltersAndCharts = () => {
               </ResizablePanelGroup>
             </ResizablePanel>
             <ResizableHandle withHandle />
-            <ResizablePanel defaultSize={76}>
+            <ResizablePanel defaultSize={74}>
               <ResizablePanelGroup direction="vertical">
                 <ResizablePanel defaultSize={70}>
                   <Suspense fallback={"Loading..."}>
