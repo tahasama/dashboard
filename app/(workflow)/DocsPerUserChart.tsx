@@ -43,6 +43,20 @@ const DocsPerUserChart: React.FC<Data> = memo(({ data }) => {
 
   const [chartHeight, setChartHeight] = useState(200); // Start with a default height
 
+  const [isPhone, setIsPhone] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsPhone(window.innerWidth < 1024);
+    };
+
+    // Run on mount & listen for resizes
+    handleResize();
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const [additionalInsights, setAdditionalInsights] = useState({
     color: "bg-teal-100 ring-teal-400/90",
     message:
@@ -143,9 +157,10 @@ const DocsPerUserChart: React.FC<Data> = memo(({ data }) => {
       x: {
         ticks: {
           font: {
-            size: 10, // Adjust font size for X-axis
+            size: isPhone ? 0 : 10, // Adjust font size for X-axis
           },
         },
+
         grid: {
           display: true,
           color: "#ccc",
@@ -226,7 +241,7 @@ const DocsPerUserChart: React.FC<Data> = memo(({ data }) => {
   }
 
   return (
-    <div className="max-h-[300px] scrollbar-thin  scrollbar-thumb-slate-600 scrollbar-track-slate-300 rounded-md scrollbar-corner-transparent overflow-y-scroll">
+    <div className="h-full scrollbar-thin  scrollbar-thumb-slate-600 scrollbar-track-slate-300 rounded-md scrollbar-corner-transparent overflow-y-scroll">
       <p
         className={`rounded-md p-2 m-1 font-thin text-xs lg:leading-loose text-black lg:text-slate-800 ${additionalInsights.color}`}
       >

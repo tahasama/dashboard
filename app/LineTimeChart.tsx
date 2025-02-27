@@ -158,7 +158,7 @@ const LineTimeChart: React.FC = memo(() => {
   }
 
   return !loading && defaultTimeEnd !== null ? (
-    <div className="snap-start h-[calc(100vh-87px)] my-5 mx-3 lg:mx-7 relative -top-2">
+    <div className="snap-start h-[calc(100vh-87px)] my-5 mx-3 lg:mx-7 relative  -top-5 lg:-top-2">
       <div className="gap-3 md:gap-0 flex justify-between items-center text-xs lg:text-sm xl:text-base mb-2 top-3   md:top-0 relative">
         <h1 className="md:w-1/3 text-xs lg:text-base">
           Document&apos;s Timeline: {totalDocs.length}

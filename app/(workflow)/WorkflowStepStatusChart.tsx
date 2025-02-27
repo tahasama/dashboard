@@ -14,6 +14,20 @@ const WorkflowStepStatusChart: React.FC<Data> = memo(({ data }) => {
 
   const chartRef = useRef<HTMLDivElement>(null);
 
+  const [isPhone, setIsPhone] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsPhone(window.innerWidth < 1024);
+    };
+
+    // Run on mount & listen for resizes
+    handleResize();
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   useEffect(() => {
     // Combine data from all files and generate chart data
     const statusCounts: { [key: string]: number } = {};
@@ -73,7 +87,7 @@ const WorkflowStepStatusChart: React.FC<Data> = memo(({ data }) => {
       series: [
         {
           type: "pie",
-          radius: ["34%", "58%"],
+          radius: isPhone ? ["25%", "45%"] : ["34%", "58%"],
           // radius: ["40%", "65%"],
           center: ["50%", "60%"], // Position of the pie chart
           data: chartData.map((item, index) => ({
@@ -99,7 +113,7 @@ const WorkflowStepStatusChart: React.FC<Data> = memo(({ data }) => {
           labelLine: {
             show: true,
             length: 10,
-            length2: 20,
+            length2: isPhone ? 0 : 20,
             smooth: true,
             lineStyle: {
               color: "#333",

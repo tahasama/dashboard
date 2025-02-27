@@ -14,6 +14,20 @@ const ReviewStatus: React.FC<Data> = memo(() => {
   >([]);
   const chartRef = useRef<HTMLDivElement>(null);
 
+  const [isPhone, setIsPhone] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsPhone(window.innerWidth < 1024);
+    };
+
+    // Run on mount & listen for resizes
+    handleResize();
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   useEffect(() => {
     if (!filtered || filtered.length === 0) return;
 
@@ -119,7 +133,7 @@ const ReviewStatus: React.FC<Data> = memo(() => {
           labelLine: {
             show: true,
             length: 10,
-            length2: 20,
+            length2: isPhone ? 0 : 20,
             smooth: true,
             lineStyle: {
               color: "#333",

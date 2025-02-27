@@ -17,6 +17,20 @@ const SubmissionStatus: React.FC<Data> = memo(() => {
 
   // Define custom colors (you can modify these)
 
+  const [isPhone, setIsPhone] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsPhone(window.innerWidth < 1024);
+    };
+
+    // Run on mount & listen for resizes
+    handleResize();
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   // Prepare the data when component mounts
   useEffect(() => {
     const statusCounts: { [key: string]: number } = {};
@@ -107,7 +121,7 @@ const SubmissionStatus: React.FC<Data> = memo(() => {
           labelLine: {
             show: true,
             length: 10,
-            length2: 20,
+            length2: isPhone ? 0 : 20,
             smooth: true,
             lineStyle: {
               color: "#333",
