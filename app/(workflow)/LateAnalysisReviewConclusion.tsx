@@ -19,10 +19,12 @@ const LateAnalysisReviewConclusion: React.FC<{
   chartValuesRealReceivedDocs: number[]; // Cumulative real received review documents count
   chartValuesdocs: number[]; // Cumulative planned review reviews count
   data: MergedData[]; // Additional data for review insights
+  isCheckedR: boolean;
 }> = ({
   chartValuesRealReceivedDocs = [],
   chartValuesdocs = [],
   data = [],
+  isCheckedR = false,
 }) => {
   const formatNumber = (num: number) => num.toLocaleString();
 
@@ -181,11 +183,12 @@ const LateAnalysisReviewConclusion: React.FC<{
       <br />
       <ul className="space-y-1 ml-0.5">
         <li>
-          ➡️ Planned Total Reviews:{" "}
+          ➡️{" "}
+          {isCheckedR ? "Planned Total Reviews" : "Documents Sent For Review"}:{" "}
           <strong>{formatNumber(totalPlannedReview)}</strong>
         </li>
         <li>
-          ➡️ Real Total Reviews:{" "}
+          ➡️ {isCheckedR ? "Real Total Reviews" : "Document Reviewed"}:{" "}
           <strong>{formatNumber(totalRealReview)}</strong>
         </li>
         <li>

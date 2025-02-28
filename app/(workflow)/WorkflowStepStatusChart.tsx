@@ -1,16 +1,34 @@
 "use client";
 
-import React, { memo, useEffect, useRef, useState } from "react";
+import React, { memo, useEffect, useMemo, useRef, useState } from "react";
 import * as echarts from "echarts";
 import { nightColor } from "../colors";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { Data, MergedData } from "../types";
+import { useFilters } from "../FiltersProvider";
 
 const WorkflowStepStatusChart: React.FC<Data> = memo(({ data }) => {
+  const { filtered, isCheckedR } = useFilters();
+
   const [chartData, setChartData] = useState<
     { label: string; value: number }[]
   >([]);
+
+  const uniqueFiltered = useMemo(() => {
+    const map = new Map();
+
+    data.forEach((doc) => {
+      if (
+        !map.has(doc.documentNo) ||
+        map.get(doc.documentNo).revision < doc.revision // Keep the latest revision
+      ) {
+        map.set(doc.documentNo, doc);
+      }
+    });
+
+    return Array.from(map.values()); // Return only the latest unique documents
+  }, [data]);
 
   const chartRef = useRef<HTMLDivElement>(null);
 
@@ -32,7 +50,7 @@ const WorkflowStepStatusChart: React.FC<Data> = memo(({ data }) => {
     // Combine data from all files and generate chart data
     const statusCounts: { [key: string]: number } = {};
 
-    data
+    (!isCheckedR ? uniqueFiltered : filtered)
       .filter(
         (row: MergedData) =>
           row.submissionStatus !== "Canceled" &&
@@ -53,7 +71,7 @@ const WorkflowStepStatusChart: React.FC<Data> = memo(({ data }) => {
     }));
 
     setChartData(formattedData);
-  }, [data]);
+  }, [data, isCheckedR]);
 
   useEffect(() => {
     if (!chartRef.current || chartData.length === 0) return;

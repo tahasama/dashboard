@@ -17,6 +17,10 @@ type FiltersContextType = {
   statusFilter: string;
   // subStatusFilter: string;
   searchText: string;
+  isCheckedS: boolean;
+  setisCheckedS: React.Dispatch<React.SetStateAction<boolean>>;
+  isCheckedR: boolean;
+  setIsCheckedR: React.Dispatch<React.SetStateAction<boolean>>;
   selectedStatus: any;
   setSelectedStatus: any;
   setCreatedByFilter: React.Dispatch<React.SetStateAction<string>>;
@@ -64,6 +68,9 @@ export const FiltersProvider = ({
   );
 
   const [filteredData, setFilteredData] = useState<any[]>(originalData);
+
+  const [isCheckedS, setisCheckedS] = useState(false);
+  const [isCheckedR, setIsCheckedR] = useState(false);
 
   const contentRef = useRef<HTMLDivElement>(null);
   const content2Ref = useRef<HTMLDivElement>(null);
@@ -183,6 +190,10 @@ export const FiltersProvider = ({
       searchText,
       subStatusFilter,
       selectedStatus,
+      isCheckedS,
+      setisCheckedS,
+      isCheckedR,
+      setIsCheckedR,
       setCreatedByFilter,
       setSubProjectFilter,
       setDisciplineFilter,
@@ -220,6 +231,8 @@ export const FiltersProvider = ({
       contentRef,
       content2Ref,
       // uniqueSubStatuses,
+      isCheckedS,
+      isCheckedR,
     ]
   );
 

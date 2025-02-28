@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useRef, memo } from "react";
+import React, { useState, useEffect, useRef, memo, useMemo } from "react";
 import LateAnalysisConclusion from "./LateAnalysisConclusion";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, HelpCircle } from "lucide-react";
@@ -20,10 +20,37 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const LateAnalysis: React.FC<Data> = memo(({ data }) => {
-  const { filtered } = useFilters();
-  const dataX = data.length >= 3 ? data : filtered;
+  console.log("🚀 ~ constLateAnalysis:React.FC<Data>=memo ~ data:", data);
+  const { filtered, isCheckedS, setisCheckedS } = useFilters();
+  console.log(
+    "🚀 ~ constLateAnalysis:React.FC<Data>=memo ~ isCheckedS:",
+    isCheckedS
+  );
+
+  const uniqueFiltered = useMemo(() => {
+    const map = new Map();
+
+    filtered.forEach((doc) => {
+      if (
+        !map.has(doc.documentNo) ||
+        map.get(doc.documentNo).revision < doc.revision // Keep the latest revision
+      ) {
+        map.set(doc.documentNo, doc);
+      }
+    });
+
+    return Array.from(map.values()); // Return only the latest unique documents
+  }, [filtered]);
 
   const [chartData, setChartData] = useState<any>({
     labels: [],
@@ -52,7 +79,7 @@ const LateAnalysis: React.FC<Data> = memo(({ data }) => {
       }
     > = {};
 
-    dataX.forEach((row: MergedData) => {
+    (!isCheckedS ? data : filtered).forEach((row: MergedData) => {
       let dateKey: string | null = null;
       const rawDate =
         row.plannedSubmissionDate && row.plannedSubmissionDate !== ""
@@ -161,7 +188,7 @@ const LateAnalysis: React.FC<Data> = memo(({ data }) => {
         },
       ],
     });
-  }, [dataX]);
+  }, [isCheckedS, filtered, data]);
 
   useEffect(() => {
     if (chartRef.current) {
@@ -246,7 +273,7 @@ const LateAnalysis: React.FC<Data> = memo(({ data }) => {
         yAxis: [
           {
             type: "value",
-            name: "Document Count",
+            name: !isCheckedS ? "Document Count" : "Submission Count",
             nameTextStyle: {
               fontSize: 9, // Font size for the axis name
             },
@@ -312,6 +339,31 @@ const LateAnalysis: React.FC<Data> = memo(({ data }) => {
       <div className="w-9/12 h-full flex flex-col mt-0.5 relative">
         <div className="flex justify-between mr-4 ml-4">
           <h2>Documents Submissions Analysis </h2>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="flex items-center space-x-2 ring-1 ring-gray-200 shadow-md p-1.5 rounded-sm bg-gray-0">
+                  {/* <div className="flex justify-between w-full items-center gap-2"> */}
+                  <Switch
+                    id="airplane-mode"
+                    onCheckedChange={(checked) => {
+                      setisCheckedS(checked); // Update switch state
+                    }}
+                    color="red"
+                  />
+                  <Label htmlFor="airplane-mode" className="min-w-28">
+                    {!isCheckedS ? "By Documents" : "By Submissions"}
+                  </Label>
+                  {/* </div> */}
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>
+                  Switch to toggle visual between No of submissions or documents
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
         <div
           ref={chartRef}
@@ -323,6 +375,7 @@ const LateAnalysis: React.FC<Data> = memo(({ data }) => {
         data={data}
         chartValuesRealReceivedDocs={chartValuesRealReceivedDocs}
         chartValuesdocs={chartValuesdocs}
+        isCheckedS={isCheckedS}
       />
     </div>
   );

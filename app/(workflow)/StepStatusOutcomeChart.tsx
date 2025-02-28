@@ -1,6 +1,6 @@
 "use client";
 
-import React, { memo, useEffect, useRef, useState } from "react";
+import React, { memo, useEffect, useMemo, useRef, useState } from "react";
 import * as echarts from "echarts";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
@@ -13,13 +13,31 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useFilters } from "../FiltersProvider";
 
 const StatusOutcomeHeatMap: React.FC<Data> = memo(({ data }) => {
+  const { filtered, isCheckedR } = useFilters();
+
   const chartRef = useRef<HTMLDivElement>(null);
   const [selectedYear, setSelectedYear] = useState<any>(null);
   const [actualReviewData, setActualReviewData] = useState<number[][]>([]);
   const [plannedReviewData, setPlannedReviewData] = useState<number[][]>([]);
   const [years, setYears] = useState<number[]>([]);
+
+  const uniqueFiltered = useMemo(() => {
+    const map = new Map();
+
+    filtered.forEach((doc) => {
+      if (
+        !map.has(doc.documentNo) ||
+        map.get(doc.documentNo).revision < doc.revision // Keep the latest revision
+      ) {
+        map.set(doc.documentNo, doc);
+      }
+    });
+
+    return Array.from(map.values()); // Return only the latest unique documents
+  }, [filtered]);
 
   const parseDate = (date: string | number | undefined): string | null => {
     if (!date) return null;
@@ -46,7 +64,8 @@ const StatusOutcomeHeatMap: React.FC<Data> = memo(({ data }) => {
     const actualReviewCounts: { [key: string]: number } = {};
     const plannedReviewCounts: { [key: string]: number } = {};
 
-    data
+    (!isCheckedR ? uniqueFiltered : filtered)
+
       .filter((x) => x.dateIn !== "" || x.dateIn !== "")
       .forEach((row: MergedData) => {
         const plannedDate = parseDate(row.dateIn);
@@ -98,7 +117,7 @@ const StatusOutcomeHeatMap: React.FC<Data> = memo(({ data }) => {
     if (yearsList.length > 0) {
       setSelectedYear(yearsList[0]);
     }
-  }, [data]);
+  }, [data, isCheckedR]);
 
   const combinedData = actualReviewData.map(([timestamp, actualCount]) => {
     const plannedCount =

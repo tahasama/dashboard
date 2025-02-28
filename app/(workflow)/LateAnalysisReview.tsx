@@ -27,6 +27,14 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { useFilters } from "../FiltersProvider";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 // Define the data structure for the input `data` prop
 interface DataRow {
@@ -35,7 +43,28 @@ interface DataRow {
 }
 
 const LateAnalysisReview: React.FC<Data> = memo(({ data }) => {
-  const { filtered } = useFilters();
+  const { filtered, isCheckedR, setIsCheckedR } = useFilters();
+
+  const uniqueFiltered = useMemo(() => {
+    const map = new Map();
+
+    filtered.forEach((doc) => {
+      if (
+        !map.has(doc.documentNo) ||
+        map.get(doc.documentNo).revision < doc.revision // Keep the latest revision
+      ) {
+        map.set(doc.documentNo, doc);
+      }
+    });
+
+    return Array.from(map.values()); // Return only the latest unique documents
+  }, [filtered]);
+
+  console.log(
+    "🚀 ~ uniqueFiltered ~ 998998u7u7:",
+    uniqueFiltered.filter((x: MergedData) => x.stepStatus === "Overdue")
+  );
+
   const [chartData, setChartData] = useState<any>({
     labels: [],
     datasets: [],
@@ -63,7 +92,7 @@ const LateAnalysisReview: React.FC<Data> = memo(({ data }) => {
       }
     > = {};
 
-    (data.length > 1 ? data : filtered).forEach((row: MergedData) => {
+    (!isCheckedR ? uniqueFiltered : filtered).forEach((row: MergedData) => {
       let dateKey: string | null = null;
       const rawDate =
         row.originalDueDate && row.originalDueDate !== ""
@@ -172,7 +201,7 @@ const LateAnalysisReview: React.FC<Data> = memo(({ data }) => {
         },
       ],
     });
-  }, [data]);
+  }, [isCheckedR, data, filtered]);
 
   useEffect(() => {
     if (chartRef.current) {
@@ -257,7 +286,7 @@ const LateAnalysisReview: React.FC<Data> = memo(({ data }) => {
         yAxis: [
           {
             type: "value",
-            name: "Document Count",
+            name: !isCheckedR ? "Document Count" : "Review Count",
             nameTextStyle: {
               fontSize: 9, // Font size for the axis name
             },
@@ -322,7 +351,32 @@ const LateAnalysisReview: React.FC<Data> = memo(({ data }) => {
     <div className="w-full h-full flex">
       <div className="w-9/12 h-full flex flex-col mt-4 lg:mt-0.5 relative">
         <div className="flex justify-between mr-4 ml-4 relative">
-          <h2>Documents Submissions Analysis </h2>
+          <h2>Documents Reviews Analysis </h2>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="flex items-center space-x-2 ring-1 ring-gray-200 shadow-md p-1.5 rounded-sm bg-gray-0">
+                  {/* <div className="flex justify-between w-full items-center gap-2"> */}
+                  <Switch
+                    id="airplane-mode"
+                    onCheckedChange={(checked) => {
+                      setIsCheckedR(checked); // Update switch state
+                    }}
+                    // defaultChecked={true}
+                  />
+                  <Label htmlFor="airplane-mode" className="min-w-28">
+                    {!isCheckedR ? "By Documents" : "By Reviews"}
+                  </Label>
+                  {/* </div> */}
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>
+                  Switch to toggle visual between No of reviews or documents
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
         <div
           ref={chartRef}
@@ -334,6 +388,7 @@ const LateAnalysisReview: React.FC<Data> = memo(({ data }) => {
         data={data}
         chartValuesRealReceivedDocs={chartValuesRealReceivedDocs}
         chartValuesdocs={chartValuesdocs}
+        isCheckedR={isCheckedR}
       />
     </div>
   );

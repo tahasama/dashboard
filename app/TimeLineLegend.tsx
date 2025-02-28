@@ -78,7 +78,7 @@ const Legend = () => {
       <Popover>
         <PopoverTrigger
           asChild
-          className="lg:absolute p-0 top-2 right-32 lg:top-0 lg:right-44"
+          className="lg:absolute top-2 right-32 lg:top-0 lg:right-44"
         >
           <Button variant="outline" className="scale-50 lg:scale-75">
             <HelpCircle className="scale-110" />

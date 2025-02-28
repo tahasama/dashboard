@@ -6,22 +6,25 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
+
+import { HelpCircle } from "lucide-react";
 import {
   Accordion,
+  AccordionContent,
   AccordionItem,
   AccordionTrigger,
-  AccordionContent,
-} from "@radix-ui/react-accordion";
-import { HelpCircle } from "lucide-react";
+} from "@/components/ui/accordion";
 
 const LateAnalysisConclusion: React.FC<{
   chartValuesRealReceivedDocs: number[];
   chartValuesdocs: number[];
   data: MergedData[];
+  isCheckedS: boolean;
 }> = ({
   chartValuesRealReceivedDocs = [],
   chartValuesdocs = [],
   data = [],
+  isCheckedS = false,
 }) => {
   const formatNumber = (num: number) => num.toLocaleString();
 
@@ -151,11 +154,12 @@ const LateAnalysisConclusion: React.FC<{
       <br />
       <ul className="space-y-1 ml-0.5">
         <li>
-          ➡️ Planned Total Submissions:{" "}
+          ➡️ Planned Total {isCheckedS ? "Submissions" : "Documents"}:{" "}
           <strong>{formatNumber(totalPlanned)}</strong>
         </li>
         <li>
-          ➡️ Real Total Submissions: <strong>{formatNumber(totalReal)}</strong>
+          ➡️ Real Total {isCheckedS ? "Submissions" : "Documents"}:{" "}
+          <strong>{formatNumber(totalReal)}</strong>
         </li>
         <li>
           ➡️ Average Daily Diff: <strong>{Math.abs(average).toFixed(0)}</strong>{" "}

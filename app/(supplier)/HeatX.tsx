@@ -25,8 +25,7 @@ interface Data {
 }
 
 const HeatX: React.FC<Data> = memo(({ data }) => {
-  const { filtered } = useFilters();
-  const dataX = data.length >= 3 ? data : filtered;
+  const { filtered, isCheckedS } = useFilters();
   const chartRef = useRef<HTMLDivElement>(null);
   const [selectedYear, setSelectedYear] = useState<any>(null);
   const [actualSubmissionData, setActualSubmissionData] = useState<number[][]>(
@@ -62,10 +61,11 @@ const HeatX: React.FC<Data> = memo(({ data }) => {
     const actualSubmissionCounts: { [key: string]: number } = {};
     const plannedSubmissionCounts: { [key: string]: number } = {};
 
-    dataX
+    (!isCheckedS ? data : filtered)
       .filter((x) => x.dateIn !== "" || x.plannedSubmissionDate !== "")
       .forEach((row: MergedData) => {
         const plannedDate = parseDate(row.plannedSubmissionDate);
+        // console.log("🚀 ~ .forEach ~ 99999999999:", row.plannedSubmissionDate);
         const actualDate = parseDate(row.dateIn);
 
         if (plannedDate) {
@@ -115,7 +115,7 @@ const HeatX: React.FC<Data> = memo(({ data }) => {
     if (yearsList.length > 0) {
       setSelectedYear(yearsList[0]);
     }
-  }, [dataX]);
+  }, [filtered, isCheckedS]);
 
   const combinedData = actualSubmissionData.map(([timestamp, actualCount]) => {
     const plannedCount =

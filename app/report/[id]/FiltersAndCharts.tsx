@@ -46,14 +46,46 @@ const FiltersAndCharts = () => {
 
   // Memoize uniqueFiltered to prevent unnecessary recalculations
   const uniqueFiltered = useMemo(() => {
-    return Array.from(
-      new Map(
-        filtered
-          .filter((doc) => doc.selectList5.trim() !== "") // Keep only non-empty selectList5
-          .map((doc) => [doc.documentNo, doc]) // Map by documentNo
-      ).values()
-    );
-  }, [filtered]); // Only recompute when `filtered` changes
+    const latestRevisionsMap = new Map();
+
+    filtered
+      .filter((doc) => doc.selectList5.trim() !== "") // Keep only non-empty selectList5
+      .forEach((doc) => {
+        const { documentNo, revision } = doc;
+
+        // If it's the first time encountering the documentNo, set the current doc as the latest
+        if (!latestRevisionsMap.has(documentNo)) {
+          latestRevisionsMap.set(documentNo, doc);
+        } else {
+          const existingDoc = latestRevisionsMap.get(documentNo);
+
+          // Compare revisions to decide which is the latest
+          if (
+            getRevisionOrder(revision) > getRevisionOrder(existingDoc.revision)
+          ) {
+            latestRevisionsMap.set(documentNo, doc);
+          }
+        }
+      });
+
+    // Convert the map values to an array and return the result
+    return Array.from(latestRevisionsMap.values());
+  }, [filtered]);
+
+  // Helper function to map revision (numeric or alphabetic) to a comparable number
+  function getRevisionOrder(revision: any) {
+    // Handle numeric revisions (e.g., 0, 1, 2, 3,...)
+    if (/\d/.test(revision)) {
+      return parseInt(revision, 10);
+    }
+
+    // Handle alphabetic revisions (e.g., A, B, C,...)
+    if (/^[A-Za-z]+$/.test(revision)) {
+      return revision.charCodeAt(0);
+    }
+
+    return 0; // Default case if revision is invalid
+  }
 
   const { setCurrentPage } = usePagination();
 
