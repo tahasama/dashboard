@@ -142,7 +142,7 @@ const Filters = ({ projectNumber, projectName }: any) => {
           <TooltipTrigger asChild>
             <Link
               href={"/"}
-              className="relative flex flex-col w-16 px-1 justify-center items-center"
+              className="relative flex flex-col w-14 px-1 justify-center items-center"
             >
               <img className="scale- z-10" src="/logo/logo.png" />
               {/* <p className="text-xs text-center -mt-1 z-50">doxara </p> */}
