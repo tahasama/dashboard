@@ -342,7 +342,7 @@ const LateAnalysis: React.FC<Data> = memo(({ data }) => {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <div className="flex items-center space-x-2 ring-1 ring-gray-200 shadow-md p-1.5 rounded-sm bg-gray-0">
+                <div className="flex items-center space-x-2 ring-1 ring-gray-200 bg-gradient-to-r from-purple-100 to-purple-50 p-1.5 rounded-sm bg-gray-0">
                   {/* <div className="flex justify-between w-full items-center gap-2"> */}
                   <Switch
                     id="airplane-mode"
