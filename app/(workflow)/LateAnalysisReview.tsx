@@ -371,14 +371,14 @@ const LateAnalysisReview: React.FC<Data> = memo(({ data }) => {
                   />
                 </div>
               </TooltipTrigger>
-              <TooltipContent className="text-xs text-gray-700 max-w-xs">
+              <TooltipContent className="bg-white shadow-md ring-1 ring-slate-200 p-2.5 max-w-xs text-slate-800">
                 <p>
-                  - <strong>By Documents</strong>: Counts each document once,
-                  regardless of review stages.
+                  - <strong className="text-emerald-500">By Documents</strong>:
+                  Counts each document once, regardless of review stages.
                 </p>
                 <p>
-                  - <strong>By Reviews</strong>: Includes all review rounds and
-                  resubmissions.
+                  - <strong className="text-cyan-600">By Reviews</strong>:
+                  Includes all review rounds and resubmissions.
                 </p>
               </TooltipContent>
             </Tooltip>
