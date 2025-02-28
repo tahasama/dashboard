@@ -155,125 +155,8 @@ const Filters = ({ projectNumber, projectName }: any) => {
         </Tooltip>
       </TooltipProvider>
       {/* Filters for small screens */}
-      <div className="block lg:hidden ml-2.5 scale-75 md:scale-100">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="icon" className="bg-purple-200">
-              <Menu className="h-5 w-5" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            align="start"
-            className="p-4 w-48 flex flex-col gap-3"
-          >
-            {/* Subproject Filter */}
-            <Select
-              value={subProjectFilter}
-              onValueChange={setSubProjectFilter}
-            >
-              <SelectTrigger className="min-w-[120px]">
-                <SelectValue placeholder="Subproject" />
-              </SelectTrigger>
-              <SelectContent side="right">
-                <SelectGroup>
-                  <SelectItem value={"all"} className="text-xs font-semibold">
-                    All
-                  </SelectItem>
-                  {uniqueSubProjects.map((value: any) => (
-                    <SelectItem key={value} value={value} className="text-xs">
-                      {value}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
 
-            {/* Supplier Filter */}
-            <Select value={createdByFilter} onValueChange={setCreatedByFilter}>
-              <SelectTrigger className="min-w-[120px]">
-                <SelectValue placeholder="Supplier" />
-              </SelectTrigger>
-              <SelectContent side="right">
-                <SelectGroup>
-                  <SelectItem value={"all"} className="text-xs font-semibold">
-                    All
-                  </SelectItem>
-                  {uniqueCreatedBy.map((value: any) => (
-                    <SelectItem key={value} value={value} className="text-xs">
-                      {value}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-
-            {/* Discipline Filter */}
-            <Select
-              value={disciplineFilter}
-              onValueChange={setDisciplineFilter}
-            >
-              <SelectTrigger className="min-w-[120px]">
-                <SelectValue placeholder="Discipline" />
-              </SelectTrigger>
-              <SelectContent side="right">
-                <SelectGroup>
-                  <SelectItem value={"all"} className="text-xs font-semibold">
-                    All
-                  </SelectItem>
-                  {uniqueDisciplines.map((value: any) => (
-                    <SelectItem key={value} value={value} className="text-xs">
-                      {value}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-
-            {/* Status Filter */}
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="min-w-[150px]">
-                <SelectValue placeholder="Status" />
-              </SelectTrigger>
-              <SelectContent side="right">
-                <SelectGroup>
-                  <SelectItem value="all" className="text-xs font-semibold">
-                    All
-                  </SelectItem>
-
-                  {/* Review Statuses Group */}
-                  <SelectLabel className="text-slate-500 text-xs">
-                    Review Status
-                  </SelectLabel>
-                  {uniqueReviewStatuses.map((value) => (
-                    <SelectItem
-                      key={value}
-                      value={`review:${value}`} // Prefix to distinguish categories
-                      className="text-xs"
-                    >
-                      {value}
-                    </SelectItem>
-                  ))}
-
-                  {/* Submission Statuses Group */}
-                  <SelectLabel className="text-slate-500 text-xs">
-                    Submission Status
-                  </SelectLabel>
-                  {uniqueSubmissionStatuses.map((value) => (
-                    <SelectItem
-                      key={value}
-                      value={`submission:${value}`} // Prefix to distinguish categories
-                      className="text-xs"
-                    >
-                      {value}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-      <div className="flex py-[13px] pl-0.5 gap-2.5 items-center">
+      <div className="flex py-[13px] pl-0 gap-2.5 items-center">
         <p
           className={`font-medium min-w-24 text-center text-xs md:text-base text-black bg-gray-00 rounded-sm`}
         >
@@ -465,6 +348,124 @@ const Filters = ({ projectNumber, projectName }: any) => {
             </TooltipProvider>
           </button>
         </div>
+      </div>
+      <div className="block lg:hidden mx-1 scale-75 md:scale-100">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="icon" className="bg-purple-200">
+              <Menu className="h-5 w-5" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            align="start"
+            className="p-4 w-48 flex flex-col gap-3"
+          >
+            {/* Subproject Filter */}
+            <Select
+              value={subProjectFilter}
+              onValueChange={setSubProjectFilter}
+            >
+              <SelectTrigger className="min-w-[120px]">
+                <SelectValue placeholder="Subproject" />
+              </SelectTrigger>
+              <SelectContent side="right">
+                <SelectGroup>
+                  <SelectItem value={"all"} className="text-xs font-semibold">
+                    All
+                  </SelectItem>
+                  {uniqueSubProjects.map((value: any) => (
+                    <SelectItem key={value} value={value} className="text-xs">
+                      {value}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+
+            {/* Supplier Filter */}
+            <Select value={createdByFilter} onValueChange={setCreatedByFilter}>
+              <SelectTrigger className="min-w-[120px]">
+                <SelectValue placeholder="Supplier" />
+              </SelectTrigger>
+              <SelectContent side="right">
+                <SelectGroup>
+                  <SelectItem value={"all"} className="text-xs font-semibold">
+                    All
+                  </SelectItem>
+                  {uniqueCreatedBy.map((value: any) => (
+                    <SelectItem key={value} value={value} className="text-xs">
+                      {value}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+
+            {/* Discipline Filter */}
+            <Select
+              value={disciplineFilter}
+              onValueChange={setDisciplineFilter}
+            >
+              <SelectTrigger className="min-w-[120px]">
+                <SelectValue placeholder="Discipline" />
+              </SelectTrigger>
+              <SelectContent side="right">
+                <SelectGroup>
+                  <SelectItem value={"all"} className="text-xs font-semibold">
+                    All
+                  </SelectItem>
+                  {uniqueDisciplines.map((value: any) => (
+                    <SelectItem key={value} value={value} className="text-xs">
+                      {value}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+
+            {/* Status Filter */}
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="min-w-[150px]">
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent side="right">
+                <SelectGroup>
+                  <SelectItem value="all" className="text-xs font-semibold">
+                    All
+                  </SelectItem>
+
+                  {/* Review Statuses Group */}
+                  <SelectLabel className="text-slate-500 text-xs">
+                    Review Status
+                  </SelectLabel>
+                  {uniqueReviewStatuses.map((value) => (
+                    <SelectItem
+                      key={value}
+                      value={`review:${value}`} // Prefix to distinguish categories
+                      className="text-xs"
+                    >
+                      {value}
+                    </SelectItem>
+                  ))}
+
+                  {/* Submission Statuses Group */}
+                  <SelectLabel className="text-slate-500 text-xs">
+                    Submission Status
+                  </SelectLabel>
+                  {uniqueSubmissionStatuses.map((value) => (
+                    <SelectItem
+                      key={value}
+                      value={`submission:${value}`} // Prefix to distinguish categories
+                      className="text-xs"
+                    >
+                      {value}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </div>
   );
