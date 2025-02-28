@@ -337,40 +337,47 @@ const LateAnalysis: React.FC<Data> = memo(({ data }) => {
   return (
     <div className="w-full h-full flex">
       <div className="w-9/12 h-full flex flex-col mt-0.5 relative">
-        <div className="flex justify-between mr-4 ml-4">
-          <h2>Documents Submissions Analysis </h2>
+        {/* Header Section */}
+        <div className="flex justify-between items-center px-4 pb-2 border-b">
+          <h2 className="text-lg font-semibold text-gray-800">
+            Documents Submissions Analysis
+          </h2>
+
+          {/* Switch Section */}
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <div className="flex items-center space-x-2 ring-1 ring-gray-200 bg-gradient-to-r from-purple-100 to-purple-50 p-1.5 rounded-sm bg-gray-0">
-                  {/* <div className="flex justify-between w-full items-center gap-2"> */}
+                <div className="flex items-center gap-3 min-w-44 px-3 py-1.5 bg-white shadow-sm border rounded-full transition-all hover:shadow-md">
+                  <span className="text-gray-600 text-sm font-medium">
+                    {isCheckedS ? "By Submissions" : "By Documents"}
+                  </span>
                   <Switch
-                    id="airplane-mode"
-                    onCheckedChange={(checked) => {
-                      setisCheckedS(checked); // Update switch state
-                    }}
-                    color="red"
+                    id="submission-mode"
+                    onCheckedChange={(checked) => setisCheckedS(checked)}
+                    className="scale-90"
                   />
-                  <Label htmlFor="airplane-mode" className="min-w-28">
-                    {!isCheckedS ? "By Documents" : "By Submissions"}
-                  </Label>
-                  {/* </div> */}
                 </div>
               </TooltipTrigger>
-              <TooltipContent>
+              {/* <TooltipContent className="text-xs bg-gray-400 max-w-xs"> */}
+              <TooltipContent className="bg-white shadow-md ring-1 ring-slate-200 p-2.5 max-w-xs text-slate-800">
                 <p>
-                  Switch to toggle visual between No of submissions or documents
+                  - <strong className="text-emerald-500">By Documents</strong>:
+                  Counts each document once, regardless of revisions.
+                </p>
+                <p>
+                  - <strong className="text-cyan-600">By Submissions</strong>:
+                  Includes all submitted revisions, including re-submissions.
                 </p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
         </div>
-        <div
-          ref={chartRef}
-          // style={{ width: "100%", height: "100%" }}
-          className="w-full h-full scale-[1.1] mt-2 -right-4"
-        />
+
+        {/* Chart Section */}
+        <div ref={chartRef} className="w-full h-full scale-[1.05] mt-4" />
       </div>
+
+      {/* Analysis Component */}
       <LateAnalysisConclusion
         data={data}
         chartValuesRealReceivedDocs={chartValuesRealReceivedDocs}
