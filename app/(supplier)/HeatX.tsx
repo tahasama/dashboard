@@ -145,7 +145,7 @@ const HeatX: React.FC<Data> = memo(({ data }) => {
 
     const option = {
       title: {
-        text: "Document Submission Heatmap",
+        text: "Document Submission Distribution",
         left: "center",
         top: "7%",
         textStyle: { fontSize: 14, fontWeight: "bold" },

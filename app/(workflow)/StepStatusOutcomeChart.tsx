@@ -148,7 +148,7 @@ const StatusOutcomeHeatMap: React.FC<Data> = memo(({ data }) => {
       // backgroundColor: "black",
       // width: "100%",
       title: {
-        text: "Document Review Heatmap",
+        text: "Document Review Distribution",
         left: "center",
         top: "7%",
         textStyle: { fontSize: 14, fontWeight: "bold" },
