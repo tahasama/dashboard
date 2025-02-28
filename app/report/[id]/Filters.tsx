@@ -45,6 +45,9 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 
+import Image from "next/image";
+import Link from "next/link";
+
 const inter = Work_Sans({ subsets: ["latin"], weight: ["400"] });
 
 const Filters = ({ projectNumber, projectName }: any) => {
@@ -133,7 +136,24 @@ const Filters = ({ projectNumber, projectName }: any) => {
   };
 
   return (
-    <div className="sticky top-0 z-50 bg-white shadow-md w-full h-full flex justify-between items-center gap-2">
+    <div className="sticky top-0 z-50 bg-white shadow-md w-full h-full flex justify-between items-center gap-">
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Link
+              href={"/"}
+              className="relative flex flex-col w-16 px-1 justify-center items-center"
+            >
+              <img className="scale- z-10" src="/logo/logo.png" />
+              {/* <p className="text-xs text-center -mt-1 z-50">doxara </p> */}
+            </Link>
+          </TooltipTrigger>
+          {/* <TooltipContent className="text-xs bg-gray-400 max-w-xs"> */}
+          <TooltipContent className="bg-white font-medium tracking-widest shadow-md ring-1 ring-slate-200 px-2.5 text-slate-800">
+            Doxara
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
       {/* Filters for small screens */}
       <div className="block lg:hidden ml-2.5 scale-75 md:scale-100">
         <DropdownMenu>
@@ -253,8 +273,7 @@ const Filters = ({ projectNumber, projectName }: any) => {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-
-      <div className="flex py-[13px] pl-2 gap-2.5 items-center">
+      <div className="flex py-[13px] pl-0.5 gap-2.5 items-center">
         <p
           className={`font-medium min-w-24 text-center text-xs md:text-base text-black bg-gray-00 rounded-sm`}
         >
@@ -264,7 +283,6 @@ const Filters = ({ projectNumber, projectName }: any) => {
           N: {projectNumber}
         </p>
       </div>
-
       <div className="flex justify-between items-center gap-2 xl:gap-3 flex-1 pl-[7px] pr-[5px]">
         {/* Filters for large screens */}
         <div className="hidden lg:flex justify-center gap-2 xl:gap-2.5 w-auto">

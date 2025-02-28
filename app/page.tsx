@@ -8,12 +8,16 @@ export default async function Home() {
   const { projects } = await getProjects();
   return (
     <div className="flex flex-col items-center h-screen">
-      <h1 className="font-bold text-center mt-4 mb-4">
-        Document Data Report Creator
-      </h1>
-      <h2 className="mt-4 mb-10 text-center">
-        Create your reports, and generate insightful charts
-      </h2>
+      <img className="w-[86px] mb-3" src="/logo/logo.png" alt="Doxara Logo" />
+
+      <p className="font-bold text-center mb-4">
+        Welcome to <span className="text-[#63A8E6]">Doxara</span>, your Data
+        Report Creator
+      </p>
+      <p></p>
+      <p className="mb-4 text-center text-[16px]">
+        Generate and browse insightful reports
+      </p>
       <ExcelForm />
       <Search projects={projects} />
       <Charts />

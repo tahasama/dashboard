@@ -66,7 +66,7 @@ export default function ProjectForm({ projects }: ProjectFormProps) {
 
   return (
     <form className="flex flex-col sm:flex-row justify-start items-center p-5 mt-2 relative">
-      <Label className="min-w-28 text-sm -ml-2.5 mr-1 mb-2">
+      <Label className="min-w-28 text-sm -ml-2.5 mr-1">
         Find your project:
       </Label>
 
