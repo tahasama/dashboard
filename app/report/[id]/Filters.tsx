@@ -148,6 +148,21 @@ const Filters = ({ projectNumber, projectName }: any) => {
               <img className="scale- z-10" src="/logo/logo.png" />
               {/* <p className="text-xs text-center -mt-1 z-50">doxara </p> */}
             </Link>
+
+            {/* <Link
+              href={"/"}
+              className="relative flex flex-col w-14 pl-1 bg-gradient-to-br from-slate-950 to-slate-600 scale-[0.83] rounded-sm py-[1px] justify-center items-center "
+            >
+              <img
+                className="w-[20px] lg:w-[40px]    "
+                src="/logo/logo.png"
+                alt="Doxara Logo"
+              />
+              <p className="text-[#FFCA18] text-[11px] font-thin -mt-1 text-center">
+                Doxara
+              </p>
+
+            </Link> */}
           </TooltipTrigger>
           {/* <TooltipContent className="text-xs bg-gray-400 max-w-xs"> */}
           <TooltipContent className="bg-white font-medium tracking-widest shadow-md ring-1 ring-slate-200 px-2.5 text-slate-800">
