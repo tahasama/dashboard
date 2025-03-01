@@ -9,7 +9,7 @@ export default async function Home() {
   return (
     <div className="flex flex-col items-center h-screen">
       <img
-        className="w-[70px] lg:w-[86px] mb-3"
+        className="w-[70px] lg:w-[86px] mb-3 bg-gradient-to-br from-slate-950 to-slate-600 scale-[0.83] rounded-sm py-[1.1px]"
         src="/logo/logo.png"
         alt="Doxara Logo"
       />
