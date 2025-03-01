@@ -88,6 +88,7 @@ const Filters = ({ projectNumber, projectName }: any) => {
   };
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const handleSelect = (category: string, value: string) => {
     const updatedStatus = {
@@ -98,7 +99,7 @@ const Filters = ({ projectNumber, projectName }: any) => {
     setSelectedStatus(updatedStatus);
     setStatusFilter(updatedStatus); // Instantly update filtering
     setTimeout(() => {
-      setOpen(!open);
+      setOpen(false);
     }, 250);
   };
 
@@ -285,14 +286,14 @@ const Filters = ({ projectNumber, projectName }: any) => {
                                     : "submission"
                                 ] === value
                               }
-                              onCheckedChange={() =>
+                              onCheckedChange={() => {
                                 handleSelect(
                                   category === "Review Status"
                                     ? "review"
                                     : "submission",
                                   value
-                                )
-                              }
+                                );
+                              }}
                             />
                             <span className="text-xs">{value}</span>
                           </Label>
@@ -350,7 +351,7 @@ const Filters = ({ projectNumber, projectName }: any) => {
         </div>
       </div>
       <div className="block lg:hidden mx-1 scale-75 md:scale-100">
-        <DropdownMenu>
+        <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="icon" className="bg-purple-200">
               <Menu className="h-5 w-5" />
@@ -363,7 +364,10 @@ const Filters = ({ projectNumber, projectName }: any) => {
             {/* Subproject Filter */}
             <Select
               value={subProjectFilter}
-              onValueChange={setSubProjectFilter}
+              onValueChange={(value) => {
+                setSubProjectFilter(value);
+                setMenuOpen(false);
+              }}
             >
               <SelectTrigger className="min-w-[120px]">
                 <SelectValue placeholder="Subproject" />
@@ -383,7 +387,13 @@ const Filters = ({ projectNumber, projectName }: any) => {
             </Select>
 
             {/* Supplier Filter */}
-            <Select value={createdByFilter} onValueChange={setCreatedByFilter}>
+            <Select
+              value={createdByFilter}
+              onValueChange={(value) => {
+                setCreatedByFilter(value);
+                setMenuOpen(false);
+              }}
+            >
               <SelectTrigger className="min-w-[120px]">
                 <SelectValue placeholder="Supplier" />
               </SelectTrigger>
@@ -404,7 +414,10 @@ const Filters = ({ projectNumber, projectName }: any) => {
             {/* Discipline Filter */}
             <Select
               value={disciplineFilter}
-              onValueChange={setDisciplineFilter}
+              onValueChange={(value) => {
+                setDisciplineFilter(value);
+                setMenuOpen(false);
+              }}
             >
               <SelectTrigger className="min-w-[120px]">
                 <SelectValue placeholder="Discipline" />
@@ -424,46 +437,66 @@ const Filters = ({ projectNumber, projectName }: any) => {
             </Select>
 
             {/* Status Filter */}
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="min-w-[150px]">
-                <SelectValue placeholder="Status" />
-              </SelectTrigger>
-              <SelectContent side="right">
-                <SelectGroup>
-                  <SelectItem value="all" className="text-xs font-semibold">
-                    All
-                  </SelectItem>
-
-                  {/* Submission Statuses Group */}
-                  <SelectLabel className="text-slate-500 text-xs">
-                    Submission Status
-                  </SelectLabel>
-                  {uniqueSubmissionStatuses.map((value) => (
-                    <SelectItem
-                      key={value}
-                      value={`submission:${value}`} // Prefix to distinguish categories
-                      className="text-xs"
-                    >
-                      {value}
-                    </SelectItem>
+            <ScrollArea className="h-[380px]">
+              <div className="flex flex-col gap-2">
+                {/* ALL Option */}
+                <div className="flex items-center gap-2">
+                  <Label className="flex items-center gap-2 cursor-pointer">
+                    <Checkbox
+                      checked={
+                        !selectedStatus.review && !selectedStatus.submission
+                      }
+                      onCheckedChange={() => {
+                        setSelectedStatus({ review: "", submission: "" });
+                        setStatusFilter("");
+                        setOpen(false); // Close popover after selection
+                      }}
+                    />
+                    <span className="text-xs font-semibold">All</span>
+                  </Label>
+                </div>
+                <p className="text-xs mt-1 bg-gray-100 p-1 rounded-sm">
+                  <b>Tip: </b>
+                  You can combine submission and review status kkk
+                </p>
+                {/* Categories */}
+                {Object.entries(statusCategories)
+                  .reverse()
+                  .map(([category, options]) => (
+                    <div key={category} className="flex flex-col gap-3">
+                      <div className="text-slate-500 text-xs mt-1">
+                        {category}
+                      </div>
+                      {options.map((value) => (
+                        <Label
+                          key={value}
+                          className="flex items-center gap-2 cursor-pointer"
+                        >
+                          <Checkbox
+                            checked={
+                              selectedStatus[
+                                category === "Review Status"
+                                  ? "review"
+                                  : "submission"
+                              ] === value
+                            }
+                            onCheckedChange={() => {
+                              handleSelect(
+                                category === "Review Status"
+                                  ? "review"
+                                  : "submission",
+                                value
+                              );
+                              setMenuOpen(false);
+                            }}
+                          />
+                          <span className="text-xs">{value}</span>
+                        </Label>
+                      ))}
+                    </div>
                   ))}
-
-                  {/* Review Statuses Group */}
-                  <SelectLabel className="text-slate-500 text-xs">
-                    Review Status
-                  </SelectLabel>
-                  {uniqueReviewStatuses.map((value) => (
-                    <SelectItem
-                      key={value}
-                      value={`review:${value}`} // Prefix to distinguish categories
-                      className="text-xs"
-                    >
-                      {value}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+              </div>
+            </ScrollArea>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
