@@ -358,7 +358,7 @@ const Filters = ({ projectNumber, projectName }: any) => {
           </DropdownMenuTrigger>
           <DropdownMenuContent
             align="start"
-            className="p-4 w-48 flex flex-col gap-3"
+            className="p-4 w-48 flex flex-col gap-3 mx-1"
           >
             {/* Subproject Filter */}
             <Select
@@ -434,20 +434,6 @@ const Filters = ({ projectNumber, projectName }: any) => {
                     All
                   </SelectItem>
 
-                  {/* Review Statuses Group */}
-                  <SelectLabel className="text-slate-500 text-xs">
-                    Review Status
-                  </SelectLabel>
-                  {uniqueReviewStatuses.map((value) => (
-                    <SelectItem
-                      key={value}
-                      value={`review:${value}`} // Prefix to distinguish categories
-                      className="text-xs"
-                    >
-                      {value}
-                    </SelectItem>
-                  ))}
-
                   {/* Submission Statuses Group */}
                   <SelectLabel className="text-slate-500 text-xs">
                     Submission Status
@@ -456,6 +442,20 @@ const Filters = ({ projectNumber, projectName }: any) => {
                     <SelectItem
                       key={value}
                       value={`submission:${value}`} // Prefix to distinguish categories
+                      className="text-xs"
+                    >
+                      {value}
+                    </SelectItem>
+                  ))}
+
+                  {/* Review Statuses Group */}
+                  <SelectLabel className="text-slate-500 text-xs">
+                    Review Status
+                  </SelectLabel>
+                  {uniqueReviewStatuses.map((value) => (
+                    <SelectItem
+                      key={value}
+                      value={`review:${value}`} // Prefix to distinguish categories
                       className="text-xs"
                     >
                       {value}
