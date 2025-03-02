@@ -344,7 +344,7 @@ const Filters = ({ projectNumber, projectName }: any) => {
 
           <button
             onClick={downloadPdf}
-            className=" p-1 text-sky-800 ring-1 ring-sky-600 rounded-sm scale-75 md:scale-100"
+            className=" p-1 text-sky-800 ring-1 hover:bg-sky-700 hover:text-white duration-500 ring-sky-600 rounded-sm scale-75 md:scale-100"
           >
             <TooltipProvider>
               <Tooltip>
@@ -355,7 +355,7 @@ const Filters = ({ projectNumber, projectName }: any) => {
                     <Loader className="animate-spin" />
                   )}
                 </TooltipTrigger>
-                <TooltipContent className="bg-white shadow-md ring-1 ring-slate-200 p-2.5 text-slate-700">
+                <TooltipContent className="bg-white shadow-md ring-1 ring-slate-200 p-2.5 mt-1.5 mr-1 text-slate-700">
                   <p>
                     Download 1<sup>st</sup> and 2<sup>nd</sup> pages
                   </p>
