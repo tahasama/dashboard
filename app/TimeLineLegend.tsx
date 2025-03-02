@@ -80,7 +80,7 @@ const Legend = () => {
           asChild
           className="lg:absolute top-2 right-32 lg:top-0 lg:right-44"
         >
-          <Button variant="outline" className="scale-50 lg:scale-75">
+          <Button variant="outline" className="scale-50 lg:scale-[0.8]">
             <HelpCircle className="scale-110" />
           </Button>
         </PopoverTrigger>

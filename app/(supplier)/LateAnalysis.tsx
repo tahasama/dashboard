@@ -336,7 +336,7 @@ const LateAnalysis: React.FC<Data> = memo(({ data }) => {
 
   return (
     <div className="w-full h-full flex">
-      <div className="w-9/12 h-full flex flex-col mt-0.5 relative">
+      <div className="w-9/12 h-full flex flex-col mt-4 lg:mt-0.5 relative">
         {/* Header Section */}
         <div className="flex justify-between items-center px-4 pb-2 border-b">
           <h2 className="text-lg font-semibold text-gray-800">
@@ -374,7 +374,10 @@ const LateAnalysis: React.FC<Data> = memo(({ data }) => {
         </div>
 
         {/* Chart Section */}
-        <div ref={chartRef} className="w-full h-full scale-[1.05] mt-4" />
+        <div
+          ref={chartRef}
+          className="w-full h-full scale-[1.11] ml-5 mt-4  mb-2 lg:mb-0"
+        />
       </div>
 
       {/* Analysis Component */}

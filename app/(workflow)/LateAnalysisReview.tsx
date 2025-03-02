@@ -361,7 +361,7 @@ const LateAnalysisReview: React.FC<Data> = memo(({ data }) => {
             <Tooltip>
               <TooltipTrigger asChild>
                 <div className="flex items-center gap-3 px-3 py-1.5 bg-white shadow-sm border rounded-full transition-all hover:shadow-md">
-                  <span className="text-gray-600 text-sm font-medium">
+                  <span className="text-gray-600  min-w-[104px] text-sm font-medium">
                     {isCheckedR ? "By Reviews" : "By Documents"}
                   </span>
                   <Switch
@@ -386,7 +386,10 @@ const LateAnalysisReview: React.FC<Data> = memo(({ data }) => {
         </div>
 
         {/* Chart Section */}
-        <div ref={chartRef} className="w-full h-full scale-[1.05] mt-4" />
+        <div
+          ref={chartRef}
+          className="w-full h-full scale-[1.11] ml-5 mt-4  mb-2 lg:mb-0"
+        />
       </div>
 
       {/* Analysis Component */}

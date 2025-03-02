@@ -344,7 +344,7 @@ const StatusOutcomeHeatMap: React.FC<Data> = memo(({ data }) => {
           maxHeight: "350px",
           minHeight: "100px",
         }}
-        className="lg:ml-5 scale-90 lg:scale-100"
+        className="lg:ml- scale-90 lg:scale-95"
       />
       <div className="flex flex-col items-center justify-center absolute -right-3 m-1 ">
         <Select value={selectedYear} onValueChange={setSelectedYear}>

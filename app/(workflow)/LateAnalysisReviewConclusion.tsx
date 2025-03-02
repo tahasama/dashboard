@@ -14,6 +14,7 @@ import {
   PopoverContent,
 } from "@radix-ui/react-popover";
 import { HelpCircle } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const LateAnalysisReviewConclusion: React.FC<{
   chartValuesRealReceivedDocs: number[]; // Cumulative real received review documents count
@@ -139,11 +140,14 @@ const LateAnalysisReviewConclusion: React.FC<{
         };
 
   return (
-    <div className="w-3/12 font-thin text-black lg:text-slate-800 text-[11px] mb-3 lg:text-xs scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-slate-300 scrollbar-corner-transparent overflow-y-scroll">
+    <ScrollArea className="w-3/12 font-thin text-black lg:text-slate-800 text-[11px] mb-3 lg:text-xs">
       {/* Impact Insights for Review */}
       <div className="text-end">
         <Popover>
-          <PopoverTrigger asChild className=" -pt-4 relative text-end scale-75">
+          <PopoverTrigger
+            asChild
+            className=" -pt-4 relative text-end scale-75 lg:scale-90"
+          >
             <Button variant="outline">
               <HelpCircle />
             </Button>
@@ -168,7 +172,7 @@ const LateAnalysisReviewConclusion: React.FC<{
         </Popover>
       </div>
 
-      <p className={`p-2 rounded-md mb-2 mx-0.5 ${reviewImpactInsight.color}`}>
+      <p className={`p-2 rounded-md my-3 mx-0.5 ${reviewImpactInsight.color}`}>
         {reviewImpactInsight.message}
       </p>
 
@@ -204,7 +208,7 @@ const LateAnalysisReviewConclusion: React.FC<{
           {max >= 0 ? "ahead" : "behind"}
         </li>
       </ul>
-    </div>
+    </ScrollArea>
   );
 };
 

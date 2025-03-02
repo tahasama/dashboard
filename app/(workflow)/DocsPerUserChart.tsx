@@ -15,6 +15,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { Data, MergedData } from "../types";
 import { filter } from "lodash";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
@@ -41,7 +42,7 @@ const DocsPerUserChart: React.FC<Data> = memo(({ data }) => {
     ],
   });
 
-  const [chartHeight, setChartHeight] = useState(200); // Start with a default height
+  const [chartHeight, setChartHeight] = useState(180); // Start with a default height
 
   const [isPhone, setIsPhone] = useState(false);
 
@@ -116,7 +117,7 @@ const DocsPerUserChart: React.FC<Data> = memo(({ data }) => {
     }));
 
     setChartHeight(
-      labels.length >= 3 ? labels.length * 50 : isPhone ? 120 : 200
+      labels.length >= 3 ? labels.length * 45 : isPhone ? 100 : 180
     );
 
     // Calculate the total number of overdue documents
@@ -243,7 +244,8 @@ const DocsPerUserChart: React.FC<Data> = memo(({ data }) => {
   }
 
   return (
-    <div className="h-full scrollbar-thin  scrollbar-thumb-slate-600 scrollbar-track-slate-300 rounded-md scrollbar-corner-transparent overflow-y-scroll">
+    <div className="h-full scrollbar-thin  scrollbar-thumb-slate-400  scrollbar-track-gray-100 rounded-md overflow-y-scroll">
+      {/* // <ScrollArea className="h-full"> */}
       <p
         className={`rounded-md p-2 m-1 font-thin text-xs lg:leading-loose text-black lg:text-slate-800 ${additionalInsights.color}`}
       >
@@ -256,6 +258,7 @@ const DocsPerUserChart: React.FC<Data> = memo(({ data }) => {
       >
         <Bar data={chartData} options={options} plugins={[customLabelPlugin]} />
       </div>
+      {/* </ScrollArea> */}
     </div>
   );
 });

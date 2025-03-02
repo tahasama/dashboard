@@ -14,6 +14,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const LateAnalysisConclusion: React.FC<{
   chartValuesRealReceivedDocs: number[];
@@ -112,10 +113,13 @@ const LateAnalysisConclusion: React.FC<{
         };
 
   return (
-    <div className="w-3/12 font-thin text-black lg:text-slate-800 text-[11px] mb-3 lg:text-xs scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-slate-300 scrollbar-corner-transparent overflow-y-scroll">
+    <ScrollArea className="w-3/12 font-thin text-black lg:text-slate-800 text-[11px] mb-3 lg:text-xs">
       <div className="text-end">
         <Popover>
-          <PopoverTrigger asChild className=" -pt-4 relative text-end scale-75">
+          <PopoverTrigger
+            asChild
+            className=" -pt-4 relative text-end scale-75 lg:scale-90"
+          >
             <Button variant="outline">
               <HelpCircle />
             </Button>
@@ -140,7 +144,7 @@ const LateAnalysisConclusion: React.FC<{
         </Popover>
       </div>
       <p
-        className={`p-2 rounded-md mb-2 ring- mx-0.5 ${submissionImpactInsight.color}`}
+        className={`p-2 rounded-md my-3 ring- mx-0.5 ${submissionImpactInsight.color}`}
       >
         {submissionImpactInsight.message}
       </p>
@@ -174,7 +178,7 @@ const LateAnalysisConclusion: React.FC<{
           {max >= 0 ? "ahead" : "behind"}
         </li>
       </ul>
-    </div>
+    </ScrollArea>
   );
 };
 
