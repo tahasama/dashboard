@@ -87,7 +87,7 @@ const ReviewStatus: React.FC<Data> = memo(() => {
       title: {
         text: "Review Status Chart",
         left: "center",
-        top: "0%",
+        top: "2%",
 
         textStyle: {
           fontSize: 14,
