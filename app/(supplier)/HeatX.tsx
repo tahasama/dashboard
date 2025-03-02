@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { useFilters } from "../FiltersProvider";
+import { eachDayOfInterval, format } from "date-fns";
 
 interface MergedData {
   plannedSubmissionDate: string | number | undefined;
@@ -57,6 +58,15 @@ const HeatX: React.FC<Data> = memo(({ data }) => {
     return null;
   };
 
+  const getAllDates = (year: number) => {
+    return eachDayOfInterval({
+      start: new Date(year, 0, 1), // January 1st
+      end: new Date(year, 11, 31), // December 31st
+    }).map((date) => format(date, "yyyy-MM-dd")); // Format as "YYYY-MM-DD"
+  };
+
+  const allDates = getAllDates(selectedYear);
+
   useEffect(() => {
     const actualSubmissionCounts: { [key: string]: number } = {};
     const plannedSubmissionCounts: { [key: string]: number } = {};
@@ -65,7 +75,6 @@ const HeatX: React.FC<Data> = memo(({ data }) => {
       .filter((x) => x.dateIn !== "" || x.plannedSubmissionDate !== "")
       .forEach((row: MergedData) => {
         const plannedDate = parseDate(row.plannedSubmissionDate);
-        // console.log("🚀 ~ .forEach ~ 99999999999:", row.plannedSubmissionDate);
         const actualDate = parseDate(row.dateIn);
 
         if (plannedDate) {
@@ -154,26 +163,26 @@ const HeatX: React.FC<Data> = memo(({ data }) => {
         show: true,
         orient: "vertical",
         left: "90.8%",
-        top: "42%",
+        top: "32%",
         align: "left",
         icon: "rect",
         textStyle: {
           fontSize: 11.5,
           color: "#333",
-          // fontWeight: "bold" , // Optional: Adjust font weight
         },
+
         formatter: (name: string) => {
+          console.log("🚀 ~ useEffect ~ name:", name);
           if (name === "Planned Submission") return "Planned";
           if (name === "Actual Submission") return "Actual";
           if (name === "Overlap Submission") return "Overlaps";
+          if (name === "Empty Cells") return "";
           return name;
         },
       },
       tooltip: {
         trigger: "item",
-        textStyle: {
-          fontSize: 12,
-        },
+        textStyle: { fontSize: 12 },
         formatter: (params: any) => {
           const date = new Date(params.data[0]).toISOString().split("T")[0];
           const actualCount =
@@ -186,18 +195,23 @@ const HeatX: React.FC<Data> = memo(({ data }) => {
             )?.[1] || 0;
 
           let tooltipContent = `Date: ${date}<br/>`;
-
-          if (actualCount > 0) {
+          if (actualCount > 0)
             tooltipContent += `Actual Submissions: ${actualCount}<br/>`;
-          }
-          if (plannedCount > 0) {
+          if (plannedCount > 0)
             tooltipContent += `Planned Submissions: ${plannedCount}<br/>`;
-          }
+          if (actualCount === 0 && plannedCount === 0)
+            tooltipContent += `<span style="color: red;">No Submissions</span>`;
 
-          return tooltipContent.trim(); // Ensures no empty tooltip is shown
+          return tooltipContent.trim();
         },
       },
       visualMap: [
+        {
+          seriesIndex: 0, // Empty Cells
+          type: "piecewise",
+          show: false,
+          pieces: [{ min: -1, max: -1, color: "#D6DEE8" }], // Red for Empty Cells #cbd5e1
+        },
         {
           seriesIndex: 1,
           type: "piecewise",
@@ -215,7 +229,7 @@ const HeatX: React.FC<Data> = memo(({ data }) => {
           ],
         },
         {
-          seriesIndex: 0,
+          seriesIndex: 2,
           type: "piecewise",
           calculable: true,
           show: false,
@@ -231,7 +245,7 @@ const HeatX: React.FC<Data> = memo(({ data }) => {
           ],
         },
         {
-          seriesIndex: 2, // Overlap series
+          seriesIndex: 3, // Overlap series
           type: "piecewise",
           calculable: true,
           show: false,
@@ -254,9 +268,9 @@ const HeatX: React.FC<Data> = memo(({ data }) => {
         right: "10%",
         top: "32.5%",
         itemStyle: {
-          borderWidth: 1.2,
+          borderWidth: 1,
           borderColor: "white",
-          color: "#dcdbdb",
+          borderRadius: 2.15, // Rounded Corners
         },
         dayLabel: {
           nameMap: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
@@ -268,19 +282,30 @@ const HeatX: React.FC<Data> = memo(({ data }) => {
           fontSize: 9,
           color: "#0f172a",
         },
-        yearLabel: {
-          show: false,
-        },
+        yearLabel: { show: false },
       },
       series: [
+        {
+          name: "Empty Cells",
+          type: "heatmap",
+          coordinateSystem: "calendar",
+          data: allDates.map((date) => [date, -1]), // Marks empty cells
+          itemStyle: {
+            color: "transparent",
+            borderRadius: 2.15, // Ensures rounded corners
+          },
+        },
         {
           name: "Planned Submission",
           type: "heatmap",
           coordinateSystem: "calendar",
           data: plannedSubmissionData.map(([timestamp, count]) => [
             new Date(timestamp).toISOString().split("T")[0],
-            count || 0,
+            count ?? -1, // Ensures empty values are handled
           ]),
+          itemStyle: {
+            borderRadius: 2.15,
+          },
         },
         {
           name: "Actual Submission",
@@ -288,8 +313,11 @@ const HeatX: React.FC<Data> = memo(({ data }) => {
           coordinateSystem: "calendar",
           data: actualSubmissionData.map(([timestamp, count]) => [
             new Date(timestamp).toISOString().split("T")[0],
-            count || 0,
+            count ?? -1, // Ensures empty values are handled
           ]),
+          itemStyle: {
+            borderRadius: 2.15,
+          },
         },
         {
           name: "Overlap Submission", // Add this series for overlap
