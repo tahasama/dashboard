@@ -30,12 +30,7 @@ import {
 } from "@/components/ui/tooltip";
 
 const LateAnalysis: React.FC<Data> = memo(({ data }) => {
-  console.log("🚀 ~ constLateAnalysis:React.FC<Data>=memo ~ data:", data);
   const { filtered, isCheckedS, setisCheckedS } = useFilters();
-  console.log(
-    "🚀 ~ constLateAnalysis:React.FC<Data>=memo ~ isCheckedS:",
-    isCheckedS
-  );
 
   const uniqueFiltered = useMemo(() => {
     const map = new Map();

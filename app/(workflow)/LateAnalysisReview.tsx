@@ -60,11 +60,6 @@ const LateAnalysisReview: React.FC<Data> = memo(({ data }) => {
     return Array.from(map.values()); // Return only the latest unique documents
   }, [filtered]);
 
-  console.log(
-    "🚀 ~ uniqueFiltered ~ 998998u7u7:",
-    uniqueFiltered.filter((x: MergedData) => x.stepStatus === "Overdue")
-  );
-
   const [chartData, setChartData] = useState<any>({
     labels: [],
     datasets: [],

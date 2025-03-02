@@ -175,7 +175,6 @@ const StatusOutcomeHeatMap: React.FC<Data> = memo(({ data }) => {
         },
 
         formatter: (name: string) => {
-          console.log("🚀 ~ useEffect ~ name:", name);
           if (name === "Planned Review") return "Planned";
           if (name === "Actual Review") return "Actual";
           if (name === "Overlap Review") return "Overlaps";

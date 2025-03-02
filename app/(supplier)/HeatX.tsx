@@ -172,7 +172,6 @@ const HeatX: React.FC<Data> = memo(({ data }) => {
         },
 
         formatter: (name: string) => {
-          console.log("🚀 ~ useEffect ~ name:", name);
           if (name === "Planned Submission") return "Planned";
           if (name === "Actual Submission") return "Actual";
           if (name === "Overlap Submission") return "Overlaps";
