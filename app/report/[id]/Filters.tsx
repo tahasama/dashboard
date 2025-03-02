@@ -137,7 +137,7 @@ const Filters = ({ projectNumber, projectName }: any) => {
   };
 
   return (
-    <div className="sticky top-0 z-50 bg-white shadow-md w-full h-full flex justify-between items-center gap-">
+    <div className="sticky top-0 z-50 bg-white max-h-12 shadow-md w-full h-full flex justify-between items-center gap-">
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -182,12 +182,12 @@ const Filters = ({ projectNumber, projectName }: any) => {
           N: {projectNumber}
         </p>
       </div>
-      <div className="flex justify-between items-center gap-2 xl:gap-3 flex-1 pl-[7px] pr-[5px]">
+      <div className="flex justify-between items-center gap-2 lg:gap-0 flex-1 pl-[7px] pr-[5px]">
         {/* Filters for large screens */}
-        <div className="hidden lg:flex justify-center gap-2 xl:gap-2.5 w-auto">
+        <div className="hidden lg:flex justify-center gap-2 lg:gap-0.5 w-auto">
           {/* Subproject Filter */}
           <Select value={subProjectFilter} onValueChange={setSubProjectFilter}>
-            <SelectTrigger className="max-w-[110px] xl:min-w-[112px] text-xs lg:text-sm hover:bg-slate-100 duration-300">
+            <SelectTrigger className="max-w-[110px] xl:min-w-[112px] text-xs lg:text-sm hover:bg-slate-100 duration-300 scale-95">
               <SelectValue placeholder="Subproject" />
             </SelectTrigger>
             <SelectContent>
@@ -206,7 +206,7 @@ const Filters = ({ projectNumber, projectName }: any) => {
 
           {/* Supplier Filter */}
           <Select value={createdByFilter} onValueChange={setCreatedByFilter}>
-            <SelectTrigger className="max-w-[110px] xl:min-w-[112px] text-xs lg:text-sm hover:bg-slate-100 duration-300">
+            <SelectTrigger className="max-w-[110px] xl:min-w-[112px] text-xs lg:text-sm hover:bg-slate-100 duration-300 scale-95">
               <SelectValue placeholder="Supplier" />
             </SelectTrigger>
             <SelectContent>
@@ -225,7 +225,7 @@ const Filters = ({ projectNumber, projectName }: any) => {
 
           {/* Discipline Filter */}
           <Select value={disciplineFilter} onValueChange={setDisciplineFilter}>
-            <SelectTrigger className="max-w-[110px] xl:min-w-[112px] text-xs lg:text-sm hover:bg-slate-100 duration-300">
+            <SelectTrigger className="max-w-[110px] xl:min-w-[112px] text-xs lg:text-sm hover:bg-slate-100 duration-300 scale-95">
               <SelectValue placeholder="Discipline" />
             </SelectTrigger>
             <SelectContent>
@@ -247,7 +247,7 @@ const Filters = ({ projectNumber, projectName }: any) => {
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
-                className="text-xs lg:text-sm w-[115px] flex justify-between  duration-300"
+                className="text-xs lg:text-sm w-[115px] flex justify-between  duration-300 scale-95"
               >
                 <p className="overflow-hidden text-start w-[115px]">
                   {selectedStatus.review ||
@@ -326,21 +326,23 @@ const Filters = ({ projectNumber, projectName }: any) => {
         </div>
 
         {/* Search and Clear Filters */}
-        <div className="flex items-center gap-3 w-full ">
-          <Input
-            type="text"
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-            placeholder="Search by Title or Document No."
-            className="p-2 border rounded text-xs md:text-sm w-full scale-75 md:scale-100"
-          />
-          <Button
-            variant="outline"
-            onClick={clearFilters}
-            className="bg-purple-200 hover:bg-purple-100 text-xs md:text-sm scale-75 md:scale-100"
-          >
-            Clear
-          </Button>
+        <div className="flex items-center gap-1 w-full -ml-1">
+          <div className="flex justify-between w-full gap-2 scale-75 md:scale-95">
+            <Input
+              type="text"
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+              placeholder="Search by Title or Document No."
+              className="p-2 border rounded text-xs md:text-sm w-full"
+            />
+            <Button
+              variant="outline"
+              onClick={clearFilters}
+              className="bg-purple-200 hover:bg-purple-100 text-xs md:text-sm lg:-mr-1 xl:-mr-2"
+            >
+              Clear
+            </Button>
+          </div>
 
           <button
             onClick={downloadPdf}
@@ -365,7 +367,7 @@ const Filters = ({ projectNumber, projectName }: any) => {
           </button>
         </div>
       </div>
-      <div className="block lg:hidden mx-1 scale-75 md:scale-100">
+      <div className="block lg:hidden mx-2 scale-75 md:scale-100">
         <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="icon" className="bg-purple-200">
