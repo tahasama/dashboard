@@ -388,10 +388,10 @@ const ExcelForm = ({}: any) => {
     });
 
     return mergedData.filter(
-      (record) => record.submissionStatus !== "Canceled"
-      // &&
-      // record.stepStatus !== "Terminated" &&
-      // record.reviewStatus !== "Terminated"
+      (record) =>
+        record.submissionStatus !== "Canceled" &&
+        record.stepStatus !== "Terminated" &&
+        record.reviewStatus !== "Terminated"
     );
   };
 

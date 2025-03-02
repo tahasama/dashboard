@@ -55,13 +55,20 @@ export default function ProjectForm({ projects }: ProjectFormProps) {
         );
 
   const handleSubmit = async (e: React.FormEvent) => {
+    setIsPending(true); // Show the loader
     e.preventDefault();
-    if (!selectedProject) return; // safeguard
-    setIsPending(true);
+
+    if (!selectedProject) return; // Safeguard
+
     // Extract project number from selectedProject
     const projectNumber = selectedProject.split(" - ")[0];
-    router.push(`/report/${projectNumber}`);
-    setIsPending(false);
+
+    // Trigger navigation
+    try {
+      router.push(`/report/${projectNumber}`);
+    } catch (error) {
+      setIsPending(false);
+    }
   };
 
   return (
@@ -132,7 +139,7 @@ export default function ProjectForm({ projects }: ProjectFormProps) {
         onClick={handleSubmit}
         className="bg-purple-200 outline-1 hover:bg-purple-300 md:mx-1 md:mt-0 w-full mt-2"
       >
-        {!isPending ? "Go" : <Loader2 className="animate-spin" />}
+        {isPending ? <Loader2 className="animate-spin" /> : "Go"}
       </Button>
     </form>
   );
