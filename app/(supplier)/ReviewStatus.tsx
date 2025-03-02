@@ -108,7 +108,7 @@ const ReviewStatus: React.FC<Data> = memo(() => {
       series: [
         {
           type: "pie",
-          radius: isPhone ? ["26%", "45%"] : ["34%", "58%"],
+          radius: isPhone ? ["26%", "45%"] : ["30%", "54%"],
           center: ["50%", "60%"],
           data: chartData.map((item, index) => ({
             value: item.value,

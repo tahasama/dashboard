@@ -88,7 +88,7 @@ const StatusChart: React.FC<Data> = memo(() => {
       series: [
         {
           type: "pie",
-          radius: isPhone ? ["26%", "45%"] : ["34%", "58%"],
+          radius: isPhone ? ["26%", "45%"] : ["30%", "54%"],
           // radius: ["40%", "65%"],
           center: ["50%", "60%"], // Position of the pie chart
           data: chartData.map((item, index) => ({
