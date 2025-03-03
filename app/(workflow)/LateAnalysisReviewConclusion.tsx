@@ -185,27 +185,59 @@ const LateAnalysisReviewConclusion: React.FC<{
 
       {/* Review Statistics */}
       <br />
-      <ul className="space-y-1 ml-0.5">
-        <li>
-          ➡️{" "}
-          {isCheckedR ? "Planned Total Reviews" : "Documents Sent For Review"}:{" "}
-          <strong>{formatNumber(totalPlannedReview)}</strong>
+      <ul className="space-y-2 ml-1">
+        <li className="flex items-center space-x-2">
+          <span className="text-green-500">➡️</span>
+          <span>
+            {isCheckedR ? "Planned Total Reviews" : "Documents Sent For Review"}
+            :{" "}
+            <strong className="text-blue-600">
+              {formatNumber(totalPlannedReview)}
+            </strong>
+          </span>
         </li>
-        <li>
-          ➡️ {isCheckedR ? "Real Total Reviews" : "Document Reviewed"}:{" "}
-          <strong>{formatNumber(totalRealReview)}</strong>
+        <li className="flex items-center space-x-2">
+          <span className="text-green-500">➡️</span>
+          <span>
+            {isCheckedR ? "Real Total Reviews" : "Document Reviewed"}:{" "}
+            <strong className="text-blue-600">
+              {formatNumber(totalRealReview)}
+            </strong>
+          </span>
         </li>
-        <li>
-          ➡️ Average Daily Difference:{" "}
-          <strong>{Math.abs(avgReviewDifference).toFixed(0)}</strong>
+        <li className="flex items-center space-x-2">
+          <span className="text-green-500">➡️</span>
+          <span>
+            Average Daily Diff:{" "}
+            <strong
+              className={
+                avgReviewDifference >= 0 ? "text-green-600" : "text-red-600"
+              }
+            >
+              {Math.abs(avgReviewDifference).toFixed(0)}
+            </strong>{" "}
+            docs {avgReviewDifference >= 0 ? "ahead" : "behind"}
+          </span>
         </li>
-        <li>
-          ➡️ Max Diff: <strong>{Math.abs(min)}</strong> docs{" "}
-          {min >= 0 ? "ahead" : "behind"}
+        <li className="flex items-center space-x-2">
+          <span className="text-green-500">➡️</span>
+          <span>
+            Max Diff:{" "}
+            <strong className={min >= 0 ? "text-green-600" : "text-red-600"}>
+              {Math.abs(min)}
+            </strong>{" "}
+            docs {min >= 0 ? "ahead" : "behind"}
+          </span>
         </li>
-        <li>
-          ➡️ Min Diff: <strong>{Math.abs(max)}</strong> docs{" "}
-          {max >= 0 ? "ahead" : "behind"}
+        <li className="flex items-center space-x-2">
+          <span className="text-green-500">➡️</span>
+          <span>
+            Min Diff:{" "}
+            <strong className={max >= 0 ? "text-green-600" : "text-red-600"}>
+              {Math.abs(max)}
+            </strong>{" "}
+            docs {max >= 0 ? "ahead" : "behind"}
+          </span>
         </li>
       </ul>
     </ScrollArea>
