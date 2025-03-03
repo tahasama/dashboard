@@ -367,7 +367,7 @@ const LateAnalysisReview: React.FC<Data> = memo(({ data }) => {
                 </div>
               </TooltipTrigger>
               <TooltipContent className="bg-white shadow-md ring-1 ring-slate-200 p-2.5 max-w-xs text-slate-800">
-                <p>
+                <p className=" mb-1">
                   - <strong className="text-emerald-500">By Documents</strong>:
                   Counts each document once, regardless of review stages.
                 </p>
