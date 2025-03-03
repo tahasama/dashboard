@@ -7,7 +7,7 @@ import { getProjects } from "./action/actions";
 export default async function Home() {
   const { projects } = await getProjects();
   return (
-    <div className="flex flex-col items-center h-screen">
+    <div className="flex flex-col items-center max-h-screen mt-6 ">
       <img
         className="w-[70px] lg:w-[86px]  bg-gradient-to-br from-slate-950 to-slate-600 scale-[0.83] py-[1.1px] mb-3 rounded-md "
         src="/logo/logo.png"
