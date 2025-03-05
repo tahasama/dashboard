@@ -172,8 +172,8 @@ const HeatX: React.FC<Data> = memo(({ data }) => {
         },
 
         formatter: (name: string) => {
-          if (name === "Planned Submission") return "Planned";
           if (name === "Actual Submission") return "Actual";
+          if (name === "Planned Submission") return "Planned";
           if (name === "Overlap Submission") return "Overlaps";
           if (name === "Empty Cells") return "";
           return name;
@@ -217,22 +217,6 @@ const HeatX: React.FC<Data> = memo(({ data }) => {
           calculable: true,
           show: false,
           pieces: [
-            { min: 0, max: 0, color: "#99e699" },
-            { min: 1, max: 5, color: "#66cc66" },
-            { min: 6, max: 15, color: "#33b233" },
-            { min: 16, max: 30, color: "#009900" },
-            { min: 31, max: 60, color: "#006600" },
-            { min: 61, max: 120, color: "#004d00" },
-            { min: 121, max: 180, color: "#003300" },
-            { min: 181, color: "#002200" },
-          ],
-        },
-        {
-          seriesIndex: 2,
-          type: "piecewise",
-          calculable: true,
-          show: false,
-          pieces: [
             { min: 0, max: 0, color: "#b3e0ff" },
             { min: 1, max: 5, color: "#66c2ff" },
             { min: 6, max: 15, color: "#3385ff" },
@@ -241,6 +225,22 @@ const HeatX: React.FC<Data> = memo(({ data }) => {
             { min: 61, max: 120, color: "#003366" },
             { min: 121, max: 180, color: "#001a33" },
             { min: 181, color: "#000000" },
+          ],
+        },
+        {
+          seriesIndex: 2,
+          type: "piecewise",
+          calculable: true,
+          show: false,
+          pieces: [
+            { min: 0, max: 0, color: "#99e699" },
+            { min: 1, max: 5, color: "#66cc66" },
+            { min: 6, max: 15, color: "#33b233" },
+            { min: 16, max: 30, color: "#009900" },
+            { min: 31, max: 60, color: "#006600" },
+            { min: 61, max: 120, color: "#004d00" },
+            { min: 121, max: 180, color: "#003300" },
+            { min: 181, color: "#002200" },
           ],
         },
         {
@@ -294,6 +294,7 @@ const HeatX: React.FC<Data> = memo(({ data }) => {
             borderRadius: 2.15, // Ensures rounded corners
           },
         },
+
         {
           name: "Planned Submission",
           type: "heatmap",
