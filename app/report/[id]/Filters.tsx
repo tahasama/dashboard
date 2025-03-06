@@ -454,67 +454,93 @@ const Filters = ({ projectNumber, projectName }: any) => {
               </SelectContent>
             </Select>
 
-            {/* Status Filter */}
-            <ScrollArea className="h-[380px]">
-              <div className="flex flex-col gap-2">
-                {/* ALL Option */}
-                <div className="flex items-center gap-2">
-                  <Label className="flex items-center gap-2 cursor-pointer">
-                    <Checkbox
-                      checked={
-                        !selectedStatus.review && !selectedStatus.submission
-                      }
-                      onCheckedChange={() => {
-                        setSelectedStatus({ review: "", submission: "" });
-                        setStatusFilter("");
-                        setOpen(false); // Close popover after selection
-                      }}
-                    />
-                    <span className="text-xs font-semibold">All</span>
-                  </Label>
-                </div>
-                <p className="text-xs mt-1 bg-gray-100 p-1 rounded-sm">
-                  <b>Tip: </b>
-                  You can combine submission and review status kkk
-                </p>
-                {/* Categories */}
-                {Object.entries(statusCategories)
-                  .reverse()
-                  .map(([category, options]) => (
-                    <div key={category} className="flex flex-col gap-3">
-                      <div className="text-slate-500 text-xs mt-1">
-                        {category}
-                      </div>
-                      {options.map((value) => (
-                        <Label
-                          key={value}
-                          className="flex items-center gap-2 cursor-pointer"
-                        >
-                          <Checkbox
-                            checked={
-                              selectedStatus[
-                                category === "Review Status"
-                                  ? "review"
-                                  : "submission"
-                              ] === value
-                            }
-                            onCheckedChange={() => {
-                              handleSelect(
-                                category === "Review Status"
-                                  ? "review"
-                                  : "submission",
-                                value
-                              );
-                              setMenuOpen(false);
-                            }}
-                          />
-                          <span className="text-xs">{value}</span>
-                        </Label>
-                      ))}
-                    </div>
+            <Select
+              value={disciplineFilter}
+              onValueChange={(value) => {
+                setDisciplineFilter(value);
+                setMenuOpen(false);
+              }}
+            >
+              <SelectTrigger className="min-w-[120px]">
+                <SelectValue placeholder="Discipline" />
+              </SelectTrigger>
+
+              <SelectContent side="right">
+                <SelectGroup>
+                  <SelectItem value={"all"} className="text-xs font-semibold">
+                    All
+                  </SelectItem>
+                  {uniqueDisciplines.map((value: any) => (
+                    <SelectItem key={value} value={value} className="text-xs">
+                      {value}
+                    </SelectItem>
                   ))}
-              </div>
-            </ScrollArea>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+
+            {/* Status Filter */}
+            {/* Submission Status Select */}
+            <Select
+              value={selectedStatus.submission}
+              onValueChange={(value) => {
+                setSelectedStatus((prev: any) => ({
+                  ...prev,
+                  submission: value,
+                }));
+                setStatusFilter((prev: any) => ({
+                  ...prev,
+                  submission: value,
+                }));
+              }}
+            >
+              <SelectTrigger className="min-w-[120px]">
+                <SelectValue placeholder="Submission Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value={"all"} className="text-xs font-semibold">
+                    All
+                  </SelectItem>
+                  {statusCategories["Submission Status"].map((value) => (
+                    <SelectItem key={value} value={value} className="text-xs">
+                      {value}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+
+            {/* Review Status Select */}
+            <Select
+              value={selectedStatus.review}
+              onValueChange={(value) => {
+                setSelectedStatus((prev: any) => ({
+                  ...prev,
+                  review: value,
+                }));
+                setStatusFilter((prev: any) => ({
+                  ...prev,
+                  review: value,
+                }));
+              }}
+            >
+              <SelectTrigger className="min-w-[120px]">
+                <SelectValue placeholder="Review Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value={"all"} className="text-xs font-semibold">
+                    All
+                  </SelectItem>
+                  {statusCategories["Review Status"].map((value) => (
+                    <SelectItem key={value} value={value} className="text-xs">
+                      {value}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
