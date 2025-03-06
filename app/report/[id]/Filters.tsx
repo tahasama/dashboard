@@ -454,31 +454,6 @@ const Filters = ({ projectNumber, projectName }: any) => {
               </SelectContent>
             </Select>
 
-            <Select
-              value={disciplineFilter}
-              onValueChange={(value) => {
-                setDisciplineFilter(value);
-                setMenuOpen(false);
-              }}
-            >
-              <SelectTrigger className="min-w-[120px]">
-                <SelectValue placeholder="Discipline" />
-              </SelectTrigger>
-
-              <SelectContent side="right">
-                <SelectGroup>
-                  <SelectItem value={"all"} className="text-xs font-semibold">
-                    All
-                  </SelectItem>
-                  {uniqueDisciplines.map((value: any) => (
-                    <SelectItem key={value} value={value} className="text-xs">
-                      {value}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-
             {/* Status Filter */}
             {/* Submission Status Select */}
             <Select
