@@ -144,48 +144,44 @@ const LateAnalysisConclusion: React.FC<{
         </Popover>
       </div>
       <p
-        className={`p-2 rounded-md my-3 ring- mx-0.5 ${submissionImpactInsight.color}`}
+        className={`p-2 rounded-md my-3 ring- mx-0.5 text-[11px] xl:text-xs ${submissionImpactInsight.color}`}
       >
         {submissionImpactInsight.message}
       </p>
 
       <p
-        className={`p-2 rounded-md mb-2 ring- mx-0.5 ${progressionInsight.color}`}
+        className={`p-2 rounded-md mb-2 ring- mx-0.5 text-[11px] xl:text-xs ${progressionInsight.color}`}
       >
         {progressionInsight.message}
       </p>
 
       <br />
-      <ul className="space-y-2 ml-1">
+      <ul className="space-y-2 ml-1 text-[10.5px] xl:text-xs bg-indigo-50 px-1 py-1.5 -mt-1 rounded-md">
         <li className="flex items-center space-x-2">
           <span className="text-green-500">➡️</span>
-          <span>
-            Planned Total {isCheckedS ? "Submissions" : "Documents"}:{" "}
-            <strong className="text-blue-600">
+          <span className="flex items-center justify-center w-full">
+            <span className="w-[72.5%]">
+              Planned {isCheckedS ? "Submissions" : "Documents"}:{" "}
+            </span>
+            <strong className="w-[27.5%] text-slate-800 bg-blue-200 rounded-sm px-1.5 py-1 text-center mr-0.5">
               {formatNumber(totalPlanned)}
             </strong>
           </span>
         </li>
+
         <li className="flex items-center space-x-2">
           <span className="text-green-500">➡️</span>
-          <span>
-            Real Total {isCheckedS ? "Submissions" : "Documents"}:{" "}
-            <strong className="text-blue-600">{formatNumber(totalReal)}</strong>
+          <span className="flex items-center justify-center w-full">
+            <span className="w-[72.5%]">
+              Actual {isCheckedS ? "Submissions" : "Documents"}:{" "}
+            </span>
+            <strong className="w-[27.5%] text-slate-800 bg-green-200 rounded-sm px-1.5 py-1 text-center mr-0.5">
+              {formatNumber(totalReal)}
+            </strong>
           </span>
         </li>
-        <li className="flex items-center space-x-2">
-          <span className="text-green-500">➡️</span>
-          <span>
-            Average Daily Diff:{" "}
-            <strong
-              className={average >= 0 ? "text-green-600" : "text-red-600"}
-            >
-              {Math.abs(average).toFixed(0)}
-            </strong>{" "}
-            docs {average >= 0 ? "ahead" : "behind"}
-          </span>
-        </li>
-        <li className="flex items-center space-x-2">
+
+        <li className="flex items-center space-x-2 pt-0.5">
           <span className="text-green-500">➡️</span>
           <span>
             Max Diff:{" "}
@@ -195,7 +191,7 @@ const LateAnalysisConclusion: React.FC<{
             docs {min >= 0 ? "ahead" : "behind"}
           </span>
         </li>
-        <li className="flex items-center space-x-2">
+        <li className="flex items-center space-x-2 pt-1.5">
           <span className="text-green-500">➡️</span>
           <span>
             Min Diff:{" "}

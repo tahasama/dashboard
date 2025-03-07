@@ -172,54 +172,47 @@ const LateAnalysisReviewConclusion: React.FC<{
         </Popover>
       </div>
 
-      <p className={`p-2 rounded-md my-3 mx-0.5 ${reviewImpactInsight.color}`}>
+      <p
+        className={`p-2 rounded-md my-3 mx-0.5 text-[11px] xl:text-xs ${reviewImpactInsight.color}`}
+      >
         {reviewImpactInsight.message}
       </p>
 
       {/* Progression Insights for Review */}
       <p
-        className={`p-2 rounded-md mb-2 mx-0.5 ${reviewProgressionInsight.color}`}
+        className={`p-2 rounded-md mb-2 mx-0.5 text-[11px] xl:text-xs ${reviewProgressionInsight.color}`}
       >
         {reviewProgressionInsight.message}
       </p>
 
       {/* Review Statistics */}
       <br />
-      <ul className="space-y-2 ml-1">
+      <ul className="space-y-2 ml-1 text-[10.5px] xl:text-xs bg-indigo-50 px-1 py-1.5 -mt-1 rounded-md">
         <li className="flex items-center space-x-2">
           <span className="text-green-500">➡️</span>
-          <span>
-            {isCheckedR ? "Planned Total Reviews" : "Documents Sent For Review"}
-            :{" "}
-            <strong className="text-blue-600">
+          <span className="flex items-center justify-center w-full">
+            <span className="w-[72.5%]">
+              {isCheckedR ? "Planned Reviews" : "Planned Documents"}:
+            </span>
+            <strong className="w-[27.5%] text-slate-800 bg-blue-200 rounded-sm px-1.5 py-1 text-center mr-0.5">
               {formatNumber(totalPlannedReview)}
             </strong>
           </span>
         </li>
+
         <li className="flex items-center space-x-2">
           <span className="text-green-500">➡️</span>
-          <span>
-            {isCheckedR ? "Real Total Reviews" : "Document Reviewed"}:{" "}
-            <strong className="text-blue-600">
+          <span className="flex items-center justify-center w-full">
+            <span className="w-[72.5%]">
+              {isCheckedR ? "Actual Reviews" : "Actual Documents"}:
+            </span>
+            <strong className="w-[27.5%] text-slate-800 bg-green-200 rounded-sm px-1.5 py-1 text-center mr-0.5">
               {formatNumber(totalRealReview)}
             </strong>
           </span>
         </li>
-        <li className="flex items-center space-x-2">
-          <span className="text-green-500">➡️</span>
-          <span>
-            Average Daily Diff:{" "}
-            <strong
-              className={
-                avgReviewDifference >= 0 ? "text-green-600" : "text-red-600"
-              }
-            >
-              {Math.abs(avgReviewDifference).toFixed(0)}
-            </strong>{" "}
-            docs {avgReviewDifference >= 0 ? "ahead" : "behind"}
-          </span>
-        </li>
-        <li className="flex items-center space-x-2">
+
+        <li className="flex items-center space-x-2 pt-1">
           <span className="text-green-500">➡️</span>
           <span>
             Max Diff:{" "}
@@ -229,7 +222,8 @@ const LateAnalysisReviewConclusion: React.FC<{
             docs {min >= 0 ? "ahead" : "behind"}
           </span>
         </li>
-        <li className="flex items-center space-x-2">
+
+        <li className="flex items-center space-x-2 pt-1.5">
           <span className="text-green-500">➡️</span>
           <span>
             Min Diff:{" "}
