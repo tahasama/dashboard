@@ -190,7 +190,7 @@ const Filters = ({ projectNumber, projectName }: any) => {
             <SelectTrigger className="max-w-[110px] xl:min-w-[112px] text-xs lg:text-sm hover:bg-slate-100 duration-300 scale-95">
               <SelectValue placeholder="Subproject" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="max-h-80">
               <SelectGroup>
                 <SelectItem value={"all"} className="text-xs font-semibold">
                   All
@@ -209,7 +209,7 @@ const Filters = ({ projectNumber, projectName }: any) => {
             <SelectTrigger className="max-w-[110px] xl:min-w-[112px] text-xs lg:text-sm hover:bg-slate-100 duration-300 scale-95">
               <SelectValue placeholder="Supplier" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="max-h-80">
               <SelectGroup>
                 <SelectItem value={"all"} className="text-xs font-semibold">
                   All
@@ -228,7 +228,7 @@ const Filters = ({ projectNumber, projectName }: any) => {
             <SelectTrigger className="max-w-[110px] xl:min-w-[112px] text-xs lg:text-sm hover:bg-slate-100 duration-300 scale-95">
               <SelectValue placeholder="Discipline" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="max-h-80">
               <SelectGroup>
                 <SelectItem value={"all"} className="text-xs font-semibold">
                   All
@@ -257,8 +257,9 @@ const Filters = ({ projectNumber, projectName }: any) => {
                 <ChevronDown />
               </Button>
             </PopoverTrigger>
+
             <PopoverContent className="w-full p-2" side="bottom" align="start">
-              <ScrollArea className="h-[380px]">
+              <ScrollArea className="h-[350px]">
                 <div className="flex flex-col gap-2">
                   {/* ALL Option */}
                   <div className="flex items-center gap-2">
@@ -284,14 +285,14 @@ const Filters = ({ projectNumber, projectName }: any) => {
                   {Object.entries(statusCategories)
                     .reverse()
                     .map(([category, options]) => (
-                      <div key={category} className="flex flex-col gap-3">
-                        <div className="text-slate-500 text-xs mt-1">
+                      <div key={category} className="flex flex-col gap-0">
+                        <div className="text-slate-500 text-xs pb-2">
                           {category}
                         </div>
                         {options.map((value) => (
                           <Label
                             key={value}
-                            className="flex items-center gap-2 cursor-pointer"
+                            className="flex items-center gap-2 cursor-pointer hover:bg-slate-100 py-2"
                           >
                             <Checkbox
                               checked={
@@ -389,7 +390,7 @@ const Filters = ({ projectNumber, projectName }: any) => {
               <SelectTrigger className="min-w-[120px]">
                 <SelectValue placeholder="Subproject" />
               </SelectTrigger>
-              <SelectContent side="right">
+              <SelectContent side="right" className="max-h-80">
                 <SelectGroup>
                   <SelectItem value={"all"} className="text-xs font-semibold">
                     All
@@ -414,7 +415,7 @@ const Filters = ({ projectNumber, projectName }: any) => {
               <SelectTrigger className="min-w-[120px]">
                 <SelectValue placeholder="Supplier" />
               </SelectTrigger>
-              <SelectContent side="right">
+              <SelectContent side="right" className="max-h-80">
                 <SelectGroup>
                   <SelectItem value={"all"} className="text-xs font-semibold">
                     All
@@ -440,7 +441,7 @@ const Filters = ({ projectNumber, projectName }: any) => {
                 <SelectValue placeholder="Discipline" />
               </SelectTrigger>
 
-              <SelectContent side="right">
+              <SelectContent side="right" className="max-h-80">
                 <SelectGroup>
                   <SelectItem value={"all"} className="text-xs font-semibold">
                     All
@@ -472,7 +473,7 @@ const Filters = ({ projectNumber, projectName }: any) => {
               <SelectTrigger className="min-w-[120px]">
                 <SelectValue placeholder="Submission Status" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent side="right" className="max-h-80">
                 <SelectGroup>
                   <SelectItem value={"all"} className="text-xs font-semibold">
                     All
@@ -503,7 +504,7 @@ const Filters = ({ projectNumber, projectName }: any) => {
               <SelectTrigger className="min-w-[120px]">
                 <SelectValue placeholder="Review Status" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent side="right" className="max-h-80">
                 <SelectGroup>
                   <SelectItem value={"all"} className="text-xs font-semibold">
                     All
