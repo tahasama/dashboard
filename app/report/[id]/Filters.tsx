@@ -286,13 +286,13 @@ const Filters = ({ projectNumber, projectName }: any) => {
                     .reverse()
                     .map(([category, options]) => (
                       <div key={category} className="flex flex-col gap-0">
-                        <div className="text-slate-500 text-xs pb-2">
+                        <div className="text-slate-500 text-xs pb-1.5">
                           {category}
                         </div>
                         {options.map((value) => (
                           <Label
                             key={value}
-                            className="flex items-center gap-2 cursor-pointer hover:bg-slate-100 py-2"
+                            className="flex items-center gap-2 cursor-pointer hover:bg-slate-100 py-1.5"
                           >
                             <Checkbox
                               checked={
