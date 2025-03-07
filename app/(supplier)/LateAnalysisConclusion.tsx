@@ -156,7 +156,7 @@ const LateAnalysisConclusion: React.FC<{
       </p>
 
       <br />
-      <ul className="space-y-2 ml-1 text-[10.5px] xl:text-xs bg-indigo-50/70 px-1 py-1.5 -mt-1 rounded-md">
+      <ul className="space-y-2 ml-1 text-[10.5px] xl:text-xs bg-indigo-50/75 px-1 py-1.5 -mt-1 rounded-md">
         <li className="flex items-center space-x-2">
           <span className="text-green-500">➡️</span>
           <span className="flex items-center justify-center w-full">
