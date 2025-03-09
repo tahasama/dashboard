@@ -32,21 +32,6 @@ import {
 const LateAnalysis: React.FC<Data> = memo(({ data }) => {
   const { filtered, isCheckedS, setisCheckedS } = useFilters();
 
-  const uniqueFiltered = useMemo(() => {
-    const map = new Map();
-
-    filtered.forEach((doc) => {
-      if (
-        !map.has(doc.documentNo) ||
-        map.get(doc.documentNo).revision < doc.revision // Keep the latest revision
-      ) {
-        map.set(doc.documentNo, doc);
-      }
-    });
-
-    return Array.from(map.values()); // Return only the latest unique documents
-  }, [filtered]);
-
   const [chartData, setChartData] = useState<any>({
     labels: [],
     datasets: [],
@@ -79,7 +64,7 @@ const LateAnalysis: React.FC<Data> = memo(({ data }) => {
       const rawDate =
         row.plannedSubmissionDate && row.plannedSubmissionDate !== ""
           ? row.plannedSubmissionDate
-          : row.dateIn;
+          : Number(row.dateIn) + 2;
 
       const rawDateW = row.dateIn;
 

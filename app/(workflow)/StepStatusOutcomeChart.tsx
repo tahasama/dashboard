@@ -79,7 +79,12 @@ const StatusOutcomeHeatMap: React.FC<Data> = memo(({ data }) => {
 
       .filter((x) => x.dateIn !== "" || x.dateIn !== "")
       .forEach((row: MergedData) => {
-        const plannedDate = parseDate(row.dateIn);
+        const plannedDate = parseDate(
+          row.originalDueDate && row.originalDueDate !== ""
+            ? row.originalDueDate
+            : row.dateIn
+        );
+
         const actualDate = parseDate(row.dateCompleted);
 
         if (plannedDate) {
