@@ -64,7 +64,7 @@ const LateAnalysis: React.FC<Data> = memo(({ data }) => {
       const rawDate =
         row.plannedSubmissionDate && row.plannedSubmissionDate !== ""
           ? row.plannedSubmissionDate
-          : Number(row.dateIn) + 2;
+          : row.dateCompleted || row.dateIn;
 
       const rawDateW = row.dateIn;
 
