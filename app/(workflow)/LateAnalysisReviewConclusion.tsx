@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { Data, MergedData } from "../types";
-import { getDurations, parseDates } from "@/lib/utils";
+import { getDurations, parseDates } from "@/app/lib/utils";
 import {
   Accordion,
   AccordionContent,

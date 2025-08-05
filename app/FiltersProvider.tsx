@@ -1,5 +1,5 @@
 "use client";
-import { filterData } from "@/lib/utils";
+import { filterData } from "@/app/lib/utils";
 import {
   createContext,
   useContext,

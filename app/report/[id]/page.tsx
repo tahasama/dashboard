@@ -18,10 +18,12 @@ export async function generateStaticParams() {
 
 const Report = async ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = await params;
+  console.log("🚀 ~ Report ~ id:", id);
 
   const { project } = await getProject(id);
+  console.log("🚀 ~ Report ~ project:", project);
 
-  if (!project.project_number) {
+  if (!project?.project_number) {
     return (
       <div className="w-screen h-screen grid place-content-center gap-6">
         <p>Project data not found. Please check the project ID.</p>

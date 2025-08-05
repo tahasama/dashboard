@@ -3,6 +3,7 @@ import ExcelForm from "./ExcelForm";
 import Charts from "./HomePageCharts/page";
 import Search from "./Search";
 import { getProjects } from "./action/actions";
+import { forEach } from "lodash";
 
 export default async function Home() {
   const { projects } = await getProjects();

@@ -24,7 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { usePagination } from "./PaginationProvider";
-import { getStatusColor, parseDates } from "@/lib/utils";
+import { getStatusColor, parseDates } from "@/app/lib/utils";
 import { statusColorMap, statusPrefixMap } from "./colors";
 
 import {
