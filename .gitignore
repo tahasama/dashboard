@@ -3,7 +3,6 @@
 # dependencies
 /node_modules
 /.pnp
-/public/tips
 .pnp.*
 .yarn/*
 !.yarn/patches
@@ -40,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+
+/public/tips
